@@ -69,14 +69,29 @@
 
 它会给你一份离线 HTML 报告，双击就能打开，不联网、无追踪。报告分八章：事业、财富、学业、感情、家庭、社交与声誉、健康、成长与课题；页面右上角可以「存为 PDF」。
 
-<p>
-<img src="docs/assets/report-first-screen.png" width="270" alt="报告首屏">
-<img src="docs/assets/report-mobile-pdf.png" width="270" alt="手机上看报告，右上角「存为 PDF」">
-</p>
-<p><img src="docs/assets/report-checks.png" width="560" alt="报告第 1 页：命盘标签，和你亲手核对过的往事"></p>
-<p><img src="docs/assets/report-years.png" width="560" alt="流年页：往后这些年，每一股天象落在哪、对你意味着什么"></p>
+下面是同一份合成数据报告的视觉示例：先看见你的命盘，再从八字、星盘、人格三面镜子认识自己。
 
-截图里的盘都是编的生辰，不是真人。
+<p><img src="docs/assets/report-intro.png" width="560" alt="报告开头：玄玑看见的你与命盘概览"></p>
+<p>
+<img src="docs/assets/report-mirrors.png" width="270" alt="照见：八字、星盘、人格三镜映照">
+<img src="docs/assets/report-core.png" width="270" alt="你是谁：灵魂三层示意图">
+</p>
+
+正文示例：事业与感情。
+
+<p>
+<img src="docs/assets/report-career.png" width="270" alt="事业章节：你该往哪走">
+<img src="docs/assets/report-love.png" width="270" alt="感情章节：你怎么爱、怕什么">
+</p>
+
+最后看流年：先看时间轴上的转折，再读逐年的提醒。
+
+<p>
+<img src="docs/assets/report-timeline.png" width="270" alt="流年时间轴：2027 至 2029 年的重要节点">
+<img src="docs/assets/report-year-cards.png" width="270" alt="流年逐年卡片：2026 与 2027 年的解读">
+</p>
+
+截图取自 rc.3 的合成数据报告，只展示版式与内容结构，不是真人资料，也不等于 rc.5.2 的完整功能验收；当前功能以本页说明为准。
 
 玄玑的方法很简单：
 
