@@ -164,6 +164,21 @@ footer .motto{font-family:var(--serif);color:var(--accent);font-size:15px;letter
 .connect .pill{display:inline-block;margin-top:16px;font-size:13px;color:var(--accent);border:1px solid var(--line2);border-radius:999px;padding:4px 14px;background:var(--card2)}
 @media(max-width:420px){h1{font-size:26px}.headline{font-size:20px}.pl .gz{font-size:29px}.win{grid-template-columns:54px 1fr}.win .fb{grid-column:2;justify-self:start}}
 @media print{details.basis{break-before:page}}
+/* 存为 PDF（网页链接为主，PDF 方便留存；不做长图）：按钮走浏览器打印→「存为 PDF」；打印时折叠全部展开（按钮先展开，beforeprint 兜底），印完收回 */
+.xj-pdf{position:absolute;top:12px;right:16px;font:inherit;font-size:12px;letter-spacing:.12em;color:var(--accent);background:var(--card);border:1px solid var(--line2);border-radius:999px;padding:6px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.xj-pdf:active{opacity:.6}
+@media print{
+  @page{size:A4;margin:12mm 11mm}
+  html,body{background:#fff !important}   /* 纸边是白的，整张都用白底，卡片照原色（不出米色框） */
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .xj-pdf{display:none !important}
+  .wrap{max-width:none;padding:0 0 8mm}
+  .fold>summary::after,.basis>summary::after{display:none}
+  .cover,.panel,.card,.cx,.luck,.next,.open,.connect,.years,svg,img,table,tr,figure{break-inside:avoid}
+  h2,h3,h4,.pl2,.pt2,.divd,.sh,.subhead,.figt{break-after:avoid}
+  .part{break-before:page;margin-top:0}   /* 每一篇从新的一页起，标题不会落在页底 */
+  .connect{break-before:page}
+}
 
 /* 封面＝分享卡「玄玑看见的你」 */
 .cover{margin:22px 0 26px;padding:28px 24px 20px;border-radius:22px;border:1px solid var(--line2);
@@ -234,7 +249,7 @@ footer .motto{font-family:var(--serif);color:var(--accent);font-size:15px;letter
 .lw .lwh{font-family:var(--serif);font-size:19px;font-weight:600;color:#a85a22;margin:4px 0 2px;letter-spacing:.06em}
 .lw p{margin:4px 0 4px;color:var(--body)}
 
-/* 七个方面 */
+/* 八个方面 */
 .blk{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px 18px 10px;margin-bottom:12px;box-shadow:0 4px 18px rgba(190,140,90,.05)}
 .blk .bt{font-size:12.5px;color:var(--accent);letter-spacing:.16em}
 .blk .bv{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);margin:6px 0 10px;line-height:1.55}
@@ -516,7 +531,7 @@ var SRC = {
   family_rough: '按家人大概记得的时间排，时辰可能有偏差。', unknown: '出生时间的来源不清楚。'
 };
 var PREC = { minute: '精确到分钟', within_15min: '误差在 15 分钟内', within_1h: '误差在 1 小时内', unknown: '误差不清楚' };
-var CHAPTERS = [['career', '事业', '你该往哪走'], ['wealth', '财富', '你的财从哪来'], ['love', '感情', '你怎么爱，怕什么'], ['family', '家庭', '你从哪里来'], ['social', '社交与声誉', '别人眼里的你'], ['health', '健康', '身体在提醒什么'], ['growth', '学习与成长', '你的人生课题']];
+var CHAPTERS = [['career', '事业', '你该往哪走'], ['wealth', '财富', '你的财从哪来'], ['study', '学业', '你怎么学、学什么'], ['love', '感情', '你怎么爱，怕什么'], ['family', '家庭', '你从哪里来'], ['social', '社交与声誉', '别人眼里的你'], ['health', '健康', '身体在提醒什么'], ['growth', '成长与课题', '你的人生课题']];
 var AUDIT_PLANETS = ['太阳', '月亮', '水星', '金星', '火星', '木星', '土星', '天王', '海王', '冥王'];
 function lon(b) { return typeof b.L === 'number' ? b.L : SIGNS.indexOf(b.sign) * 30 + b.deg + (b.min || 0) / 60; }
 function pos(b) { return b.sign + ' ' + b.deg + '°' + pad(b.min) + '′'; }
@@ -747,7 +762,7 @@ var GF = R.gifts || {};
 add(app, part('你的天赋与命脉', null, [GF.intro ? h('div', 'body', paras(GF.intro)) : null,
   (GF.items || []).map(function (it) { return [dia(it.title, it.body), refs(it.refs, '天赋')]; }), gold(GF.oneline)]));
 
-// 七个方面：只把这张盘最响的几件事（R.focus）完整展开，其余每块一句结论，点开才看细节（GPT 10-02 审：高手不会十个栏目平均讲）
+// 八个方面：只把这张盘最响的几件事（R.focus）完整展开，其余每块一句结论，点开才看细节（GPT 10-02 审：高手不会十个栏目平均讲）
 var CHD = R.chapters || {}, CHMAP = {};
 CHAPTERS.forEach(function (c) { CHMAP[c[0]] = c; });
 var FOCUS = (R.focus || []).filter(function (k) { return CHMAP[k] && CHD[k]; });
@@ -1053,6 +1068,16 @@ add(app, h('footer', null, [h('div', 'motto', '用命，不算命'), h('div', nu
 
 // 上篇写完才知道谁引用了谁：把下篇的「上篇引用」补上（下篇先渲染了占位）
 Object.keys(CITED).forEach(function (id) { var el = document.getElementById(id); if (el && !el.querySelector('.cited')) { var c = citedLine(id); if (c) el.appendChild(c); } });
+// 存为 PDF：浏览器打印。折叠（details）先全部展开，印完把原来收着的收回去
+(function () {
+  var shut = null;
+  function openAll() { if (shut) return; shut = [].filter.call(document.querySelectorAll('details'), function (d) { return !d.open; }); shut.forEach(function (d) { d.open = true; }); }
+  function restore() { if (shut) shut.forEach(function (d) { d.open = false; }); shut = null; }
+  window.addEventListener('beforeprint', openAll); window.addEventListener('afterprint', restore);
+  var b = h('button', 'xj-pdf', '存为 PDF'); b.type = 'button';
+  b.onclick = function () { openAll(); setTimeout(function () { window.print(); }, 60); };
+  app.appendChild(b);
+})();
 })();
 </script>
 </body>

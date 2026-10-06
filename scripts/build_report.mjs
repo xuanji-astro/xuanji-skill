@@ -21,7 +21,7 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.5.1';
+const SKILL_VERSION = '0.1.0-rc.5.2';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
@@ -74,7 +74,7 @@ export function check(rep, prof) {
   }
   const chapters = rep.chapters ?? {};
   const FR = R.focus_rules, focus = rep.focus ?? [];
-  for (const k of focus) if (!R.chapters.includes(k)) errs.push(`focus 里的「${k}」不是七个方面之一`);
+  for (const k of focus) if (!R.chapters.includes(k)) errs.push(`focus 里的「${k}」不是八个方面之一`);
   if (new Set(focus).size !== focus.length) errs.push('focus 里有重复');
   for (const c of R.chapters) {
     const ch = chapters[c] ?? {}, n = (ch.sections ?? []).length;
@@ -89,8 +89,8 @@ export function check(rep, prof) {
     if (tot < lo || tot > hi) errs.push(`最响的几件事里 ${f} 要 ${lo}～${hi} 个，现在 ${tot} 个（结构跟着证据走，别每章一样）`);
   }
   const g = chapters.growth ?? {};
-  if (focus.includes('growth') && !(g.sections ?? []).some((x) => (x.title ?? '').includes('课题'))) errs.push('学习与成长在 focus 里时，至少一节小标题带「课题」');
-  if (!focus.includes('growth') && chapters.growth && !(g.brief ?? '').includes('课题')) errs.push('学习与成长不在 focus 里时，brief 里要点出人生课题（带「课题」二字）');
+  if (focus.includes('growth') && !(g.sections ?? []).some((x) => (x.title ?? '').includes('课题'))) errs.push('成长与课题在 focus 里时，至少一节小标题带「课题」');
+  if (!focus.includes('growth') && chapters.growth && !(g.brief ?? '').includes('课题')) errs.push('成长与课题不在 focus 里时，brief 里要点出人生课题（带「课题」二字）');
   for (const c of Object.keys(chapters)) if (!R.chapters.includes(c)) errs.push(`chapters 里多了 ${c}，只能是 ${R.chapters.join('、')}`);
   if (hasWest) {
     for (const k of ['outer', 'middle', 'inner']) need(`skeleton.layers.${k}.body`, '日月升三层都要写');
@@ -114,7 +114,7 @@ export function check(rep, prof) {
     (sc.asked ?? []).forEach((a, i) => { if (!R.strength_check.answer.includes(a.answer)) errs.push(`strength_check.asked 第${i + 1}条 answer 只能是 顺／闷／没感觉`); });
   }
   for (const [path, words] of Object.entries(R.forbidden_in ?? {})) for (const [where, v] of collect(rep, path)) for (const w of words) if (typeof v === 'string' && v.includes(w)) errs.push(`${where} 里不要用「${w}」：今年的天象写成「天象 · 落在哪 · 意味着什么」`);
-  for (const [path, word] of Object.entries(R.must_contain ?? {})) { const vals = collect(rep, path).map(([, v]) => v).filter((v) => typeof v === 'string'); if (vals.length && !vals.some((v) => v.includes(word))) errs.push(`${path} 里至少要有一节标题带「${word}」（学习与成长要讲人生课题）`); }
+  for (const [path, word] of Object.entries(R.must_contain ?? {})) { const vals = collect(rep, path).map(([, v]) => v).filter((v) => typeof v === 'string'); if (vals.length && !vals.some((v) => v.includes(word))) errs.push(`${path} 里至少要有一节标题带「${word}」（成长与课题要讲人生课题）`); }
   (rep.basis?.confidence ?? []).forEach((c, i) => { if (!R.levels.includes(c.level)) errs.push(`basis.confidence 第${i + 1}条 level 只能是 高／中／欠定`); });
   const { basis, ...dflt } = rep;
   const text = JSON.stringify(dflt);
