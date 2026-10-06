@@ -1,0 +1,1059 @@
+<!doctype html>
+<!-- Copyright 2026 杭州强势播传文化影视传媒有限公司; SPDX-License-Identifier: Apache-2.0 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#fbf6ef">
+<title>玄玑 · 命盘报告</title>
+<!-- 玄玑 Skill 报告模板 v0.3：上篇命理师文章、下篇盘面审计。盘面、判词、应期由接口原样填入（profile.method），模型只写解读文字。本页不联网、不加载任何外部资源。 -->
+<style>
+:root{
+  --bg:#fbf6ef;--card:#fffdfa;--card2:#fbf3e8;
+  --ink:#3b2e26;--body:#4f4036;--sub:#8b7565;--faint:#b09c8c;
+  --line:rgba(214,178,128,.42);--line2:rgba(212,160,100,.7);
+  --accent:#c9783a;--accent2:#e58c4c;--soft:#fde6cf;--lav:#6f74c4;--lavsoft:#eceafb;
+  --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","Source Han Serif CN","SimSun",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--body);min-height:100vh;background:
+  radial-gradient(900px 480px at 50% -160px,#fff 0%,transparent 70%),
+  radial-gradient(700px 520px at 100% 30%,rgba(196,186,250,.22),transparent 70%),
+  radial-gradient(700px 520px at 0% 70%,rgba(253,214,180,.28),transparent 70%),
+  linear-gradient(180deg,#fffdf9 0%,#fbf4ea 55%,#f8f2f6 100%);
+  font:15px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+.wrap{position:relative;max-width:760px;margin:0 auto;padding:44px 16px 72px}
+p{margin:0 0 .7em}
+strong{color:var(--ink);font-weight:600;background:linear-gradient(transparent 60%,var(--soft) 0)}
+.serif{font-family:var(--serif)}
+
+/* 抬头 */
+.brand{display:flex;align-items:center;gap:10px;color:var(--accent);font-size:12px;letter-spacing:.32em}
+.brand i{display:block;width:26px;height:1px;background:var(--line2)}
+h1{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.35;margin:14px 0 6px;letter-spacing:.04em;color:var(--ink)}
+.meta{color:var(--sub);font-size:13.5px}
+.tags{margin-top:14px}
+.timenote{margin-top:10px;font-size:13.5px;color:var(--sub);padding-left:12px;border-left:2px solid var(--line2)}
+.timenote.warn{border-left-color:#ee9a7c}
+
+/* 一句话 */
+.hero{margin:30px 0 8px;padding:26px 22px 22px;border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(150deg,#fff 0%,#fff6ec 55%,#f3f0fd 100%);box-shadow:0 6px 24px rgba(190,140,90,.08)}
+.headline{text-wrap:pretty;font-family:var(--serif);font-size:23px;line-height:1.65;color:var(--ink);margin:0 0 16px;letter-spacing:.02em}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:12.5px;line-height:1;padding:7px 11px;border-radius:999px;border:1px solid var(--line2);color:var(--body);background:rgba(255,255,255,.75);white-space:nowrap}
+.tag b{color:var(--accent);font-weight:600;margin-left:4px}
+
+/* 两张盘 */
+.charts{display:grid;grid-template-columns:1fr;gap:14px;margin:18px 0 6px}
+@media(min-width:680px){.charts{grid-template-columns:1fr 1fr}}
+.panel{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px 14px 12px;box-shadow:0 4px 18px rgba(190,140,90,.06)}
+.panel h4{margin:0 0 10px;font-weight:500;font-size:12.5px;color:var(--sub);letter-spacing:.18em}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.pl{border-radius:12px;padding:8px 2px 10px}
+.pl.me{background:#fff4e7;box-shadow:inset 0 0 0 1px var(--line2)}
+.pl small{display:block;font-size:11px;color:var(--faint);line-height:1.6}
+.pl .tg{font-size:11.5px;color:var(--sub);margin-top:2px}
+.pl .gz{font-family:var(--serif);font-size:34px;line-height:1.18;font-weight:600}
+.pl .hid{font-size:11px;color:var(--faint);margin-top:4px;letter-spacing:.06em}
+.pl.none .gz{color:var(--faint);font-size:15px;line-height:2.6}
+.wx{margin-top:14px}
+.wxrow{display:grid;grid-template-columns:22px 1fr 38px;align-items:center;gap:8px;font-size:12.5px;margin:5px 0}
+.wxrow .bar{height:7px;border-radius:9px;background:rgba(150,110,70,.09);overflow:hidden}
+.wxrow .bar i{display:block;height:100%;border-radius:9px}
+.wxrow .pc{color:var(--sub);text-align:right;font-variant-numeric:tabular-nums}
+.wheel{display:block;width:100%;max-width:400px;margin:0 auto}
+.panel .empty{color:var(--faint);font-size:13px;padding:40px 6px;text-align:center}
+
+/* 章节 */
+section{margin-top:46px}
+.sh{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.sh .no{font-size:12px;color:var(--accent);letter-spacing:.2em}
+.sh h2{font-family:var(--serif);font-size:21px;font-weight:600;margin:0;letter-spacing:.06em;color:var(--ink)}
+.sh .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent);transform:translateY(-5px)}
+.lead{font-size:15.5px}
+.cards{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+.card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px 18px 10px;box-shadow:0 4px 18px rgba(190,140,90,.06)}
+.card .lb{font-size:12px;color:var(--accent);letter-spacing:.16em}
+.card .lb span{color:var(--faint);letter-spacing:.04em;margin-left:8px}
+.card h3{font-family:var(--serif);font-size:18px;font-weight:600;margin:6px 0 8px;line-height:1.5;color:var(--ink)}
+.type{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--accent);letter-spacing:.08em;line-height:1.2;margin:6px 0 2px}
+.sub2{font-size:12.5px;color:var(--sub);margin-bottom:8px}
+
+/* 对照 */
+.cx{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px 18px 8px;margin-bottom:12px;box-shadow:0 4px 18px rgba(190,140,90,.05)}
+.cx .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.cx h3{font-family:var(--serif);font-size:17px;font-weight:600;margin:0;color:var(--ink)}
+.badge{font-size:12px;line-height:1;padding:6px 10px;border-radius:999px;white-space:nowrap}
+.badge.agree{color:#a85a22;background:var(--soft)}
+.badge.differ{color:var(--lav);background:var(--lavsoft)}
+.cx .row{display:grid;grid-template-columns:62px 1fr;gap:8px;font-size:14px;padding:5px 0;border-top:1px dashed rgba(150,110,70,.16)}
+.cx .row span{color:var(--faint);font-size:12.5px;padding-top:1px}
+.cx .note{font-size:13.5px;color:var(--sub);margin:8px 0 6px}
+
+/* 运势 */
+.luck{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px 10px 10px;margin:4px 0 14px}
+.luck svg{display:block;width:100%;height:auto}
+.years{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0 14px}
+@media(min-width:620px){.years{grid-template-columns:repeat(10,1fr)}}
+.yr{position:relative;overflow:hidden;border-radius:10px;padding:9px 2px 6px;text-align:center;font-size:11.5px;line-height:1.45;color:var(--sub);background:var(--card);border:1px solid var(--line)}
+.yr>i{position:absolute;left:0;right:0;top:0;height:3px}
+.yr b{display:block;font-size:12.5px;font-weight:600;color:var(--ink)}
+.yr .tw{font-weight:600}
+.yr.now{border-color:var(--accent2);box-shadow:0 0 0 1px var(--accent2) inset}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--faint);margin:6px 4px 0}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.next{margin-top:10px;padding:12px 16px;border-radius:12px;background:var(--card2);font-size:14.5px}
+.next span{color:var(--accent);font-size:12.5px;letter-spacing:.12em;margin-right:8px}
+
+/* 过去 */
+.win{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:start;padding:14px 4px;border-top:1px solid rgba(150,110,70,.13)}
+.win:first-of-type{border-top:0}
+.win .y{font-family:var(--serif);font-size:20px;color:var(--accent);line-height:1.3}
+.win p{margin:0;font-size:14.5px}
+.fb{font-size:12px;line-height:1;padding:6px 9px;border-radius:999px;white-space:nowrap;margin-top:3px}
+.fb.f1{background:#f8c79c;color:#7a3f14}.fb.f2{background:var(--soft);color:#a85a22}
+.fb.f3{background:var(--lavsoft);color:var(--lav)}.fb.f0{border:1px dashed var(--line2);color:var(--faint)}
+.winnote{font-size:13px;color:var(--faint);margin-top:6px}
+
+/* 被看见 */
+.seen{text-wrap:pretty;font-family:var(--serif);font-size:22px;line-height:1.7;color:var(--ink);text-align:center;padding:30px 10px 26px;margin:0}
+.seen::before,.seen::after{content:"";display:block;width:44px;height:1px;margin:0 auto 18px;background:var(--line2)}
+.seen::after{margin:18px auto 0}
+.open{border:1px dashed rgba(111,116,196,.45);border-radius:16px;padding:14px 18px 8px;margin-top:8px;background:rgba(236,234,251,.35)}
+.open .lb{font-size:12px;color:var(--lav);letter-spacing:.14em;margin-bottom:6px}
+
+/* 接着问＋存档 */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
+.chip{font-size:13.5px;padding:8px 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--body)}
+.hint{font-size:13px;color:var(--faint)}
+.btn{display:inline-block;margin:8px 0 4px;padding:11px 20px;border-radius:999px;background:linear-gradient(90deg,#f2a46c,#e2804a);color:#fff;text-decoration:none;font-weight:600;font-size:14.5px;border:0;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(226,128,74,.25)}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--line2);padding:8px 16px;font-size:13px;font-weight:500;box-shadow:none}
+
+/* 依据 */
+details.basis{margin-top:52px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+details.basis>summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;font-family:var(--serif);font-size:17px;letter-spacing:.08em;color:var(--ink)}
+details.basis>summary::-webkit-details-marker{display:none}
+details.basis>summary::after{content:"";width:8px;height:8px;border-right:1.5px solid var(--accent);border-bottom:1.5px solid var(--accent);transform:rotate(45deg) translateY(-3px);transition:transform .2s}
+details.basis[open]>summary::after{transform:rotate(-135deg) translateY(-1px)}
+details.basis>summary small{font-family:-apple-system,"PingFang SC",sans-serif;font-size:12px;color:var(--faint);letter-spacing:0;margin-left:10px}
+.bd{padding:0 18px 14px;font-size:13.5px;color:var(--body)}
+.bd h4{font-size:12.5px;color:var(--accent);letter-spacing:.16em;font-weight:500;margin:22px 0 8px}
+.bd h4:first-child{margin-top:4px}
+.bd ul{margin:0 0 6px;padding-left:18px}.bd li{margin:2px 0}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:4px 12px}
+.kv dt{color:var(--faint)}.kv dd{margin:0}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:6px 4px;border-bottom:1px solid rgba(150,110,70,.12);text-align:center;font-weight:400}
+.tbl th{color:var(--faint);font-size:12px}
+.tbl td:first-child,.tbl th:first-child{text-align:left;color:var(--faint);white-space:nowrap;padding-right:8px}
+.conf{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin-bottom:6px}
+.lv{font-size:11.5px;padding:3px 8px;border-radius:999px;background:var(--soft);color:#a85a22;white-space:nowrap;height:fit-content;margin-top:2px}
+.mini{display:flex;flex-wrap:wrap;gap:6px}.mini span{font-size:12px;padding:3px 8px;border-radius:8px;background:var(--card2)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+footer{margin-top:44px;text-align:center;color:var(--faint);font-size:12px;line-height:1.9}
+footer .motto{font-family:var(--serif);color:var(--accent);font-size:15px;letter-spacing:.3em;margin-bottom:8px}
+.connect{margin:40px 0 0;text-align:center;padding:24px 16px 22px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.connect .ct{font-family:var(--serif);font-size:19px;color:var(--ink);letter-spacing:.14em;margin-bottom:16px}
+.connect .qrw{display:inline-block;padding:12px;background:#fff;border-radius:14px;box-shadow:0 0 0 6px rgba(201,120,58,.10),0 0 30px rgba(229,140,76,.32)}
+.connect .qr{display:block;width:180px;height:180px}
+.connect .pill{display:inline-block;margin-top:16px;font-size:13px;color:var(--accent);border:1px solid var(--line2);border-radius:999px;padding:4px 14px;background:var(--card2)}
+@media(max-width:420px){h1{font-size:26px}.headline{font-size:20px}.pl .gz{font-size:29px}.win{grid-template-columns:54px 1fr}.win .fb{grid-column:2;justify-self:start}}
+@media print{details.basis{break-before:page}}
+
+/* 封面＝分享卡「玄玑看见的你」 */
+.cover{margin:22px 0 26px;padding:28px 24px 20px;border-radius:22px;border:1px solid var(--line2);
+  background:linear-gradient(155deg,#fff 0%,#fff3e6 48%,#eeeafd 100%);box-shadow:0 10px 30px rgba(190,140,90,.12)}
+.cover .ct{font-size:12.5px;letter-spacing:.32em;color:var(--accent)}
+.cover .cl{text-wrap:pretty;font-family:var(--serif);font-size:24px;line-height:1.7;color:var(--ink);margin:14px 0 12px;font-weight:600}
+.cover .ce{font-size:13.5px;color:var(--sub);padding-left:10px;border-left:2px solid var(--line2)}
+.cover .cf{display:flex;justify-content:space-between;align-items:center;margin-top:18px;font-size:12px;color:var(--faint)}
+.cover .cf span{color:var(--lav);background:var(--lavsoft);padding:4px 10px;border-radius:999px}
+.cover .cf b{font-family:var(--serif);color:var(--accent);letter-spacing:.2em;font-weight:600}
+
+/* 认知进度 */
+.prog{margin:18px 0 0;padding:14px 18px 10px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.prog .pt{font-size:12.5px;color:var(--sub);letter-spacing:.14em;margin-bottom:6px}
+.prog ul{list-style:none;margin:0;padding:0}
+.prog li{display:flex;gap:10px;align-items:baseline;padding:4px 0;font-size:14.5px}
+.prog li span{flex:none;font-size:12px;padding:2px 8px;border-radius:999px}
+.prog .st-ok span{background:var(--soft);color:#a85a22}.prog .st-q span{background:var(--lavsoft);color:var(--lav)}.prog .st-w span{border:1px dashed var(--line2);color:var(--faint)}
+
+/* 术语条 */
+.termrow{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 10px}
+.term{font-size:12.5px;line-height:1.3;padding:5px 10px;border-radius:8px;background:var(--card2);color:var(--body);border:1px solid rgba(214,178,128,.3)}
+.term.big{font-family:var(--serif);font-weight:600;font-size:14px;color:#a85a22;background:var(--soft)}
+.term.ok{color:#2f7d57;background:#e7f5ec;border-color:#cde9d8}.term.no{color:#b5503a;background:#fbe9e4;border-color:#f3d2c8}
+.term.hard{color:#b5503a}.term.soft{color:#2f7d73}
+
+/* 八字：日主＋格局 */
+.idn{margin:4px 0 12px}
+.idn-t{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink)}
+.idn-s{font-size:14.5px;color:var(--body);margin-top:2px}.idn-s b{font-family:var(--serif);font-size:17px;color:#e0623f}
+.idn-l{font-size:13.5px;color:var(--sub);margin-top:2px}
+.gj .hm{font-family:var(--serif);font-size:17px;font-weight:600;color:#a85a22;margin:2px 0 6px}
+.gj .gjn{font-size:13.5px;color:var(--sub)}
+.gj .gjd{margin:8px 0 6px;color:var(--body)}
+.ss .ssr{display:grid;grid-template-columns:40px 1fr 30px;align-items:center;gap:8px;margin:8px 0 0;font-size:13px}
+.ss .ssr .bar{height:6px;border-radius:9px;background:rgba(150,110,70,.09);overflow:hidden}.ss .ssr .bar i{display:block;height:100%;background:linear-gradient(90deg,#f6b780,#e58c4c);border-radius:9px}
+.ss .ssv{color:var(--sub);text-align:right;font-variant-numeric:tabular-nums}
+.ss .ssw{grid-column:2/4;font-size:12.5px;color:var(--sub);margin-top:-4px}
+.ss .ssf{margin-top:12px;padding-top:10px;border-top:1px dashed rgba(150,110,70,.18)}
+.ss .ssfi{margin:6px 0 8px}.ss .ssfi b{font-family:var(--serif);color:var(--ink);margin-right:8px}.ss .ssfi span{color:#a85a22;font-size:13px}
+.ss .ssfi p{font-size:12.5px;color:var(--sub);margin:2px 0 0}
+.lucky{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--sub);margin-top:6px}.lucky b{color:var(--ink);font-weight:600}
+
+/* 星盘：日月升＋逐星 */
+.pgrid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+@media(min-width:680px){.pgrid.two{grid-template-columns:1fr 1fr}}
+.pcd{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px 16px 8px;box-shadow:0 4px 18px rgba(190,140,90,.05)}
+.pcd .ph{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.pcd .pn{font-family:var(--serif);font-size:19px;font-weight:600}
+.pcd .ps{font-size:13px;color:var(--sub)}
+.pcd .ruler{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--soft);color:#a85a22}
+.pcd .termrow{margin:8px 0 6px}
+.pcd p{font-size:14.5px}
+
+/* 人格 */
+.stack{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:10px 0 8px;font-size:13.5px}
+.stack dt{color:var(--faint)}.stack dd{margin:0}.stack dd b{color:var(--ink);margin-right:6px}
+.quote{font-family:var(--serif);font-size:15.5px;color:var(--ink);margin:8px 0 6px;padding-left:12px;border-left:2px solid var(--line2)}
+.nb{font-size:13px;color:var(--sub);margin:4px 0 8px}
+.rb{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:620px){.rb{grid-template-columns:1fr 1fr}}
+.rb .card h3{margin-bottom:2px}
+.src{font-size:12.5px;color:var(--sub);margin:6px 0 8px}.src b{color:var(--ink);font-weight:600}
+
+/* 大运判词 */
+.lw{margin:0 0 12px;padding:14px 18px 10px;border-radius:16px;background:linear-gradient(150deg,#fff8ef,#fff);border:1px solid var(--line2)}
+.lw .lwt{font-size:12.5px;color:var(--sub);letter-spacing:.08em}
+.lw .lwh{font-family:var(--serif);font-size:19px;font-weight:600;color:#a85a22;margin:4px 0 2px;letter-spacing:.06em}
+.lw p{margin:4px 0 4px;color:var(--body)}
+
+/* 七个方面 */
+.blk{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px 18px 10px;margin-bottom:12px;box-shadow:0 4px 18px rgba(190,140,90,.05)}
+.blk .bt{font-size:12.5px;color:var(--accent);letter-spacing:.16em}
+.blk .bv{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);margin:6px 0 10px;line-height:1.55}
+.blk .why{display:grid;grid-template-columns:62px 1fr;gap:6px 8px;font-size:14px;margin-bottom:8px}
+.blk .why span{color:var(--faint);font-size:12.5px;padding-top:1px}
+.blk .row2{font-size:14px;margin:6px 0}.blk .row2 span{color:var(--accent);font-size:12.5px;letter-spacing:.1em;margin-right:8px}
+.blk .bnd{font-size:12px;color:var(--faint);margin-top:8px}
+
+/* ── v0.3：上篇命理师文章／下篇审计 ── */
+.half{margin:64px 0 10px;text-align:center}
+.half .hl{font-size:12px;letter-spacing:.42em;color:var(--accent)}
+.half .ht{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--ink);letter-spacing:.12em;margin-top:6px}
+.half .hs{font-size:13px;color:var(--faint);margin-top:4px}
+.part{margin-top:54px}
+.part .pl2{font-size:11.5px;letter-spacing:.32em;color:var(--accent)}
+.part .pt2{font-family:var(--serif);font-size:25px;font-weight:700;color:var(--ink);margin:6px 0 10px;letter-spacing:.04em;line-height:1.4}
+.part .pt2 span{color:var(--accent)}
+.divd{display:flex;align-items:center;gap:10px;margin:0 0 18px}
+.divd i{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--line2),transparent)}
+.divd b{width:7px;height:7px;transform:rotate(45deg);background:#d9a057;display:block}
+.q{font-family:var(--serif);font-size:16px;line-height:1.9;color:#4b4f9a;background:#f1effc;border:1px solid rgba(111,116,196,.22);border-radius:16px;padding:16px 20px;margin:4px 0 18px}
+.dia{display:flex;align-items:baseline;gap:10px;margin:22px 0 8px}
+.dia::before{content:"";flex:none;width:7px;height:7px;transform:rotate(45deg) translateY(-2px);background:#d9a057}
+.dia h3{margin:0;font-family:var(--serif);font-size:17.5px;font-weight:600;color:#5b54a8;line-height:1.55}
+.gold{font-family:var(--serif);font-size:17px;line-height:1.85;color:#a0561f;border-left:3px solid #d9a057;padding:4px 0 4px 16px;margin:18px 0}
+.warm{font-family:var(--serif);font-style:italic;text-align:center;font-size:15.5px;line-height:2;color:#8a5a2b;background:linear-gradient(160deg,#fff8ee,#fdf3e6);border:1px solid var(--line2);border-radius:16px;padding:18px 18px;margin:18px 0}
+.body p{font-size:15.5px;line-height:1.95}
+.refs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 0;font-size:11.5px;color:var(--faint)}
+.refs a{font-size:11.5px;color:var(--lav);background:var(--lavsoft);border-radius:6px;padding:2px 8px;text-decoration:none}
+.refs a:hover{background:#dfdcf7}
+.chip2{display:inline-block;font-size:12px;color:#a85a22;background:var(--soft);border-radius:6px;padding:2px 8px;margin:0 6px 6px 0}
+
+/* 玄玑说中的事 */
+.hits{margin:14px 0 0;padding:14px 18px 8px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.hits .pt{font-size:12.5px;color:var(--sub);letter-spacing:.14em;margin-bottom:6px}
+.persona-feedback{display:inline-block;margin:6px 0 10px;padding:3px 9px;border-radius:8px;border:1px solid #ae7043;color:#704424;background:#fff4e6;font-size:13px;line-height:1.7}
+.hit{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;padding:6px 0;border-top:1px dashed rgba(150,110,70,.15)}
+.hit:first-of-type{border-top:0}
+.hit span{font-size:12px;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.hit .h1{background:#f8c79c;color:#7a3f14}.hit .h2{background:var(--soft);color:#a85a22}.hit .h3{background:var(--lavsoft);color:var(--lav)}.hit .h0{border:1px dashed var(--line2);color:var(--faint)}
+.hit small{display:block;color:var(--faint);font-size:12px;margin-top:2px}
+
+/* 图 */
+.fig{margin:16px 0 8px;padding:14px 12px 10px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.fig svg{display:block;width:100%;height:auto;margin:0 auto}
+.fig .cap{font-size:12px;color:var(--faint);text-align:center;margin-top:6px}
+.panel .cap{font-size:12px;color:var(--faint);margin-top:8px;line-height:1.6}
+.fig.soul svg{max-width:360px}.fig.venn svg{max-width:420px}
+
+/* 节奏日历 */
+.cal{display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0}
+@media(min-width:640px){.cal{grid-template-columns:1fr 1fr}}
+.calc{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px 16px 10px;position:relative}
+.calc .ch{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.calc .cs{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--accent)}
+.calc .cp{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--soft);color:#a85a22}
+.calc .ct2{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink)}
+.calc p{margin:8px 0 6px;font-size:14.5px}
+.calc .cb{font-size:12px;color:var(--faint)}
+.calc .mir{position:absolute;right:12px;top:12px;font-size:11px;color:var(--lav);background:var(--lavsoft);border-radius:999px;padding:2px 8px}
+
+/* 结尾 */
+.closing{text-align:center;font-family:var(--serif);color:#8a5a2b;font-size:16.5px;line-height:2.4;margin:56px 0 10px;padding:30px 10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+/* 下篇审计 */
+.aud .lbl{display:block;font-size:12px;color:var(--accent);letter-spacing:.12em;margin:10px 0 2px}
+.aud p{font-size:14.5px;margin:0 0 4px}
+.cited{font-size:12px;color:var(--faint);margin-top:8px}
+.cited a{color:var(--lav);text-decoration:none;margin-right:6px}
+.power{margin:6px 0 4px}
+.pw{display:grid;grid-template-columns:18px 34px 1fr 76px;gap:8px;align-items:center;font-size:13px;margin:6px 0}
+.pw b{font-family:var(--serif)}.pw .bar{height:8px;border-radius:9px;background:rgba(150,110,70,.09);overflow:hidden}
+.pw .bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#f6b780,#e58c4c)}
+.pw em{font-style:normal;font-size:11.5px;color:var(--faint);text-align:right}
+.stairs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;align-items:end;height:150px;margin:12px 0 4px}
+.stairs div{border-radius:10px 10px 4px 4px;padding:8px 6px;font-size:11.5px;color:#7a3f14;display:flex;flex-direction:column;justify-content:flex-end}
+.stairs div b{font-family:var(--serif);font-size:16px;display:block}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;margin:8px 0 4px}
+.flow span{padding:3px 9px;border-radius:8px;background:var(--card2);border:1px solid rgba(214,178,128,.3)}
+.flow i{font-style:normal;color:var(--faint)}
+.flow b{padding:3px 9px;border-radius:8px;background:var(--soft);color:#a85a22}
+
+/* v0.3b：卷首、双色小标题、图 */
+strong{color:#9a4f1c;font-weight:600;background:linear-gradient(transparent 62%,rgba(253,214,180,.55) 0)}
+.dia h3 .k{color:#a0561f;font-weight:700}.dia h3 .sep{color:#d9a057;margin:0 2px}.dia h3 .m{color:#4b4f9a;font-weight:600}
+.part .pt2{font-size:26px}.part .pt2 span{color:#c0652a;font-weight:600}
+.subhead{margin:30px 0 8px;font-size:12.5px;letter-spacing:.32em;color:var(--accent);display:flex;align-items:center;gap:10px}
+.subhead::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.juan{margin:72px 0 18px;padding:34px 16px 30px;text-align:center;border-radius:20px;background:radial-gradient(420px 160px at 50% 0%,rgba(253,214,180,.45),transparent 70%),radial-gradient(420px 160px at 50% 100%,rgba(196,186,250,.28),transparent 70%),#fffdf8;border:1px solid var(--line)}
+.juan .st-line{display:flex;align-items:center;gap:12px;max-width:420px;margin:0 auto}
+.juan .st-line i{flex:1;height:0;border-top:1px solid rgba(201,135,62,.55);border-bottom:1px solid rgba(201,135,62,.25);padding-top:2px}
+.juan .st-line b{width:9px;height:9px;transform:rotate(45deg);border:1px solid #c9873e;background:#fdecd9}
+.juan .st-k{margin-top:22px;font-size:12px;letter-spacing:.6em;color:var(--accent)}
+.juan .st-t{font-family:var(--serif);font-size:42px;font-weight:700;letter-spacing:.5em;margin:10px 0 6px .5em;background:linear-gradient(180deg,#b8692e,#7a3f14);-webkit-background-clip:text;background-clip:text;color:transparent}
+.juan .st-s{font-family:var(--serif);font-size:16px;color:#4b4f9a;letter-spacing:.12em}
+.juan .st-tri{font-size:12px;color:var(--faint);letter-spacing:.3em;margin:10px 0 22px}
+.figt{font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:.3em;color:#7a3f14;text-align:center;margin:4px 0 6px}
+.fig.venn svg{max-width:460px}
+.soult{margin:10px 2px 6px;border-top:1px solid var(--line)}
+.srow{display:grid;grid-template-columns:76px 1fr;gap:4px 12px;padding:10px 2px;border-bottom:1px dashed rgba(150,110,70,.18)}
+.srow .sl{grid-row:span 3;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.srow .sl i{width:9px;height:9px;border-radius:50%;display:block;margin-bottom:2px}
+.srow .sl b{font-family:var(--serif);font-size:18px;color:#3b2e26}.srow .sl span{font-size:11.5px;color:var(--faint)}
+.srow .sm b{font-family:var(--serif);font-size:16px;color:#a0561f;margin-right:8px}.srow .sm span{font-size:12.5px;color:var(--sub)}
+.srow .sa .term{font-size:11.5px;padding:2px 7px;margin:2px 4px 0 0;display:inline-block}
+.srow .si{font-family:var(--serif);font-size:14px;color:#4b4f9a}
+.smini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.smini>div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fffdf9}
+.smini span{display:block;font-size:11px;color:var(--faint);letter-spacing:.14em}.smini b{display:block;font-family:var(--serif);font-size:15px;color:#3b2e26;margin:2px 0}.smini em{font-style:normal;font-size:12px;color:var(--sub)}
+@media(max-width:420px){.juan .st-t{font-size:36px}.smini{grid-template-columns:1fr}}
+
+/* 节奏日历 v0.3c：一年一张卡 */
+.cal{grid-template-columns:1fr!important;gap:14px}
+.calc{padding:18px 20px 14px}
+.calc .ch{gap:10px}.calc .cs{font-size:22px}.calc .ct2{font-size:18px}
+.calc .ctier{font-size:11.5px;padding:2px 9px;border-radius:999px;margin-left:auto}
+.calc .mir{position:static;display:inline-block;margin:8px 0 0}
+.calc .cov{font-size:15px;margin:10px 0 8px;color:var(--body)}
+.careas{display:grid;grid-template-columns:1fr;gap:6px;margin:8px 0;padding:10px 12px;border-radius:12px;background:var(--card2)}
+@media(min-width:640px){.careas{grid-template-columns:1fr 1fr}}
+.car{display:grid;grid-template-columns:40px 1fr;gap:8px;font-size:14px;line-height:1.7}
+.car b{font-family:var(--serif);color:#a0561f;font-weight:700}
+.chalf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0;font-size:14px;line-height:1.7}
+.chalf>div{border-left:2px solid var(--line2);padding-left:10px}
+.chalf b,.cdo b{display:block;font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:500}
+.cdo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 4px;font-size:14px}
+.cdo .yi{background:#eef7f1;border-radius:10px;padding:8px 10px}.cdo .yi b{color:#2f7d57}
+.cdo .ji{background:#fbeee9;border-radius:10px;padding:8px 10px}.cdo .ji b{color:#b5503a}
+.calc .cb{margin-top:8px}
+@media(max-width:420px){.chalf,.cdo{grid-template-columns:1fr}}
+/* 流年 v0.4：月历、十年、一生 */
+.mfig .legend,.lfig .legend{justify-content:center}
+.wins{margin:12px 0 6px 6px;border-left:2px solid var(--line2);padding-left:0}
+.win{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:10px 0 10px 14px;position:relative}
+.win::before{content:"";position:absolute;left:-6px;top:17px;width:10px;height:10px;border-radius:50%;background:var(--card);border:2px solid var(--accent)}
+.wwhen{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--accent);line-height:1.6}
+.wt{font-family:var(--serif);font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.6}
+.warea{display:inline-block;font-family:-apple-system,"PingFang SC",sans-serif;font-size:11px;font-weight:500;color:#a85a22;background:var(--soft);border-radius:999px;padding:1px 8px;margin-right:8px;vertical-align:2px}
+.wb{font-size:14.5px;margin-top:4px}.wb p{margin:0 0 .4em}
+.dec{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.decc{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:12px 14px 10px}
+.decc .dh{display:flex;align-items:center;gap:8px}
+.dtier{display:block;width:10px;height:10px;border-radius:50%;background:#ddd;flex:none}
+.decc .ds{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--accent)}
+.decc .cp{font-size:11.5px;padding:1px 8px;border-radius:999px;background:var(--soft);color:#a85a22}
+.decc .dtw{margin-left:auto;font-size:11px;color:var(--sub)}
+.decc .dt{font-family:var(--serif);font-size:15.5px;font-weight:600;color:var(--ink);margin:6px 0 2px;line-height:1.55}
+.decc .dmir{display:inline-block;font-size:11px;color:var(--lav);background:var(--lavsoft);border-radius:999px;padding:1px 8px;margin:2px 0}
+.decc .db{font-size:14px;line-height:1.75}.decc .db p{margin:4px 0}
+.decc .cb{font-size:11.5px;color:var(--faint);margin-top:4px}
+.lifel{margin:10px 0}
+.lrow{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.lrow:last-child{border-bottom:0}
+.lspan{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--accent);line-height:1.6}
+.lt{font-family:var(--serif);font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.6}
+.lb{font-size:14.5px}.lb p{margin:2px 0}
+@media(max-width:520px){.dec{grid-template-columns:1fr}.win{grid-template-columns:1fr;gap:2px}.lrow{grid-template-columns:1fr;gap:2px}}
+/* 身强身弱投票 */
+.card.vote{margin:12px 0}
+.vrow{display:grid;grid-template-columns:118px 92px 1fr;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.vsch{font-family:var(--serif);font-weight:600;color:var(--ink)}
+.vsch em{font-style:normal;font-family:-apple-system,"PingFang SC",sans-serif;font-size:10.5px;font-weight:500;color:var(--lav);background:var(--lavsoft);border-radius:999px;padding:0 6px;margin-left:6px}
+.vchip{justify-self:start;font-size:12.5px;padding:2px 10px;border-radius:999px;background:#f3eee8;color:var(--sub)}
+.vwhy{color:var(--sub);font-size:12.5px;line-height:1.6}
+.vwest{opacity:.92}.vgut .vsch em{color:#a0561f;background:var(--soft)}
+.vsay{margin-top:10px;font-family:var(--serif);font-size:15px;font-weight:600;color:#a0561f}
+.vnote{margin-top:4px;font-size:12.5px;color:var(--sub)}
+@media(max-width:520px){.vrow{grid-template-columns:1fr auto;gap:4px 8px}.vwhy{grid-column:1/-1}}
+/* 10-02 分层：最响的三件事、其余一句话、折叠、接着问前三 */
+.focuslead{font-size:13px;letter-spacing:.06em;color:var(--sub);margin:-4px 0 14px}
+.briefs{margin:6px 0}
+.brow{padding:12px 0;border-bottom:1px dashed var(--line)}
+.brow:last-child{border-bottom:0}
+.bh{display:grid;grid-template-columns:92px 1fr;gap:12px;align-items:baseline}
+.bh b{font-family:var(--serif);font-size:16px;font-weight:600;color:#a0561f}
+.bh span{font-family:var(--serif);font-size:15.5px;color:var(--ink);line-height:1.65}
+details.fold{margin:6px 0 0 104px}
+details.fold.wide{margin:14px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:0 14px}
+details.fold>summary{list-style:none;cursor:pointer;font-size:13px;color:var(--accent);padding:6px 0;display:inline-flex;align-items:center;gap:6px}
+details.fold.wide>summary{display:flex;padding:12px 0;font-family:var(--serif);font-size:15px;color:var(--ink)}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::after{content:"";width:6px;height:6px;border-right:1.5px solid var(--accent);border-bottom:1.5px solid var(--accent);transform:rotate(45deg) translateY(-2px);transition:transform .2s}
+details.fold[open]>summary::after{transform:rotate(-135deg) translateY(1px)}
+.nqlead{font-size:12.5px;letter-spacing:.24em;color:var(--accent);margin:6px 0 8px}
+ol.nq{margin:0 0 8px;padding:0;list-style:none;counter-reset:nq}
+ol.nq li{counter-increment:nq;position:relative;padding:12px 14px 12px 44px;margin:0 0 8px;border:1px solid var(--line2);border-radius:14px;background:var(--card);font-family:var(--serif);font-size:15.5px;color:var(--ink);line-height:1.6}
+ol.nq li::before{content:counter(nq);position:absolute;left:14px;top:12px;width:20px;height:20px;border-radius:50%;background:var(--soft);color:#a0561f;font:600 12px/20px -apple-system,sans-serif;text-align:center}
+details.fold.nqmore{margin-left:0}
+@media(max-width:520px){.bh{grid-template-columns:1fr;gap:2px}details.fold{margin-left:0}}
+</style>
+</head>
+<body>
+<main class="wrap" id="app"><noscript>这份报告需要打开 JavaScript 才能显示。</noscript></main>
+<script id="xj-data" type="application/json">__XJ_DATA__</script>
+<script>
+(function () {
+'use strict';
+var D = JSON.parse(document.getElementById('xj-data').textContent);
+var P = D.profile || {}, R = D.report || {};
+var BZ = P.bazi && P.bazi.status === 'ok' ? P.bazi : null;
+var W = P.western && P.western.data ? P.western.data : null;
+var X = P.method || {}, XB = X.bazi || null, XW = X.west || null, XP = X.persona || null, XT = X.timing || null;
+var birth = P.birth || {};
+var NOW = Number(String(D.built_at || new Date().toISOString()).slice(0, 4));
+var app = document.getElementById('app');
+app.textContent = '';
+
+// ── 小工具：所有文字都按纯文本放，只认 **加重** ──
+function h(tag, cls, kids) { var e = document.createElement(tag); if (cls) e.className = cls; add(e, kids); return e; }
+function add(e, k) {
+  if (k == null || k === false) return;
+  if (Array.isArray(k)) { k.forEach(function (x) { add(e, x); }); return; }
+  e.appendChild(typeof k === 'object' ? k : document.createTextNode(String(k)));
+}
+function rich(t, cls) {
+  var p = h('p', cls);
+  String(t || '').split('**').forEach(function (s, i) { if (s) add(p, i % 2 ? h('strong', null, s) : s); });
+  return p;
+}
+function paras(t, cls) { return String(t || '').split(/\n+/).filter(Boolean).map(function (s) { return rich(s, cls); }); }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function svg(w, hgt, inner, cls) {
+  var doc = new DOMParser().parseFromString('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + esc(w) + '" class="' + esc(cls || '') + '" role="img">' + inner + '</svg>', 'image/svg+xml');
+  var root = doc.documentElement;
+  var tags = ['svg','g','defs','radialGradient','linearGradient','stop','circle','rect','line','path','polygon','polyline','text','tspan'];
+  var attrs = ['xmlns','viewBox','class','role','id','x','y','x1','y1','x2','y2','cx','cy','r','rx','ry','width','height','d','points','fill','stroke','stroke-width','stroke-opacity','fill-opacity','opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','font-size','font-weight','font-family','text-anchor','dominant-baseline','dy','dx','letter-spacing','paint-order','offset','stop-color','stop-opacity'];
+  if (root.localName !== 'svg' || root.querySelector('parsererror')) return h('span', 'empty', '图表数据格式无效');
+  [root].concat(Array.from(root.querySelectorAll('*'))).forEach(function (el) {
+    if (tags.indexOf(el.localName) < 0) { el.remove(); return; }
+    Array.from(el.attributes).forEach(function (a) {
+      if (attrs.indexOf(a.name) < 0 || (/url\(/i.test(a.value) && !/^url\(#[A-Za-z0-9_-]+\)$/.test(a.value))) el.removeAttribute(a.name);
+    });
+  });
+  return document.importNode(root, true);
+}
+function pad(n) { return (n < 10 ? '0' : '') + n; }
+function anchor(el, id) { el.id = id; return el; }
+var NUM = ['壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖', '拾', '拾壹', '拾贰'], partNo = 0;
+function part(title, sub, kids, id) {
+  var sec = h('section', 'part', [h('div', 'pl2', 'PART · ' + NUM[partNo++]), h('h2', 'pt2', [title, sub ? h('span', null, ' · ' + sub) : null]), h('div', 'divd', [h('i'), h('b'), h('i')]), kids]);
+  if (id) sec.id = id;
+  return sec;
+}
+function scrollTitle(k, t, sub, tri) {
+  return h('div', 'juan', [h('div', 'st-line', [h('i'), h('b'), h('i')]), h('div', 'st-k', k), h('div', 'st-t', t), h('div', 'st-s', sub), h('div', 'st-tri', tri), h('div', 'st-line', [h('i'), h('b'), h('i')])]);
+}
+function q(t) { return t ? h('div', 'q', t) : null; }
+function gold(t) { return t ? h('div', 'gold', t) : null; }
+function warm(t) { return t ? h('div', 'warm', String(t).split(/\n+/).map(function (s) { return h('div', null, s); })) : null; }
+function diaTitle(t) { var i = String(t).indexOf('——'); return i < 0 ? h('h3', null, t) : h('h3', null, [h('b', 'k', t.slice(0, i)), h('span', 'sep', '——'), h('span', 'm', t.slice(i + 2))]); }
+function dia(title, body) { return [title ? h('div', 'dia', diaTitle(title)) : null, h('div', 'body', paras(body))]; }
+
+// ── 溯源角标：正文写「星盘·金星」「八字·日支」「人格·Te」，点了跳到下篇；下篇卡片反过来列出被哪几章引用 ──
+var CITED = {};
+function refTarget(r) {
+  var m = String(r).match(/^(星盘|八字|人格)[·・](.+)$/); if (!m) return null;
+  if (m[1] === '星盘') { var pl = AUDIT_PLANETS.filter(function (x) { return m[2].indexOf(x) >= 0; })[0]; return pl ? 'w-' + pl : 'a-west'; }
+  return m[1] === '八字' ? 'a-bazi' : 'a-persona';
+}
+function refs(list, from) {
+  if (!list || !list.length) return null;
+  return h('div', 'refs', ['依据'].concat(list.map(function (r) {
+    var t = refTarget(r), a = h('a', null, r);
+    if (t) { a.href = '#' + t; (CITED[t] = CITED[t] || []); if (from && CITED[t].indexOf(from) < 0) CITED[t].push(from); }
+    return a;
+  })));
+}
+
+// ── 词表（名字和颜色，不含判词；判词都来自接口 method 层）──
+var EL = { 木: '#3f9b6b', 火: '#e0623f', 土: '#c99636', 金: '#8e97a8', 水: '#4a7fd6' };
+var GAN_EL = { 甲: '木', 乙: '木', 丙: '火', 丁: '火', 戊: '土', 己: '土', 庚: '金', 辛: '金', 壬: '水', 癸: '水' };
+var SIGNS = ['白羊', '金牛', '双子', '巨蟹', '狮子', '处女', '天秤', '天蝎', '射手', '摩羯', '水瓶', '双鱼'];
+var ZOD = ['羊', '牛', '双', '蟹', '狮', '处', '秤', '蝎', '射', '摩', '瓶', '鱼'];
+var CHAR = { 太阳: '日', 月亮: '月', 水星: '水', 金星: '金', 火星: '火', 木星: '木', 土星: '土', 天王: '天', 海王: '海', 冥王: '冥', 凯龙: '凯', 北交点: '北', 南交点: '南', 莉莉丝: '莉', 谷神: '谷', 智神: '智', 婚神: '婚', 灶神: '灶' };
+var ASPECTS = [[0, '合', 8, ''], [60, '六合', 4, 'good'], [90, '刑', 6, 'hard'], [120, '拱', 6, 'good'], [180, '冲', 8, 'hard']];
+var TIER = [['顺风', '#f2a066', '#d06f2e'], ['偏顺', '#f8d2ae', '#c0844c'], ['平稳', '#cfd2f0', '#7e85c6'], ['偏紧', '#a7acde', '#6a71b8'], ['逆风', '#7f86ca', '#5a60ad']];
+var SRC = {
+  birth_certificate: '按出生证上的时间排。', family_clear: '按家人明确记得的时间排。',
+  family_rough: '按家人大概记得的时间排，时辰可能有偏差。', unknown: '出生时间的来源不清楚。'
+};
+var PREC = { minute: '精确到分钟', within_15min: '误差在 15 分钟内', within_1h: '误差在 1 小时内', unknown: '误差不清楚' };
+var CHAPTERS = [['career', '事业', '你该往哪走'], ['wealth', '财富', '你的财从哪来'], ['love', '感情', '你怎么爱，怕什么'], ['family', '家庭', '你从哪里来'], ['social', '社交与声誉', '别人眼里的你'], ['health', '健康', '身体在提醒什么'], ['growth', '学习与成长', '你的人生课题']];
+var AUDIT_PLANETS = ['太阳', '月亮', '水星', '金星', '火星', '木星', '土星', '天王', '海王', '冥王'];
+function lon(b) { return typeof b.L === 'number' ? b.L : SIGNS.indexOf(b.sign) * 30 + b.deg + (b.min || 0) / 60; }
+function pos(b) { return b.sign + ' ' + b.deg + '°' + pad(b.min) + '′'; }
+function planet(n) { return W && W.planets.filter(function (p) { return p.n === n; })[0]; }
+function xw(n) { return XW && XW.planets.filter(function (p) { return p.n === n; })[0]; }
+
+function pillarsPanel() {
+  var keys = [['year', '年柱'], ['month', '月柱'], ['day', '日柱'], ['hour', '时柱']];
+  var pil = BZ.bazi.pillars;
+  var cols = keys.map(function (k) {
+    var p = pil[k[0]];
+    if (!p) return h('div', 'pl none', [h('small', null, k[1]), h('div', 'gz', '时辰不详')]);
+    var ge = GAN_EL[p.gan], ze = p.hidden && p.hidden[0] ? p.hidden[0].element : null;
+    var g = h('div', 'gz', p.gan); g.style.color = EL[ge];
+    var z = h('div', 'gz', p.zhi); if (ze) z.style.color = EL[ze];
+    return h('div', 'pl' + (k[0] === 'day' ? ' me' : ''), [
+      h('small', null, k[1]), h('div', 'tg', k[0] === 'day' ? '日主' : p.tenGod), g, z,
+      h('div', 'hid', (p.hidden || []).map(function (x) { return x.stem; }).join(' '))
+    ]);
+  });
+  var rows = BZ.components.wuxingRing.rows.map(function (r) {
+    var bar = h('div', 'bar', h('i')); bar.firstChild.style.width = r.percent + '%'; bar.firstChild.style.background = EL[r.element];
+    var nm = h('span', 'serif', r.element); nm.style.color = EL[r.element];
+    return h('div', 'wxrow', [nm, bar, h('span', 'pc', r.percent + '%')]);
+  });
+  return h('div', 'panel', [h('h4', null, '八字四柱 · 五行能量环'), h('div', 'pillars', cols), h('div', 'wx', rows)]);
+}
+
+function wheelPanel() {
+  if (!W) return h('div', 'panel', [h('h4', null, '星盘'), h('div', 'empty', '没有出生时间，星盘的上升和宫位排不出来。')]);
+  var asc = W.angles.asc.L, mc = W.angles.mc.L, s = '';
+  var R0 = 190, R1 = 163, R2 = 145, RL = 124, RA = 98;
+  var ELC = ['#d8432f', '#a8841c', '#3d8f4f', '#2f5fc4'];   // 火 土 风 水
+  var RULE = [['火'], ['金'], ['水'], ['月'], ['日'], ['水'], ['金'], ['火', '冥'], ['木'], ['土'], ['土', '天'], ['木', '海']];
+  var PC = { 太阳: '#d8432f', 月亮: '#2f5fc4', 水星: '#3d8f4f', 金星: '#a8841c', 火星: '#d8432f', 木星: '#d8432f', 土星: '#a8841c', 天王: '#3d8f4f', 海王: '#2f5fc4', 冥王: '#23366e', 凯龙: '#7a5fc4', 北交点: '#2a9d9d', 福点: '#2a9d9d', 升: '#d8432f', 中: '#3d8f4f' };
+  function pol(L, r) { var t = (180 + (L - asc)) * Math.PI / 180; return [(200 + r * Math.cos(t)).toFixed(1), (200 - r * Math.sin(t)).toFixed(1)]; }
+  function ang(a, b) { var d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d; }
+  function line(p1, p2, st) { return '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" ' + st + '/>'; }
+  function txt(p, t, st, dy) { return '<text x="' + p[0] + '" y="' + (+p[1] + (dy || 0)).toFixed(1) + '" text-anchor="middle" dominant-baseline="central" ' + st + '>' + t + '</text>'; }
+  // 星座带：四象上色，旁边标守护星
+  s += '<circle cx="200" cy="200" r="' + R0 + '" fill="#fcf1d4" stroke="#d2ac63" stroke-width="1.2"/>';
+  s += '<circle cx="200" cy="200" r="' + R1 + '" fill="#eef6fb" stroke="#d2ac63" stroke-width="1"/>';
+  for (var i = 0; i < 12; i++) {
+    s += line(pol(i * 30, R1), pol(i * 30, R0), 'stroke="#d2ac63" stroke-width="1"');
+    var c = ELC[i % 4], rl = RULE[i];
+    s += txt(pol(i * 30 + 15 + (rl.length > 1 ? 0 : -3), (R0 + R1) / 2), ZOD[i], 'font-size="15" font-weight="700" fill="' + c + '" font-family="Songti SC,STSong,serif"');
+    if (rl.length > 1) {
+      s += txt(pol(i * 30 + 5, (R0 + R1) / 2 - 2), rl[0], 'font-size="8.5" fill="' + c + '" opacity=".8"');
+      s += txt(pol(i * 30 + 25, (R0 + R1) / 2 - 2), rl[1], 'font-size="8.5" fill="' + c + '" opacity=".8"');
+    } else {
+      s += txt(pol(i * 30 + 24, (R0 + R1) / 2 + 3), rl[0], 'font-size="8.5" fill="' + c + '" opacity=".8"');
+    }
+  }
+  // 宫位带＋宫号；宫头线到相位圈是实线，圈里是虚线通到圆心
+  s += '<circle cx="200" cy="200" r="' + R2 + '" fill="#fffefb" stroke="#8fb0cc" stroke-width="1"/>';
+  var cusps = W.houses.map(lon);
+  for (var k = 0; k < 12; k++) {
+    var cu = cusps[k], axis = k === 0 || k === 3 || k === 6 || k === 9;
+    if (!axis) {
+      s += line(pol(cu, RA), pol(cu, R1), 'stroke="#8fb0cc" stroke-width="1"');
+      s += line(pol(cu, 0), pol(cu, RA), 'stroke="#7f9fbd" stroke-width=".9" stroke-dasharray="2 3"');
+    }
+    var span = ((cusps[(k + 1) % 12] - cu) % 360 + 360) % 360;
+    s += txt(pol(cu + span / 2, (R1 + R2) / 2), k + 1, 'font-size="10.5" font-weight="600" fill="#3a5a8c"');
+  }
+  // 相位圈
+  s += '<circle cx="200" cy="200" r="' + RA + '" fill="none" stroke="#8fb0cc" stroke-width="1"/>';
+  var P = W.planets.map(function (p) { return { n: p.n, L: lon(p) }; });
+  for (var a1 = 0; a1 < P.length; a1++) for (var b1 = a1 + 1; b1 < P.length; b1++) {
+    var dd = ang(P[a1].L, P[b1].L), hit = null;
+    for (var z = 0; z < ASPECTS.length; z++) if (Math.abs(dd - ASPECTS[z][0]) <= ASPECTS[z][2]) { hit = ASPECTS[z]; break; }
+    if (!hit || hit[0] === 0) continue;
+    var st = hit[0] === 180 ? 'stroke="#d8432f" stroke-width="1.1" opacity=".75"'
+      : hit[0] === 90 ? 'stroke="#d8432f" stroke-width="1.1" stroke-dasharray="4 3" opacity=".75"'
+      : hit[0] === 120 ? 'stroke="#2a9d8f" stroke-width="1.1" opacity=".8"'
+      : 'stroke="#2a9d8f" stroke-width="1" stroke-dasharray="4 3" opacity=".75"';
+    s += line(pol(P[a1].L, RA), pol(P[b1].L, RA), st);
+  }
+  // 两轴：上升—下降、天顶—天底，实线贯穿全盘
+  s += line(pol(asc, R0 + 8), pol(asc + 180, R0 + 8), 'stroke="#3b6ea5" stroke-width="1.6"');
+  s += line(pol(mc, R0 + 8), pol(mc + 180, R0 + 8), 'stroke="#3b6ea5" stroke-width="1.6"');
+  // 天体：相位圈上的真实位置点＋点线＋彩色汉字，挤在一起的往两边推开
+  var bodies = W.planets.map(function (p) { return { k: p.n, ch: CHAR[p.n], L: lon(p), rx: p.rx }; })
+    .concat((W.points || []).filter(function (p) { return p.n === '北交点' || p.n === '福点'; }).map(function (p) { return { k: p.n, ch: p.n === '福点' ? '福' : '北', L: lon(p) }; }))
+    .concat([{ k: '升', ch: '升', L: asc }, { k: '中', ch: '中', L: mc }]);
+  var lab = bodies.map(function (x) { return { k: x.k, L: x.L, A: x.L }; }).sort(function (p, q) { return p.L - q.L; });
+  for (var it = 0; it < 80; it++) {
+    var moved = false;
+    for (var j = 0; j < lab.length; j++) {
+      var nb = lab[(j + 1) % lab.length], gap = j + 1 < lab.length ? nb.A - lab[j].A : nb.A + 360 - lab[j].A;
+      if (gap < 9) { var push = (9 - gap) / 2 + 0.05; lab[j].A -= push; nb.A += push; moved = true; }
+    }
+    if (!moved) break;
+  }
+  var LBL = {}; lab.forEach(function (x) { LBL[x.k] = x.A; });
+  bodies.forEach(function (x) {
+    var col = PC[x.k] || '#6a6a8a', A = LBL[x.k], dot = pol(x.L, RA), lp = pol(A, RL);
+    s += line(pol(x.L, RA + 2), pol(A, RL - 9), 'stroke="' + col + '" stroke-width=".8" stroke-dasharray="1.5 2" opacity=".8"');
+    s += '<circle cx="' + dot[0] + '" cy="' + dot[1] + '" r="2.3" fill="' + col + '"/>';
+    s += txt(lp, esc(x.ch) + (x.rx ? '<tspan font-size="7" dy="-5">R</tspan>' : ''), 'font-size="14" font-weight="600" fill="' + col + '" font-family="Songti SC,STSong,serif"');
+  });
+  return h('div', 'panel', [h('h4', null, '星盘 · 普拉西德分宫'), svg('-12 -12 424 424', 0, s, 'wheel')]);
+}
+
+function luckChart() {
+  var cy = BZ.bazi.luck.cycles.filter(function (c) { return c.startAge <= 86; });
+  var n = cy.length, Wd = 640, Hd = 206, x0 = 14, bw = (Wd - x0 * 2) / n, base = 140, s = '';
+  cy.forEach(function (c, i) {
+    var hh = Math.max(8, (c.score - 30) / 70 * 112), x = x0 + i * bw + bw * 0.18, w = bw * 0.64, now = NOW >= c.startYear && NOW <= c.endYear;
+    s += '<rect x="' + x.toFixed(1) + '" y="' + (base - hh).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="5" fill="' + TIER[c.tier][1] + '"' + (now ? ' stroke="#c9783a" stroke-width="2"' : '') + '/>';
+    var cx = (x + w / 2).toFixed(1);
+    s += '<text x="' + cx + '" y="' + (base + 18) + '" fill="' + (now ? '#c9783a' : '#3b2e26') + '" font-size="14" text-anchor="middle" font-family="Songti SC,STSong,serif">' + esc(c.ganZhi) + '</text>';
+    s += '<text x="' + cx + '" y="' + (base + 34) + '" fill="#b09c8c" font-size="10.5" text-anchor="middle">' + esc(c.startAge) + '–' + esc(c.endAge) + '岁</text>';
+    var lw = XB ? XB.luck.filter(function (x) { return x.seq === c.seq; })[0] : null;
+    if (lw && lw.title) s += '<text x="' + cx + '" y="' + (base + 52) + '" fill="' + (now ? '#c9783a' : '#8b7565') + '" font-size="11" text-anchor="middle" font-family="Songti SC,STSong,serif">' + esc(lw.title[0]) + '</text>';
+    if (now) s += '<text x="' + cx + '" y="' + (base - hh - 9).toFixed(1) + '" fill="#c9783a" font-size="11" text-anchor="middle">现在</text>';
+  });
+  return h('div', 'luck', [svg('0 0 ' + Wd + ' ' + Hd, 0, s), legend()]);
+}
+function legend() { return h('div', 'legend', TIER.map(function (t) { var i = h('i'); i.style.background = t[1]; return h('span', null, [i, t[0]]); }).concat(h('span', null, '年龄按虚岁'))); }
+function yearStrip() {
+  var cur = BZ.bazi.luck.cycles.filter(function (c) { return NOW >= c.startYear && NOW <= c.endYear; })[0];
+  if (!cur) return null;
+  return h('div', 'years', cur.years.map(function (y) {
+    var w = h('div', 'tw', TIER[y.tier][0]); w.style.color = TIER[y.tier][2];
+    var d = h('div', 'yr' + (y.year === NOW ? ' now' : ''), [h('i'), h('b', null, String(y.year)), y.ganZhi, w]);
+    d.firstChild.style.background = TIER[y.tier][1];
+    return d;
+  }));
+}
+
+
+
+// ══════════ 封面＋抬头 ══════════
+var timeKnown = !!birth.time_known, cv = R.cover || {};
+add(app, h('div', 'brand', [h('i'), '玄玑 · 命盘报告', h('i')]));
+if (cv.seen) add(app, h('div', 'cover', [h('div', 'ct', '玄玑看见的你'), h('p', 'cl', cv.seen), cv.evidence ? h('div', 'ce', cv.evidence) : null,
+  h('div', 'cf', [(cv.support || []).length ? h('span', null, cv.support.join(' × ') + ' 映照') : h('i'), h('b', null, 'Xuanji 玄玑')])]));
+var meta = [birth.sex === 'female' ? '女' : birth.sex === 'male' ? '男' : ''].filter(Boolean).join(' · ');
+var RF = D.rectified || null;   // 定过时辰（build_report --rectify，结果 a/b）：不再报离交界几分钟、两种口径的时柱、压宫头的星
+var warns = BZ ? (BZ.warnings || []).filter(function (w) { return !(RF && /^出生时间接近时辰交界/.test(w)); }) : [];
+var BD = RF ? null : X.boundary || null;   // 出生时间边界（接口算好）：离时辰交界几分钟、压宫头的星
+if (BD && BD.hour && BD.hour.near) warns.push('真太阳时落在' + BD.hour.branch + '时，离' + (BD.hour.minutes_from_prev < 15 ? BD.hour.prev_branch + '时交界 ' + BD.hour.minutes_from_prev : BD.hour.next_branch + '时交界 ' + BD.hour.minutes_to_next) + ' 分钟。');
+if (BD && BD.cusp_planets && BD.cusp_planets.length) warns.push(BD.cusp_planets.slice(0, 3).map(function (c) { return c.n + '压在' + c.cusp + '宫宫头上（差 ' + Math.abs(c.deg_from_cusp) + '°）'; }).join('，') + '，出生时间差几分钟就会换宫。');
+var tags = [];
+if (XB) { tags.push([XB.day_master.gan + XB.day_master.element + '日主']); if (strengthShown()) tags.push([strengthShown()]); tags.push([XB.pattern.name]); }
+if (W) { ['太阳', '月亮'].forEach(function (n) { var p = planet(n); if (p) tags.push([n, p.sign]); }); tags.push(['上升', W.angles.asc.sign]); }
+if (XP) tags.push(['出厂底色', XP.base.type]);
+add(app, [h('h1', null, R.name ? R.name + ' 的命盘' : '你的命盘'), h('div', 'meta', meta),
+  h('div', 'timenote' + (warns.length ? ' warn' : ''), [RF ? '出生时辰经定时辰定在' + RF.hour + '（按你说的大事和回答）。' : timeKnown ? (SRC[birth.time_source] || SRC.unknown) : '没有出生时间：八字按三柱排，星盘的上升、宫位和出厂底色出不了。'].concat(warns.map(function (w) { return h('div', null, w); }))),
+  h('div', 'tags', tags.map(function (t) { return h('span', 'tag', [t[0], t[1] ? h('b', null, t[1]) : null]); }))]);
+
+// 认知进度＋玄玑说中的事
+var ST = { 已确认: 'ok', 待确认: 'q', 待观察: 'w' };
+if (R.progress && R.progress.length) add(app, h('div', 'prog', [h('div', 'pt', '玄玑已经认识你到这里'), h('ul', null, R.progress.map(function (p) { return h('li', 'st-' + (ST[p.state] || 'w'), [h('span', null, p.state), p.item]); }))]));
+var HB = { 准: 'h1', 部分准: 'h2', 不准: 'h3' };
+if (R.hits && R.hits.length) add(app, h('div', 'hits', [h('div', 'pt', '玄玑说中的事 · 你亲手核对过')].concat(R.hits.map(function (x) {
+  return h('div', 'hit', [h('span', HB[x.feedback] || 'h0', x.feedback || '待核对'), h('div', null, [x.statement, x.basis ? h('small', null, x.basis) : null])]);
+}))));
+
+// 三体系映照图
+function vennFig(items) {
+  // 三镜映照：每面镜子里写它自己的证据（接口算好的），交叠处写说法一致的主题（解读里的 crosscheck）
+  var C = { 八字: [172, 168], 星盘: [288, 168], 人格: [230, 268] }, r = 112, s = '';
+  var col = { 八字: ['#e8955a', '#fdf1e6'], 星盘: ['#7d86d8', '#eff0fc'], 人格: ['#5aa883', '#ecf7f1'] };
+  s += '<defs>' + Object.keys(col).map(function (k, i) { return '<radialGradient id="vg' + i + '" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="' + col[k][1] + '" stop-opacity=".95"/><stop offset="1" stop-color="' + col[k][1] + '" stop-opacity=".35"/></radialGradient>'; }).join('') + '</defs>';
+  Object.keys(C).forEach(function (k, i) { s += '<circle cx="' + C[k][0] + '" cy="' + C[k][1] + '" r="' + r + '" fill="url(#vg' + i + ')" stroke="' + col[k][0] + '" stroke-width="1.2" stroke-opacity=".75"/>'; });
+  Object.keys(C).forEach(function (k) { s += '<circle cx="' + C[k][0] + '" cy="' + C[k][1] + '" r="' + (r + 6) + '" fill="none" stroke="' + col[k][0] + '" stroke-opacity=".25" stroke-dasharray="1 4"/>'; });
+  var T = function (x, y, t, st) { return '<text x="' + x + '" y="' + y + '" text-anchor="middle" ' + st + '>' + esc(t) + '</text>'; };
+  var head = function (x, y, a, b, c) { return T(x, y, a, 'font-size="15" font-weight="700" fill="' + c + '" font-family="Songti SC,STSong,serif" letter-spacing="2"') + T(x, y + 15, b, 'font-size="9.5" fill="#a08c7c" letter-spacing="2"'); };
+  s += head(118, 34, '八 字', '东方 · 命理', '#c0652a') + head(342, 34, '星 盘', '西方 · 占星', '#5b62c4') + head(230, 404, '人 格', '出厂底色', '#2f7d57');
+  var ev = function (x, y, lines) { return lines.filter(Boolean).slice(0, 3).map(function (t, i) { return T(x, y + i * 16, t, 'font-size="11.5" fill="#6b5a4e"'); }).join(''); };
+  var bzL = XB ? [XB.day_master.gan + XB.day_master.element + '日主', (strengthShown() ? strengthShown() + ' · ' : '') + XB.pattern.name, '喜' + usefulShown().favorable.slice(0, 2).join('') + ' 忌' + usefulShown().unfavorable.join('')] : [];
+  var hard = function (p) { return p ? p.aspects.filter(function (x) { return x.type === '冲' || x.type === '刑' || x.type === '合'; }).slice(0, 1).map(function (x) { return p.n.slice(0, 1) + x.type + x.with.slice(0, 1); })[0] : null; };
+  var wL = XW ? ['上升' + XW.big3.asc.sign, '命主星' + XW.big3.asc.ruler + (XW.big3.asc.ruler_detail ? '落' + XW.big3.asc.ruler_detail.house + '宫' : ''), [hard(XW.big3.sun), hard(XW.big3.moon)].filter(Boolean).join(' · ')] : [];
+  var pL = XP ? ['出厂底色 ' + XP.base.type, '主导' + XP.base.stack.dom.f + ' · 辅助' + XP.base.stack.aux.f, '重生 ' + XP.rebirth.map(function (x) { return x.type; }).join(' / ')] : [];
+  s += ev(112, 140, bzL) + ev(348, 140, wL) + ev(230, 318, pL);
+  var slot = function (sys) { var has = function (k) { return sys.indexOf(k) >= 0; }; if (has('八字') && has('星盘') && has('人格')) return [230, 200, 1]; if (has('八字') && has('星盘')) return [230, 112, 0]; if (has('八字') && has('人格')) return [172, 252, 0]; if (has('星盘') && has('人格')) return [288, 252, 0]; return null; };
+  var used = {};
+  (items || []).forEach(function (c) {
+    var p = slot(c.systems || []); if (!p) return; var k = p[0] + ',' + p[1]; used[k] = (used[k] || 0) + 1; if (used[k] > 2) return;
+    var y = p[1] + (used[k] - 1) * 18;
+    s += T(p[0], y, c.theme, 'font-size="' + (p[2] ? 14 : 12.5) + '" font-weight="700" fill="' + (p[2] ? '#8a3f12' : '#3b2e26') + '" font-family="Songti SC,STSong,serif"');
+  });
+  s += '<path d="M230 176 l5 5 -5 5 -5 -5z" fill="#d9a057"/>';
+  return h('div', 'fig venn', [h('div', 'figt', '三镜映照'), svg('0 0 460 420', 0, s), h('div', 'cap', '每面镜子里是它自己看到的你；交叠处是两套都这么说的，正中间是三套都这么说的')]);
+}
+
+// ══════════ 上篇 ══════════
+add(app, scrollTitle('卷 · 上', '照 见', '三面镜子，照同一个你', '八字 · 星盘 · 人格'));
+var cx = (R.crosscheck || []).filter(function (c) { return (c.systems || []).length >= 2; });
+if (cx.length) add(app, vennFig(cx));
+
+// 壹 骨架：灵魂三层图
+var SK = R.skeleton || {};
+function soulFig() {
+  if (!W || !XW) return null;
+  var ELE = { 白羊: '火', 狮子: '火', 射手: '火', 金牛: '土', 处女: '土', 摩羯: '土', 双子: '风', 天秤: '风', 水瓶: '风', 巨蟹: '水', 天蝎: '水', 双鱼: '水' };
+  var b3 = XW.big3, sun = b3.sun, moon = b3.moon, asc = b3.asc, L3x = (R.skeleton || {}).layers || {};
+  var img = function (L) { var t = (L && L.title) || ''; var i = t.indexOf('——'); return i >= 0 ? t.slice(i + 2) : ''; };
+  var rows = [
+    ['外', '你的防', '上升' + asc.sign, ELE[asc.sign] + '象 · 一宫', '命主星' + asc.ruler + (asc.ruler_detail ? '落' + asc.ruler_detail.house + '宫' : ''), asc.ruler_detail && asc.ruler !== '太阳' && asc.ruler !== '月亮' ? asc.ruler_detail.aspects : [], img(L3x.outer), '#7d86d8'],
+    ['中', '你的火', '太阳' + sun.sign, ELE[sun.sign] + '象 · ' + sun.house + '宫', [sun.dignity !== '平' ? sun.dignity : '', sun.power_rank ? '力量第' + sun.power_rank : ''].filter(Boolean).join(' · '), sun.aspects, img(L3x.middle), '#e8955a'],
+    ['内', '你的心', '月亮' + moon.sign, ELE[moon.sign] + '象 · ' + moon.house + '宫', [moon.dignity !== '平' ? moon.dignity : '', moon.power_rank ? '力量第' + moon.power_rank : ''].filter(Boolean).join(' · '), moon.aspects, img(L3x.inner), '#d9a057']];
+  var s = '<defs><radialGradient id="sg0"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#eef0fc"/></radialGradient><radialGradient id="sg1"><stop offset="0" stop-color="#fff6ea"/><stop offset="1" stop-color="#fde6cf"/></radialGradient><radialGradient id="sg2"><stop offset="0" stop-color="#fffdf6"/><stop offset="1" stop-color="#fbeccf"/></radialGradient></defs>';
+  for (var i = 0; i < 72; i++) { var a = i * 5 * Math.PI / 180, r1 = i % 6 === 0 ? 166 : 170; s += '<line x1="' + (180 + r1 * Math.cos(a)).toFixed(1) + '" y1="' + (180 + r1 * Math.sin(a)).toFixed(1) + '" x2="' + (180 + 174 * Math.cos(a)).toFixed(1) + '" y2="' + (180 + 174 * Math.sin(a)).toFixed(1) + '" stroke="#d2ac63" stroke-opacity="' + (i % 6 === 0 ? '.8' : '.35') + '"/>'; }
+  s += '<circle cx="180" cy="180" r="160" fill="url(#sg0)" stroke="#7d86d8" stroke-opacity=".7"/><circle cx="180" cy="180" r="108" fill="url(#sg1)" stroke="#e8955a" stroke-opacity=".8"/><circle cx="180" cy="180" r="56" fill="url(#sg2)" stroke="#d9a057"/>';
+  s += '<circle cx="180" cy="180" r="134" fill="none" stroke="#7d86d8" stroke-opacity=".25" stroke-dasharray="1 4"/><circle cx="180" cy="180" r="82" fill="none" stroke="#e8955a" stroke-opacity=".3" stroke-dasharray="1 4"/>';
+  var lab = function (y, k, name, c) { return '<text x="180" y="' + y + '" text-anchor="middle" font-size="10" fill="' + c + '" letter-spacing="4">' + k + '</text><text x="180" y="' + (y + 22) + '" text-anchor="middle" font-size="18" font-weight="700" fill="#3b2e26" font-family="Songti SC,STSong,serif" letter-spacing="1">' + esc(name) + '</text>'; };
+  s += lab(42, '外 · 你 的 防', rows[0][2], '#5b62c4') + lab(98, '中 · 你 的 火', rows[1][2], '#c0652a') + lab(172, '内 · 你 的 心', rows[2][2], '#a0561f');
+  var table = h('div', 'soult', rows.map(function (r) {
+    var dot = h('i'); dot.style.background = r[7];
+    return h('div', 'srow', [h('div', 'sl', [dot, h('b', null, r[0]), h('span', null, r[1])]), h('div', 'sm', [h('b', null, r[2]), h('span', null, [r[3], r[4]].filter(Boolean).join(' · '))]),
+      h('div', 'sa', r[5].slice(0, 4).map(function (x) { return h('span', 'term ' + (x.type === '冲' || x.type === '刑' ? 'hard' : x.type === '合' ? '' : 'soft'), x.type + x.with); })), r[6] ? h('div', 'si', r[6]) : null]);
+  }));
+  var mini = h('div', 'smini', [XB ? h('div', null, [h('span', null, '八字日主'), h('b', null, XB.day_master.gan + XB.day_master.element + (XB.day_master.image ? ' · ' + XB.day_master.image : '')), h('em', null, (strengthShown() ? strengthShown() + ' · ' : '') + XB.pattern.name + (XB.pattern.label ? ' · ' + XB.pattern.label : ''))]) : null,
+    XP ? h('div', null, [h('span', null, '出厂底色'), h('b', null, XP.base.type + (XP.base.name ? ' · ' + XP.base.name : '')), h('em', null, '主导 ' + XP.base.stack.dom.f + ' · 辅助 ' + XP.base.stack.aux.f)]) : null]);
+  return h('div', 'fig soul', [h('div', 'figt', '灵魂的三层'), svg('0 0 360 360', 0, s), table, mini]);
+}
+var L3 = SK.layers || {};
+add(app, part('你是谁', '灵魂的骨架', [q(SK.question), soulFig(),
+  dia(L3.outer && L3.outer.title, L3.outer && L3.outer.body), dia(L3.middle && L3.middle.title, L3.middle && L3.middle.body), dia(L3.inner && L3.inner.title, L3.inner && L3.inner.body),
+  SK.bazi ? dia('八字里的你', SK.bazi) : null, SK.persona ? dia('出厂底色里的你', SK.persona) : null,
+  gold(SK.oneline), refs(SK.refs, '骨架')]));
+
+// 贰 天赋与命脉
+var GF = R.gifts || {};
+add(app, part('你的天赋与命脉', null, [GF.intro ? h('div', 'body', paras(GF.intro)) : null,
+  (GF.items || []).map(function (it) { return [dia(it.title, it.body), refs(it.refs, '天赋')]; }), gold(GF.oneline)]));
+
+// 七个方面：只把这张盘最响的几件事（R.focus）完整展开，其余每块一句结论，点开才看细节（GPT 10-02 审：高手不会十个栏目平均讲）
+var CHD = R.chapters || {}, CHMAP = {};
+CHAPTERS.forEach(function (c) { CHMAP[c[0]] = c; });
+var FOCUS = (R.focus || []).filter(function (k) { return CHMAP[k] && CHD[k]; });
+if (!FOCUS.length) FOCUS = CHAPTERS.map(function (c) { return c[0]; }).filter(function (k) { return CHD[k]; });
+function chExtra(key) {
+  if (key === 'career' && XB && XB.fit.jobs.length) return h('div', null, ['喜用对应的行业：'].concat(XB.fit.jobs.map(function (j) { return h('span', 'chip2', j); })));
+  if (key === 'love' && XB && XB.fit.spouse_element) return h('div', null, [h('span', 'chip2', '配偶星属' + XB.fit.spouse_element), h('span', 'chip2', XB.fit.spouse_why)]);
+  return null;
+}
+var HEALTH_BND = '这是玄学结构提示，不替代医学诊断；身体有具体不适，按真实的医疗检查处理。';
+FOCUS.forEach(function (key, i) {
+  var c = CHMAP[key], k = CHD[key];
+  add(app, part(c[1], c[2], [i === 0 ? h('div', 'focuslead', ['这张盘最响的 ' + FOCUS.length + ' 件事：', FOCUS.map(function (x) { return CHMAP[x][1]; }).join('、')]) : null,
+    q(k.question), chExtra(key), (k.sections || []).map(function (s2) { return dia(s2.title, s2.body); }), gold(k.gold), warm(k.warm),
+    key === 'health' ? h('div', 'bnd', HEALTH_BND) : null, refs(k.refs, c[1])], 'ch-' + key));
+});
+var REST = CHAPTERS.map(function (c) { return c[0]; }).filter(function (k) { return CHD[k] && FOCUS.indexOf(k) < 0; });
+var CN_NUM = ['', '一', '两', '三', '四', '五', '六'];
+if (REST.length) add(app, part('另外' + (CN_NUM[REST.length] || '几') + '面', '点到为止', [h('div', 'briefs', REST.map(function (key) {
+  var c = CHMAP[key], k = CHD[key], more = (k.sections || []).length;
+  var row = [h('div', 'bh', [h('b', null, c[1]), h('span', null, k.brief || (k.sections && k.sections[0] ? k.sections[0].title : ''))])];
+  if (more || key === 'health' || k.question || k.gold) {
+    var d = h('details', 'fold', [h('summary', null, '展开看'), q(k.question), chExtra(key), (k.sections || []).map(function (s2) { return dia(s2.title, s2.body); }), gold(k.gold), warm(k.warm), key === 'health' ? h('div', 'bnd', HEALTH_BND) : null, refs(k.refs, c[1])]);   // 藏起来不等于写少：完整一章都在里面
+    row.push(d);
+  }
+  return anchor(h('div', 'brow', row), 'ch-' + key);
+}))]));
+
+// 拾 流年：今年＋节奏轴＋节奏日历＋修行课题
+var YR = R.years || {};
+function axisFig() {
+  if (!XT || !BZ) return null;
+  var ys = XT.years.filter(function (y) { return y.year >= NOW - 1 && y.year <= NOW + 9; }); if (!ys.length) return null;
+  var Wd = 640, x0 = 30, step = (Wd - 2 * x0) / ys.length, s = '';
+  // 大运色带
+  var runs = []; ys.forEach(function (y) { var last = runs[runs.length - 1]; if (last && last.luck === y.luck) last.n++; else runs.push({ luck: y.luck, n: 1, i0: ys.indexOf(y) }); });
+  runs.forEach(function (r) {
+    var lw = XB ? XB.luck.filter(function (c) { return c.gan_zhi === r.luck; })[0] : null;
+    var x = x0 + r.i0 * step, w = r.n * step - 4;
+    s += '<rect x="' + x.toFixed(1) + '" y="14" width="' + w.toFixed(1) + '" height="30" rx="8" fill="' + (lw ? TIER[lw.tier][1] : '#eee') + '" fill-opacity=".55"/>';
+    s += '<text x="' + (x + w / 2).toFixed(1) + '" y="34" text-anchor="middle" font-size="12.5" fill="#3b2e26" font-family="Songti SC,STSong,serif">' + esc(r.n >= 3 ? r.luck + ' 大运' + (lw && lw.title ? ' · ' + lw.title[0] : '') : r.luck) + '</text>';
+  });
+  ys.forEach(function (y, i) {
+    var cxp = x0 + i * step + step / 2, t = y.tier == null ? 2 : y.tier;
+    s += '<line x1="' + cxp.toFixed(1) + '" y1="56" x2="' + cxp.toFixed(1) + '" y2="150" stroke="rgba(150,110,70,.12)"/>';
+    s += '<circle cx="' + cxp.toFixed(1) + '" cy="78" r="' + (y.year === NOW ? 11 : 8) + '" fill="' + TIER[t][1] + '"' + (y.year === NOW ? ' stroke="#c9783a" stroke-width="2"' : '') + '/>';
+    s += '<text x="' + cxp.toFixed(1) + '" y="106" text-anchor="middle" font-size="12" fill="' + (y.year === NOW ? '#c9783a' : '#3b2e26') + '" font-weight="600">' + y.year + '</text>';
+    s += '<text x="' + cxp.toFixed(1) + '" y="121" text-anchor="middle" font-size="10.5" fill="#8b7565">' + TIER[t][0] + '</text>';
+    (y.mirror || []).slice(0, 2).forEach(function (m, j) {
+      s += '<rect x="' + (cxp - 23).toFixed(1) + '" y="' + (130 + j * 18) + '" width="46" height="15" rx="7" fill="#eceafb"/><text x="' + cxp.toFixed(1) + '" y="' + (141 + j * 18) + '" text-anchor="middle" font-size="9" fill="#5b54a8">' + esc(m.slice(0, 4)) + '</text>';
+    });
+  });
+  return h('div', 'fig', [svg('0 0 ' + Wd + ' 172', 0, s), h('div', 'cap', '上排是大运，圆点是每年的顺逆，紫色小签是八字流年和西盘行运同一年都指向的领域（双系统映照）')]);
+}
+// 近三年月历：西盘行运窗口（服务器 method.timing.months），一行一个过境，点＝精准日
+var NARROW = (window.innerWidth || 800) < 560;   // 手机上两张新图用窄画布，字不至于缩成芝麻
+var TONE_C = { 机会: '#f2a066', 顺风: '#f6c393', 压力: '#7f86ca', 突变: '#a08fe0', 迷雾: '#b9bde8', 重塑: '#575db0' };
+function monthsFig() {
+  var M = XT && XT.months; if (!M || !M.length) return null;
+  var m0 = M.reduce(function (a, w) { return w.start < a ? w.start : a; }, M[0].start), y0 = +m0.slice(0, 4), mo0 = +m0.slice(5, 7);
+  var idx = function (ym) { return (+ym.slice(0, 4) - y0) * 12 + (+ym.slice(5, 7) - mo0); };
+  var asp = M.filter(function (w) { return w.kind === '相位'; }), ing = M.filter(function (w) { return w.kind === '进宫'; });
+  var bzm = []; (XT.months_bazi || []).forEach(function (y) { y.domains.forEach(function (d) { d.months.forEach(function (m) { bzm.push({ domain: d.domain, from: m.from, to: m.to }); }); }); });
+  var L = NARROW ? 106 : 138, Wd = NARROW ? 420 : 640, R0 = 10, n = 36, cw = (Wd - L - R0) / n, top = 34, rh = 26, rows = asp.length + (ing.length ? 1 : 0) + (bzm.length ? (ing.length ? 2 : 1.4) : 0), Hd = top + rows * rh + 14, s = '';
+  for (var k = 0; k <= n; k++) {
+    var mm = (mo0 - 1 + k) % 12, x = L + k * cw;
+    if (mm === 0 || k === 0) { s += '<line x1="' + x.toFixed(1) + '" y1="' + (top - 8) + '" x2="' + x.toFixed(1) + '" y2="' + (Hd - 10) + '" stroke="rgba(201,120,58,.28)"/>'; if (k < n - 2 && (mm === 0 || mo0 <= 9)) s += '<text x="' + (x + 4).toFixed(1) + '" y="' + (top - 14) + '" font-size="12" font-weight="600" fill="#c9783a">' + (y0 + Math.floor((mo0 - 1 + k) / 12)) + '</text>'; }
+    else if (mm % 3 === 0) s += '<line x1="' + x.toFixed(1) + '" y1="' + (top - 4) + '" x2="' + x.toFixed(1) + '" y2="' + (Hd - 10) + '" stroke="rgba(150,110,70,.10)"/>';
+  }
+  s += '<text x="' + (L + 2) + '" y="' + (Hd - 1) + '" font-size="10" fill="#c9783a">▲ 现在</text>';
+  asp.forEach(function (w, r) {
+    var y = top + r * rh, a = Math.max(0, idx(w.start)), b = Math.min(n, idx(w.end) + 1), col = TONE_C[w.tone] || '#cfd2f0';
+    if (r % 2 === 0) s += '<rect x="0" y="' + y + '" width="' + Wd + '" height="' + rh + '" fill="rgba(253,230,207,.22)"/>';
+    s += '<text x="4" y="' + (y + 17) + '" font-size="12.5" fill="#3b2e26" font-family="Songti SC,STSong,serif">' + esc(w.mover + w.asp + w.point) + '</text>';
+    s += '<text x="' + (L - 6) + '" y="' + (y + 17) + '" font-size="10" fill="#8b7565" text-anchor="end">' + esc(({ 迁移远方: '远方', 事业认可: '事业', 家庭居所: '家庭' })[w.domain] || w.domain.slice(0, 2)) + '</text>';
+    s += '<rect x="' + (L + a * cw + 1).toFixed(1) + '" y="' + (y + 7) + '" width="' + Math.max(cw - 2, (b - a) * cw - 2).toFixed(1) + '" height="12" rx="6" fill="' + col + '" fill-opacity=".85"/>';
+    (w.exacts || []).forEach(function (e) { var ex = L + (idx(e.slice(0, 7)) + (+e.slice(8, 10) || 15) / 31) * cw; if (ex >= L && ex <= Wd - R0) s += '<circle cx="' + ex.toFixed(1) + '" cy="' + (y + 13) + '" r="3.2" fill="#fff" stroke="#3b2e26" stroke-width="1.2"/>'; });
+  });
+  if (ing.length) {
+    var y = top + asp.length * rh;
+    s += '<text x="4" y="' + (y + 17) + '" font-size="12.5" fill="#3b2e26" font-family="Songti SC,STSong,serif">木星、土星进宫</text>';
+    var lastX = -99, lane = 0;
+    ing.forEach(function (w) {
+      var x = L + (idx(w.start) + 0.5) * cw; lane = x - lastX < 34 ? 1 - lane : 0; lastX = x;
+      s += '<path d="M' + x.toFixed(1) + ' ' + (y + 6) + 'l5 6l-5 6l-5-6z" fill="' + (TONE_C[w.tone] || '#ccc') + '"/>';
+      s += '<text x="' + x.toFixed(1) + '" y="' + (y + (lane ? 30 : 4)) + '" font-size="9.5" fill="#8b7565" text-anchor="middle">' + esc(w.mover.slice(0, 1) + w.house + '宫') + '</text>';
+    });
+  }
+  if (bzm.length) {
+    var yb = top + (asp.length + (ing.length ? 1 : 0)) * rh + (ing.length ? 22 : 8), lx = -99, ln = 0;
+    s += '<text x="4" y="' + (yb + 15) + '" font-size="12.5" fill="#a0561f" font-family="Songti SC,STSong,serif">八字高发月</text>';
+    bzm.forEach(function (m) {
+      var a = idx(m.from.slice(0, 7)) + (+m.from.slice(8, 10)) / 31, b = idx(m.to.slice(0, 7)) + (+m.to.slice(8, 10)) / 31;
+      if (b < 0 || a > n) return;
+      var x1 = L + Math.max(0, a) * cw, x2 = L + Math.min(n, b) * cw, xm = (x1 + x2) / 2; ln = xm - lx < 30 ? 1 - ln : 0; lx = xm;
+      s += '<rect x="' + x1.toFixed(1) + '" y="' + (yb + 6) + '" width="' + Math.max(3, x2 - x1 - 1).toFixed(1) + '" height="12" rx="3" fill="#e58c4c" fill-opacity=".75"/>';
+      s += '<text x="' + xm.toFixed(1) + '" y="' + (yb + (ln ? 30 : 2)) + '" font-size="9.5" fill="#a0561f" text-anchor="middle">' + esc(({ 迁移远方: '远方', 事业认可: '事业', 家庭居所: '家庭' })[m.domain] || m.domain.slice(0, 2)) + '</text>';
+    });
+  }
+  var leg = ['机会', '顺风', '压力', '突变', '迷雾', '重塑'].filter(function (t) { return M.some(function (w) { return w.tone === t; }); });
+  return h('div', 'fig mfig', [svg('0 0 ' + Wd + ' ' + (Hd + (ing.length ? 10 : 0)), 0, s), h('div', 'legend', leg.map(function (t) { var i = h('i'); i.style.background = TONE_C[t]; return h('span', null, [i, t]); }).concat(h('span', null, '◯ 精准那几天'))), h('div', 'cap', '近三年西盘行运：一行一次过境，色条是起止的月份，白点是精准那几天' + (bzm.length ? '；最下一行是八字流年在这几个节气月最容易应' : ''))]);
+}
+function windowsList(ws) {
+  if (!ws || !ws.length) return null;
+  return h('div', 'wins', ws.map(function (w) {
+    return h('div', 'win', [h('div', 'wwhen', w.when), h('div', 'wmain', [h('div', 'wt', [w.area ? h('span', 'warea', w.area) : null, w.title]), h('div', 'wb', paras(w.body))])]);
+  }));
+}
+function decadeCards(ds) {
+  if (!ds || !ds.length) return null;
+  return h('div', 'dec', ds.map(function (c) {
+    var yy = parseInt(c.span, 10), ty = XT ? XT.years.filter(function (v) { return v.year === yy; })[0] : null;
+    var dot = h('i', 'dtier'); if (ty && ty.tier != null) dot.style.background = TIER[ty.tier][1];
+    return h('div', 'decc', [h('div', 'dh', [dot, h('span', 'ds', c.span), c.phase ? h('span', 'cp', c.phase) : null, ty && ty.tier != null ? h('span', 'dtw', TIER[ty.tier][0]) : null]),
+      h('div', 'dt', c.title), ty && ty.mirror && ty.mirror.length ? h('div', 'dmir', '双系统映照 · ' + ty.mirror.join('、')) : null, h('div', 'db', paras(c.body)), c.basis ? h('div', 'cb', '依据　' + c.basis) : null]);
+  }));
+}
+// 一生的节奏：上排八字大运（method.bazi.luck），下排西盘人生大周期（method.timing.life_cycles）
+var LIFE_SHOW = { 土星回归: 1, 土星对冲: 1, 天王四分: 1, 天王对冲: 1, 海王四分: 1, 冥王四分: 1, 凯龙回归: 1 };
+function lifeFig() {
+  if (!XB || !XB.luck || !XB.luck.length) return null;
+  var Wd = NARROW ? 420 : 640, x0 = 16, maxA = 90, sc = (Wd - 2 * x0) / maxA, X = function (a) { return x0 + a * sc; }, s = '';
+  var cur = XB.luck.filter(function (c) { return NOW >= c.start_year && NOW <= c.end_year; })[0], age0 = cur ? cur.start_age + (NOW - cur.start_year) : null;
+  XB.luck.filter(function (c) { return c.start_age <= maxA - 8; }).forEach(function (c) {
+    var a = X(c.start_age), b = X(Math.min(maxA, c.end_age + 1)), now = c === cur;
+    s += '<rect x="' + (a + 1).toFixed(1) + '" y="16" width="' + (b - a - 2).toFixed(1) + '" height="40" rx="7" fill="' + TIER[c.tier][1] + '" fill-opacity="' + (now ? 1 : .6) + '"' + (now ? ' stroke="#c9783a" stroke-width="2"' : '') + '/>';
+    s += '<text x="' + ((a + b) / 2).toFixed(1) + '" y="33" text-anchor="middle" font-size="13" fill="#3b2e26" font-family="Songti SC,STSong,serif">' + esc(c.gan_zhi) + '</text>';
+    if (c.title && b - a > 54) s += '<text x="' + ((a + b) / 2).toFixed(1) + '" y="49" text-anchor="middle" font-size="9.5" fill="#6b5a4e" font-family="Songti SC,STSong,serif">' + esc(c.title[0]) + '</text>';
+  });
+  var ay = 72;
+  s += '<line x1="' + x0 + '" y1="' + ay + '" x2="' + (Wd - x0) + '" y2="' + ay + '" stroke="#d9a057" stroke-width="1.2"/>';
+  for (var a = 0; a <= maxA; a += 10) { s += '<line x1="' + X(a).toFixed(1) + '" y1="' + (ay - 4) + '" x2="' + X(a).toFixed(1) + '" y2="' + (ay + 4) + '" stroke="#d9a057"/><text x="' + X(a).toFixed(1) + '" y="' + (ay + 16) + '" text-anchor="middle" font-size="10" fill="#b09c8c">' + a + (a === maxA ? '岁' : '') + '</text>'; }
+  var cyc = (XT && XT.life_cycles) || [], lanes = [[], [], [], [], [], [], []], ly0 = ay + 30, used = 0;
+  cyc.filter(function (c) { return c.name === '木星回归'; }).forEach(function (c) { s += '<circle cx="' + X(c.age + .5).toFixed(1) + '" cy="' + ay + '" r="3" fill="#f2a066"/>'; });
+  cyc.filter(function (c) { return LIFE_SHOW[c.name]; }).forEach(function (c) {
+    var x = X(c.age + .5), w = c.name.length * 11 + 24, end = x + w > Wd - 4, a = end ? x - w : x, b = end ? x : x + w, ln = 0;
+    while (ln < lanes.length - 1 && lanes[ln].some(function (r) { return a < r[1] + 6 && b > r[0] - 6; })) ln++;
+    lanes[ln].push([a, b]); used = Math.max(used, ln + 1);
+    var y = ly0 + ln * 24, col = /土星|冥王/.test(c.name) ? '#7f86ca' : /凯龙/.test(c.name) ? '#c9783a' : '#a08fe0';
+    s += '<line x1="' + x.toFixed(1) + '" y1="' + ay + '" x2="' + x.toFixed(1) + '" y2="' + (y - 4) + '" stroke="' + col + '" stroke-dasharray="2 2"/>';
+    s += '<circle cx="' + x.toFixed(1) + '" cy="' + ay + '" r="3.6" fill="' + col + '"/>';
+    s += '<text x="' + (end ? x - 3 : x + 3).toFixed(1) + '" y="' + (y + 6) + '" font-size="11" fill="' + col + '" paint-order="stroke" stroke="#fffdfa" stroke-width="4" stroke-linejoin="round"' + (end ? ' text-anchor="end"' : '') + '>' + esc(c.name) + '<tspan fill="#b09c8c" font-size="9.5"> ' + esc(c.age) + '</tspan></text>';
+  });
+  if (age0 != null) s += '<path d="M' + X(age0 + .5).toFixed(1) + ' 62l-5 -7h10z" fill="#c9783a"/><text x="' + X(age0 + .5).toFixed(1) + '" y="11" text-anchor="middle" font-size="10.5" fill="#c9783a">现在</text>';
+  return h('div', 'fig lfig', [svg('0 0 ' + Wd + ' ' + (ly0 + Math.max(1, used) * 24 + 4), 0, s), h('div', 'cap', '上排是八字大运（每步十年，颜色是顺逆），下排是西盘的人生大周期，橙点是每十二年一次的木星回归')]);
+}
+function lifeList(ls) {
+  if (!ls || !ls.length) return null;
+  return h('div', 'lifel', ls.map(function (l) { return h('div', 'lrow', [h('div', 'lspan', l.span), h('div', null, [h('div', 'lt', l.title), h('div', 'lb', paras(l.body))])]); }));
+}
+add(app, part('流年', '往后这些年', [YR.theme ? gold(YR.theme) : null, YR.intro ? h('div', 'body', paras(YR.intro)) : null,
+  YR.forces && YR.forces.length ? h('div', 'subhead', '今年的天象') : null, (YR.forces || []).map(function (f) { return dia(f.title, f.body); }),
+  XT && XT.months && XT.months.length ? h('div', 'subhead', '近三年，一个月一个月看') : null, monthsFig(), windowsList(YR.windows),
+  h('div', 'subhead', '往后十年，一眼看趋势'), axisFig(),
+  YR.calendar && YR.calendar.length ? h('div', 'cal', YR.calendar.map(function (c) {
+    var yy = parseInt(c.span, 10), ty = XT ? XT.years.filter(function (v) { return v.year === yy; })[0] : null;
+    var tierChip = ty && ty.tier != null ? h('span', 'ctier', TIER[ty.tier][0]) : null; if (tierChip) { tierChip.style.background = TIER[ty.tier][1]; tierChip.style.color = ty.tier >= 2 ? '#3b3f7a' : '#7a3f14'; }
+    var mir = ty && ty.mirror && ty.mirror.length ? h('span', 'mir', '双系统映照 · ' + ty.mirror.join('、')) : c.mirror ? h('span', 'mir', '双系统映照') : null;
+    return h('div', 'calc', [
+      h('div', 'ch', [h('span', 'cs', c.span), c.phase ? h('span', 'cp', c.phase) : null, h('span', 'ct2', c.title), tierChip]), mir,
+      c.body ? h('p', 'cov', c.body) : null,
+      c.areas && c.areas.length ? h('div', 'careas', c.areas.map(function (x) { return h('div', 'car', [h('b', null, x.area), h('span', null, x.text)]); })) : null,
+      c.first_half || c.second_half ? h('div', 'chalf', [h('div', null, [h('b', null, '上半年'), c.first_half || '']), h('div', null, [h('b', null, '下半年'), c.second_half || ''])]) : null,
+      c.do || c.avoid ? h('div', 'cdo', [c.do ? h('div', 'yi', [h('b', null, '宜'), c.do]) : null, c.avoid ? h('div', 'ji', [h('b', null, '忌'), c.avoid]) : null]) : null,
+      c.basis ? h('div', 'cb', '依据　' + c.basis) : null]);
+  })) : null,
+  YR.decade && YR.decade.length ? h('details', 'fold wide', [h('summary', null, '再往后看 · ' + parseInt(YR.decade[0].span, 10) + '–' + parseInt(YR.decade[YR.decade.length - 1].span, 10) + ' 年'), decadeCards(YR.decade)]) : null,
+  XB && XB.luck && XB.luck.length ? h('details', 'fold wide', [h('summary', null, '查看完整人生节律'), lifeFig(), lifeList(YR.life)]) : null,
+  YR.lesson ? [h('div', 'dia', h('h3', null, '修行课题')), q(YR.lesson.question), h('div', 'body', paras(YR.lesson.body)), warm(YR.lesson.quote)] : null], 'years'));
+if (R.closing) add(app, h('div', 'closing', String(R.closing).split(/\n+/).map(function (s) { return h('div', null, s); })));
+
+// ══════════ 下篇：盘面与审计 ══════════
+add(app, scrollTitle('卷 · 下', '溯 源', '卷上每一句话，都从这里来', '星盘逐星 · 八字盘面 · 人格推法'));
+var AU = R.audit || {}, AP = AU.planets || {};
+function citedLine(id) { var c = CITED[id]; return c && c.length ? h('div', 'cited', ['上篇引用：'].concat(c.map(function (x) { return h('span', null, x + ' '); }))) : null; }
+if (W && XW) {
+  var pr = XW.power_rank || [], maxv = pr.length ? pr[0].v : 1;
+  var auditCards = AUDIT_PLANETS.map(function (n) {
+    var p = xw(n); if (!p) return null; var a = AP[n] || {};
+    var bits = [pos(p), p.house + ' 宫 · ' + p.house_kind, p.dignity, p.rx ? '逆行' : null, p.rules_houses.length ? p.rules_houses.join('、') + ' 宫宫主' : null, p.power_rank ? '力量第 ' + p.power_rank : null].filter(Boolean);
+    return anchor(h('div', 'pcd aud', [h('div', 'ph', [h('span', 'pn', n + (a.role ? ' · ' + a.role : '')), p.is_chart_ruler ? h('span', 'ruler', '命主星') : null]), h('div', 'ps', bits.join(' · ')),
+      p.aspects.length ? h('div', 'termrow', p.aspects.map(function (x) { return h('span', 'term ' + (x.type === '冲' || x.type === '刑' ? 'hard' : x.type === '合' ? '' : 'soft'), x.type + x.with); })) : null,
+      a.p1 ? [h('span', 'lbl', '它管你人生的什么事'), paras(a.p1)] : null, a.p2 ? [h('span', 'lbl', '它状态怎么样'), paras(a.p2)] : null, a.p3 ? [h('span', 'lbl', '现在和以后'), paras(a.p3)] : null,
+      citedLine('w-' + n)]), 'w-' + n);
+  });
+  add(app, anchor(h('section', 'part', [h('div', 'pl2', '审计 · 一'), h('h2', 'pt2', '星盘逐星'), h('div', 'divd', [h('i'), h('b'), h('i')]),
+    h('div', 'charts', [wheelPanel(), h('div', 'panel', [h('h4', null, '七星力量'), h('div', 'power', pr.map(function (x, i) {
+      var bar = h('div', 'bar', h('i')); bar.firstChild.style.width = Math.max(6, x.v / maxv * 100) + '%';
+      return h('div', 'pw', [h('em', null, String(i + 1)), h('b', null, x.n), bar, h('em', null, i === 0 ? '最强的牌' : i === pr.length - 1 ? '要补的短板' : '')]);
+    })), h('div', 'cap', '庙旺落陷 × 落宫 × 相位扶克 × 逆行，玄玑西盘尺子同一套算法')])]),
+    h('div', 'pgrid', auditCards),
+    AU.aspects && AU.aspects.length ? [h('div', 'dia', h('h3', null, '主要相位')), h('div', 'pgrid two', AU.aspects.map(function (x) { return h('div', 'pcd', [h('div', 'ph', h('span', 'pn', x.aspect)), paras(x.body)]); }))] : null]), 'a-west'));
+}
+// 八字盘面
+// 身强身弱：几家算法投票（method.bazi.strength.vote）；默认页只给结论，待定就不说
+var SCK = R.strength_check || null;   // 对话里按体感问出来的结论，高于几家投票
+function strengthSide() {
+  var st = XB && XB.strength; if (!st) return null;
+  if (SCK && (SCK.decided === '强' || SCK.decided === '弱')) return SCK.decided;
+  if (SCK && SCK.decided === '不可判') return '待定';
+  var v = st.vote && st.vote.verdict; return v ? v.side : null;
+}
+function strengthShown() {
+  var st = XB && XB.strength; if (!st || !st.level || st.level === '未知') return null;
+  var sd = strengthSide(); if (!sd) return st.level;
+  if (sd === '待定') return null;
+  return st.level.indexOf(sd) >= 0 || (sd === '强' && /旺/.test(st.level)) ? st.level : '身' + sd;
+}
+// 喜用：结论和排盘引擎方向相反（体感定的）时，换成另一套喜用
+function usefulShown() {
+  var us = XB.useful, st = XB.strength, sd = strengthSide(), fi = st && st.vote && st.vote.favorable_if;
+  var eng = /强|旺/.test(st.level || '') ? '强' : /弱/.test(st.level || '') ? '弱' : null;
+  if (fi && (sd === '强' || sd === '弱') && eng && sd !== eng) return { favorable: fi[sd], unfavorable: fi[sd === '强' ? '弱' : '强'], useful: null, avoid: null };
+  return us;
+}
+function voteBox() {
+  var V = XB && XB.strength && XB.strength.vote; if (!V) return null;
+  var SC = { 强: ['#fde6cf', '#a0561f'], 中: ['#eceafb', '#5b54a8'], 弱: ['#e3e6f6', '#3b3f7a'] };
+  var chip = function (side, txt) { var c = h('span', 'vchip', txt || '—'); if (side && SC[side]) { c.style.background = SC[side][0]; c.style.color = SC[side][1]; } return c; };
+  var rows = V.votes.map(function (x) {
+    return h('div', 'vrow', [h('div', 'vsch', x.school), chip(x.side, x.level ? String(x.level).replace(/[(（].*[)）]/, '') : x.status), h('div', 'vwhy', x.status ? '这一票还在做，做好了接上' : (/[(（](.*)[)）]/.test(x.level || '') ? String(x.level).match(/[(（](.*)[)）]/)[1] + '。' : '') + (x.why || '') + (x.score != null ? '　总分 ' + x.score + (x.confidence ? '，把握' + x.confidence : '') : ''))]);
+  });
+  var w = V.west;
+  rows.push(h('div', 'vrow vwest', [h('div', 'vsch', [w.school.replace(' v0', ''), h('em', null, '佐证')]), chip(w.tier === '缺料不判' ? null : w.tier, w.tier), h('div', 'vwhy', w.tier === '缺料不判' ? '没有出生时间，西盘算不了' : (w.why || '') + (w.S != null ? '　S＝' + w.S : ''))]));
+  if (SCK) rows.push(h('div', 'vrow vgut', [h('div', 'vsch', ['你的体感', h('em', null, '定案')]), chip(SCK.decided === '不可判' ? null : SCK.decided, SCK.decided === '不可判' ? '不可判' : '身' + SCK.decided), h('div', 'vwhy', (SCK.asked || []).map(function (a) { return a.year + ' ' + (a.gan_zhi || '') + ' ' + a.answer; }).join('　'))]));
+  var d = V.verdict, n = V.votes.filter(function (x) { return x.side; }).length;
+  var say = SCK && SCK.decided !== '不可判' ? '结论：身' + SCK.decided + '（按你对这几年的体感定的，体感高于几家算法）' : SCK ? '体感也分不出来，身强身弱先不下结论' : d.side === '待定' ? (d.agree === '时辰不详' ? '时辰不详，身强身弱先不下结论' : '几种判法说法不同，先不下结论，等你对过去几年的体感来定')
+    : '结论：身' + d.side + '（' + (d.agree === '一致' ? n + ' 种判法一致' : d.agree === '多数' ? '多数判法' : '偏' + d.side) + (V.votes.some(function (x) { return x.status; }) ? '，新派一票待接入' : '') + (d.west_agrees === true ? '；西盘也是' + w.tier : d.west_agrees === false ? '；西盘看是' + w.tier + '，只作参考' : '') + '）';
+  return h('div', 'card vote', [h('div', 'lb', ['身强身弱 · 三种判法', h('span', null, '多数为准，西盘只佐证')]), rows, h('div', 'vsay', say), XB.pattern && XB.pattern.is_special ? h('div', 'vnote', '这张盘按特殊格局（' + XB.pattern.name + '）论，喜忌按格局取，不按身强身弱这套') : null]);   // 有一票判到极档只是触发引擎复核；复核没成立（is_special 为假）就照常三票，不提特殊格局
+}
+function shenshaBox(ss) {
+  return h('div', 'card ss', [h('div', 'lb', ['神煞图谱', h('span', null, '分数越高，这一维越显')]),
+    ss.dimensions.map(function (d) { var bar = h('div', 'bar', h('i')); bar.firstChild.style.width = Math.max(4, d.score) + '%'; return h('div', 'ssr', [h('span', 'ssn', d.name), bar, h('span', 'ssv', String(d.score)), h('div', 'ssw', d.words || '')]); }),
+    ss.featured.length ? h('div', 'ssf', [h('div', 'lb', '稀有神煞')].concat(ss.featured.map(function (f) { return h('div', 'ssfi', [h('b', null, f.name), f.words ? h('span', null, f.words) : null, f.origin ? h('p', null, f.origin) : null]); }))) : null]);
+}
+if (BZ && XB) {
+  var dmx = XB.day_master, pt = XB.pattern, stx = XB.strength, us = usefulShown(), lk = XB.lucky;
+  add(app, anchor(h('section', 'part', [h('div', 'pl2', '审计 · 二'), h('h2', 'pt2', '八字盘面'), h('div', 'divd', [h('i'), h('b'), h('i')]),
+    h('div', 'idn', [h('div', 'idn-t', dmx.day_gan_zhi + '日出生'), h('div', 'idn-s', ['日主 ', h('b', null, dmx.gan), '，属' + dmx.yin_yang + dmx.element + (dmx.image ? '，如' + dmx.image : '')]), dmx.image_line ? h('div', 'idn-l', dmx.image_line) : null]),
+    h('div', 'card gj', [pt.huaming ? h('div', 'hm', '【' + pt.huaming.line + '】') : null, h('div', 'gjn', '格局：' + pt.name + (pt.label ? ' · ' + pt.label : '') + (pt.is_special ? '（特殊格局）' : '')), pt.huaming && pt.huaming.desc ? h('p', 'gjd', pt.huaming.desc) : null]),
+    h('div', 'charts', [pillarsPanel(), shenshaBox(XB.shensha)]),
+    strengthShown() ? h('div', 'termrow', [h('span', 'term big', stx.type || stx.level)].concat(stx.basis_words.map(function (w) { return h('span', 'term', w); }))) : null,
+    voteBox(),
+    h('div', 'termrow', [h('span', 'term ok', '喜用 ' + us.favorable.join(' ')), h('span', 'term no', '忌 ' + us.unfavorable.join(' '))].concat(us.useful ? [h('span', 'term', '用神 ' + us.useful)] : []).concat(us.avoid ? [h('span', 'term', '忌神 ' + us.avoid)] : [])),
+    lk && lk.elements.length ? h('div', 'lucky', [h('span', null, ['幸运色 ', h('b', null, lk.colors.map(function (c) { return c.name; }).join('、'))]), h('span', null, ['方位 ', h('b', null, lk.directions.join('、'))]), h('span', null, ['数字 ', h('b', null, lk.numbers.join('、'))])]) : null,
+    luckChart(), yearStrip(), citedLine('a-bazi')]), 'a-bazi'));
+}
+// 人格推法
+function personaFeedback(target,original) {
+  var match=(R.persona_feedback||[]).find(function(x){return x.target===target&&x.statement===original;});
+  if(!match)return null;
+  return h('div','persona-feedback',match.feedback==='不准'?'你说这句不像你':'你说这句部分像你');
+}
+if (XP) {
+  var bs0 = XP.base, sk = bs0.stack;
+  var stairCol = ['#f6b780', '#f9cfa6', '#fbe2c8', '#fdf0e2'];
+  add(app, anchor(h('section', 'part', [h('div', 'pl2', '审计 · 三'), h('h2', 'pt2', '人格的推法'), h('div', 'divd', [h('i'), h('b'), h('i')]),
+    h('div', 'card', [h('div', 'lb', ['出厂底色', h('span', null, '星盘推出的人格结构')]), h('div', 'type', bs0.type), bs0.name ? h('div', 'sub2', '「' + bs0.name + '」') : null, bs0.line ? h('div', 'quote', bs0.line) : null, personaFeedback('base',bs0.line),
+      h('div', 'stairs', [['主导', sk.dom, '100%'], ['辅助', sk.aux, '78%'], ['第三', sk.tert, '56%'], ['劣势', sk.inf, '36%']].map(function (r, i) { var d = h('div', null, [r[0], h('b', null, r[1].f), r[1].word.split('（')[0]]); d.style.height = r[2]; d.style.background = stairCol[i]; return d; })),
+      bs0.neighbor ? h('div', 'nb', '隔壁型 ' + bs0.neighbor.type + '：主导功能一样是 ' + sk.dom.f + '，把你们分开的是辅助功能：你是 ' + sk.aux.f + '，它是 ' + bs0.neighbor.aux.f + '。') : null]),
+    h('div', 'rb', XP.rebirth.map(function (r,i) {
+      return h('div', 'card', [h('div', 'lb', ['重生人格', h('span', null, '两张不分先后')]), h('h3', null, r.type + (r.name ? ' · ' + r.name : '')), r.scene ? h('div', 'sub2', r.scene) : null, personaFeedback('rebirth'+i,r.scene),
+        r.sources.map(function (x) { return h('div', 'flow', x.pain ? [h('span', null, '欲望星 ' + x.desire + '（' + x.desire_sign + '）'), h('i', null, '撞上'), h('span', null, '痛点星 ' + x.pain), h('i', null, '长出'), h('b', null, r.mine_func.f + ' ' + r.mine_func.word.split('（')[0])] : [h('span', null, x.aspect), h('i', null, '长出'), h('b', null, r.mine_func.f)]); })]);
+    })),
+    XP.buffs.length ? h('div', 'termrow', [h('span', 'term big', '人格 Buff')].concat(XP.buffs.map(function (b) { return h('span', 'term', b.f + ' ' + b.word); }))) : null, citedLine('a-persona')]), 'a-persona'));
+}
+
+// ══════════ 接着问 ══════════
+add(app, h('section', 'part', [h('div', 'pl2', '接 着 问'), h('div', 'divd', [h('i'), h('b'), h('i')]),
+  R.open_question ? h('div', 'open', [h('div', 'lb', '还有一件事没定下来'), paras(R.open_question)]) : null,
+  R.next_questions && R.next_questions.length ? [h('div', 'nqlead', '你现在最值得接着问'), h('ol', 'nq', R.next_questions.slice(0, 3).map(function (x) { return h('li', null, x); })),
+    R.next_questions.length > 3 ? h('details', 'fold nqmore', [h('summary', null, '更多问题'), h('div', 'chips', R.next_questions.slice(3).map(function (x) { return h('span', 'chip', x); }))]) : null,
+    h('p', 'hint', '回到对话里，直接问我。')] : null]));
+
+// ══════════ 查看依据 ══════════
+var bs = R.basis || {}, bd = h('div', 'bd');
+function dl(pairs) { return h('dl', 'kv', pairs.filter(function (p) { return p[1]; }).map(function (p) { return [h('dt', null, p[0]), h('dd', null, p[1])]; })); }
+add(bd, [h('h4', null, '出生时间与口径'), dl([
+  ['时间来源', timeKnown ? (SRC[birth.time_source] || SRC.unknown).replace(/，.*$|。$/, '') : '没有出生时间'], ['时间精度', timeKnown ? PREC[birth.time_precision] || PREC.unknown : null],
+  ['八字', BZ ? (timeKnown ? '采用服务端时间口径排盘；报告不显示原始出生时间或地点' : '按年、月、日三柱排') : null],
+  ['星盘', W ? '按钟表时间加出生地经纬度排，普拉西德分宫，回归黄道' : null],
+  ['应期', XT ? '八字流年（v0）与西盘行运（土、天、海、冥的硬相位，木星合，木土进宫，小限）按年合并；两套同一年同一领域都过线才标映照' : null],
+  ['时辰交界', BZ && BZ.timeCheck ? (BZ.timeCheck.differs ? '换一种时间口径，日柱或时柱会变：' + BZ.timeCheck.other.pillars : '换一种时间口径也是同一组日柱和时柱') : null]])]);
+if ((bs.confidence && bs.confidence.length) || (bs.counter && bs.counter.length) || bs.notes) add(bd, [h('h4', null, '把握和反证'),
+  bs.confidence && bs.confidence.length ? h('div', 'conf', bs.confidence.map(function (c) { return [h('span', 'lv', c.level), h('div', null, [h('b', null, c.item + '：'), c.why])]; })) : null,
+  bs.counter && bs.counter.length ? h('ul', null, bs.counter.map(function (c) { return h('li', null, c); })) : null, bs.notes ? paras(bs.notes) : null]);
+if (bs.differences && bs.differences.length) add(bd, [h('h4', null, '几套体系说法不同的地方'), h('ul', null, bs.differences.map(function (d) {
+  return h('li', null, [h('b', null, d.theme + '：'), [['八字', d.bazi], ['星盘', d.west], ['人格', d.base]].filter(function (r) { return r[1]; }).map(function (r) { return r[0] + '说' + r[1]; }).join('；'), d.note ? '。' + d.note : '']);
+}))]);
+if (W) add(bd, [h('h4', null, '星盘原始数据'), dl([['上升', pos(W.angles.asc)], ['天顶', pos(W.angles.mc)], ['小行星', (W.asteroids || []).map(function (p) { return p.n + ' ' + pos(p) + ' · ' + p.house + ' 宫'; }).join('；')]]), h('div', 'mini', (W.aspects || []).map(function (a) { return h('span', null, a); }))]);
+if (XP) add(bd, [h('h4', null, '人格的推法'), dl([['出厂底色', XP.base.type + '，第二接近 ' + XP.base.runner_up + '（' + XP.base.lead + '）'], ['行星落座锁定', XP.locks.map(function (l) { return l.planet + '落' + l.sign + '→' + l.funcs.join('/'); }).join('；')], ['说明', '出厂底色是从星盘推出的人格结构，不是自测的 MBTI，也不用来猜你自测的结果。']])]);
+var v = P.version || {};
+add(bd, [h('h4', null, '版本'), dl([['数据', (v.schema || '') + (X.schema ? ' · ' + X.schema : '') + (XT ? ' · ' + XT.schema : '') + (BZ ? ' · ' + BZ.version.engine : '')], ['生成', String(D.built_at || '').slice(0, 10) + ' · 玄玑 Skill ' + (D.skill_version || '')]])]);
+add(app, h('details', 'basis', [h('summary', null, [h('span', null, ['查看依据', h('small', null, '口径、把握、反证、原始数据')])]), bd]));
+// 与玄玑建立连接：创始人微信码直接露出来（build_report 从 assets/founder-wechat.png 读进来，报告不联网，CSP 只许 data: 图）；没有这张图就不出这一块
+function connect() {
+  if (typeof D.founder_qr !== 'string' || D.founder_qr.indexOf('data:image/png;base64,') !== 0) return null;
+  var img = h('img', 'qr'); img.src = D.founder_qr; img.alt = '创始人微信二维码';
+  return h('section', 'connect', [h('div', 'ct', '与玄玑建立连接'), h('div', 'qrw', img), h('div', null, h('span', 'pill', '加我时请备注：来源 · 称呼'))]);
+}
+add(app, connect());
+add(app, h('footer', null, [h('div', 'motto', '用命，不算命'), h('div', null, '这份报告讲的是结构倾向，不替你做决定。健康、法律、投资、婚姻去留这类事，请以专业意见和你自己的判断为准。'), h('div', null, '盘面、判词和应期由玄玑接口给出，解读由你的 AI 按玄玑的规矩写成。')]));
+
+// 上篇写完才知道谁引用了谁：把下篇的「上篇引用」补上（下篇先渲染了占位）
+Object.keys(CITED).forEach(function (id) { var el = document.getElementById(id); if (el && !el.querySelector('.cited')) { var c = citedLine(id); if (c) el.appendChild(c); } });
+})();
+</script>
+</body>
+</html>

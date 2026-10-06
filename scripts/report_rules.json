@@ -1,0 +1,334 @@
+{
+ "_license": "Apache-2.0",
+ "_copyright": "Copyright 2026 杭州强势播传文化影视传媒有限公司",
+ "说明": "报告 v0.5 的字数上限、条数、取值和默认页禁用词。build_report.mjs读这一份，改规矩只改这里。路径里 * 表示对象的每一项，[] 表示数组的每一项。",
+ "schema": "xuanji.report/0.5",
+ "persona_feedback": {"targets":["base","rebirth0","rebirth1"],"values":["不准","部分准"]},
+ "limits": {
+  "cover.seen": 60,
+  "cover.evidence": 50,
+  "progress[].item": 30,
+  "hits[].statement": 90,
+  "hits[].basis": 60,
+  "crosscheck[].theme": 8,
+  "crosscheck[].note": 80,
+  "skeleton.question": 90,
+  "skeleton.layers.*.title": 32,
+  "skeleton.layers.*.body": 360,
+  "skeleton.bazi": 320,
+  "skeleton.persona": 320,
+  "skeleton.oneline": 70,
+  "gifts.intro": 150,
+  "gifts.items[].title": 32,
+  "gifts.items[].body": 340,
+  "gifts.oneline": 90,
+  "chapters.*.question": 90,
+  "chapters.*.sections[].title": 32,
+  "chapters.*.sections[].body": 460,
+  "chapters.*.gold": 80,
+  "chapters.*.warm": 130,
+  "years.theme": 40,
+  "years.intro": 260,
+  "years.forces[].title": 40,
+  "years.forces[].body": 340,
+  "years.calendar[].span": 20,
+  "years.calendar[].phase": 8,
+  "years.calendar[].title": 18,
+  "years.calendar[].body": 160,
+  "years.calendar[].basis": 110,
+  "years.lesson.question": 90,
+  "years.lesson.body": 420,
+  "years.lesson.quote": 140,
+  "closing": 220,
+  "audit.planets.*.role": 20,
+  "audit.planets.*.p1": 220,
+  "audit.planets.*.p2": 220,
+  "audit.planets.*.p3": 220,
+  "audit.aspects[].aspect": 12,
+  "audit.aspects[].body": 220,
+  "open_question": 220,
+  "next_questions[]": 28,
+  "years.calendar[].areas[].area": 4,
+  "years.calendar[].areas[].text": 90,
+  "years.calendar[].first_half": 90,
+  "years.calendar[].second_half": 90,
+  "years.calendar[].do": 60,
+  "years.calendar[].avoid": 60,
+  "years.windows[].when": 20,
+  "years.windows[].area": 4,
+  "years.windows[].title": 30,
+  "years.windows[].body": 130,
+  "years.decade[].span": 20,
+  "years.decade[].phase": 8,
+  "years.decade[].title": 24,
+  "years.decade[].body": 140,
+  "years.decade[].basis": 110,
+  "years.life[].span": 20,
+  "years.life[].title": 24,
+  "years.life[].body": 90,
+  "chapters.*.brief": 40
+ },
+ "counts": {
+  "progress": [
+   3,
+   6
+  ],
+  "hits": [
+   0,
+   6
+  ],
+  "crosscheck": [
+   2,
+   5
+  ],
+  "gifts.items": [
+   3,
+   5
+  ],
+  "chapters.*.sections": [
+   0,
+   4
+  ],
+  "years.forces": [
+   1,
+   4
+  ],
+  "years.calendar": [
+   3,
+   4
+  ],
+  "audit.aspects": [
+   3,
+   6
+  ],
+  "next_questions": [
+   4,
+   8
+  ],
+  "years.calendar[].areas": [
+   2,
+   4
+  ],
+  "years.windows": [
+   4,
+   8
+  ],
+  "years.decade": [
+   6,
+   7
+  ],
+  "years.life": [
+   6,
+   12
+  ],
+  "focus": [
+   2,
+   3
+  ]
+ },
+ "chapters": [
+  "career",
+  "wealth",
+  "love",
+  "family",
+  "social",
+  "health",
+  "growth"
+ ],
+ "audit_planets": [
+  "太阳",
+  "月亮",
+  "水星",
+  "金星",
+  "火星",
+  "木星",
+  "土星",
+  "天王",
+  "海王",
+  "冥王"
+ ],
+ "support": [
+  "八字",
+  "星盘",
+  "人格"
+ ],
+ "progress_states": [
+  "已确认",
+  "待确认",
+  "待观察"
+ ],
+ "hit_feedback": [
+  "准",
+  "部分准"
+ ],
+ "forbidden_default": [
+  "%",
+  "％",
+  "概率",
+  "置信",
+  "准确率",
+  "兑现率",
+  "命中率",
+  "MBTI",
+  "判词",
+  "花名",
+  "喻物",
+  "白话",
+  "【",
+  "】",
+  "坐镇",
+  "守一宫",
+  "守二宫",
+  "守三宫",
+  "守四宫",
+  "守五宫",
+  "守六宫",
+  "守七宫",
+  "守八宫",
+  "守九宫",
+  "守十宫",
+  "守十一宫",
+  "守十二宫",
+  "守1宫",
+  "守2宫",
+  "守3宫",
+  "守4宫",
+  "守5宫",
+  "守6宫",
+  "守7宫",
+  "守8宫",
+  "守9宫",
+  "守10宫",
+  "守11宫",
+  "守12宫",
+  "守第一宫",
+  "守第二宫",
+  "守第三宫",
+  "守第四宫",
+  "守第五宫",
+  "守第六宫",
+  "守第七宫",
+  "守第八宫",
+  "守第九宫",
+  "守第十宫",
+  "守第十一宫",
+  "守第十二宫",
+  "官司",
+  "坐牢",
+  "犯法",
+  "三家算法",
+  "几家算法",
+  "三家一致",
+  "三家判法",
+  "闭合"
+ ],
+ "levels": [
+  "高",
+  "中",
+  "欠定"
+ ],
+ "forbidden_in": {
+  "years.forces[].title": [
+   "股"
+  ],
+  "years.windows[].title": [
+   "股"
+  ]
+ },
+ "must_contain": {},
+ "required_each": {
+  "years.calendar[]": [
+   "span",
+   "title",
+   "body",
+   "first_half",
+   "second_half",
+   "do",
+   "avoid",
+   "basis"
+  ],
+  "years.windows[]": [
+   "when",
+   "area",
+   "title",
+   "body"
+  ],
+  "years.decade[]": [
+   "span",
+   "title",
+   "body",
+   "basis"
+  ],
+  "years.life[]": [
+   "span",
+   "title",
+   "body"
+  ]
+ },
+ "no_copy": {
+  "说明": "写作说明里旧版的例句。报告里出现这些就说明是照抄，要换成从这张盘里长出来的话。古人的原句如果在这张盘的 method.quotes 候选里，可以用。",
+  "phrases": [
+   "你心里是不是一直有个声音",
+   "爱与价值，焊在成就上",
+   "你对『深』有胃口",
+   "第一层永远是",
+   "你的价值，不等于你的产出",
+   "这不是停滞，是天在帮你把根扎深",
+   "你的爱被两股力拉扯",
+   "关系要重新立规矩",
+   "重新长出一个自己",
+   "换更大的平台，年中前后最有动静",
+   "拖着不说会在下半年爆",
+   "长大成人",
+   "中年转向",
+   "旧伤变成天赋",
+   "管着事业宫的发动机",
+   "坐镇事业宫的发动机",
+   "我和 TA 合不合",
+   "我该不该换城市",
+   "这两年风是逆的",
+   "父亲事业心重，在单位或行业里有一定的职位或专业分量",
+   "不是平稳的一年",
+   "结硬寨，打呆仗",
+   "博观而约取，厚积而薄发",
+   "命由我作，福自己求",
+   "潜意识若不被看见"
+  ]
+ },
+ "quote_markers": "(《[^》]{1,20}》|曾国藩|苏轼|王阳明|孔子|老子|庄子|孟子|荀子|韩愈|李白|杜甫|王维|陆游|王安石|朱熹|荣格|尼采|论语|道德经|周易|易经|诗经|史记|了凡)",
+ "strength_check": {
+  "answer": [
+   "顺",
+   "闷",
+   "没感觉"
+  ],
+  "decided": [
+   "强",
+   "弱",
+   "不可判"
+  ]
+ },
+ "focus_rules": {
+  "说明": "最响的几件事（focus）露在外面完整展开；其余每块外面一句 brief，完整内容（和 focus 一样的长度和细节）收在「展开看」里——藏起来不等于写少。问句、金句、暖框的限量只管露在外面的 focus",
+  "focus_sections": [
+   1,
+   4
+  ],
+  "question_total": [
+   1,
+   2
+  ],
+  "gold_total": [
+   1,
+   3
+  ],
+  "warm_total": [
+   0,
+   2
+  ],
+  "brief_sections": [
+   2,
+   4
+  ]
+ }
+}

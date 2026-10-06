@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+request.json
+pair-request.json
+profile.json
+pair.json
+report.json
+/report.html
+玄玑报告/
+*.log
+*.dump
+.DS_Store
+._*
