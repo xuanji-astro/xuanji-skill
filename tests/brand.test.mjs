@@ -14,7 +14,7 @@ function fixtures(){
  const calendar=Array.from({length:3},(_,i)=>({span:String(year+i),title:'合成观察',body:'保留自主判断。',first_half:'观察',second_half:'复核',do:'记录',avoid:'冲动',basis:'合成接口依据',areas:[{area:'事业',text:'合成'},{area:'学业',text:'合成'}]}));
  const chapters=Object.fromEntries(['career','wealth','study','love','family','social','health','growth'].map(k=>[k,{brief:k==='growth'?'人生课题需要慢慢观察':'观察后再判断',sections:[section,section]}]));
  chapters.career.question='你是否想了解这个结构？';chapters.career.gold='结构不替代选择。';
- const rep={schema:'xuanji.report/0.5',cover:{seen:'合成样本，不是真人。',support:['星盘','八字','人格']},progress:Array.from({length:3},()=>({state:'待确认',item:'合成样本待确认'})),hits:[],misses:[],crosscheck:[],skeleton:{question:'你想从哪里开始？',oneline:'用结构帮助观察。',bazi:'合成说明。'},gifts:{oneline:'善用已有优势。',items:Array.from({length:3},()=>section)},focus:['career','love'],chapters,years:{theme:'合成节奏',lesson:{question:'你想观察什么？',body:'保留自己的判断。'},forces:[section],windows:Array.from({length:4},()=>({when:'合成月份',area:'事业',title:'观察窗口',body:'仅为格式测试。'})),calendar,decade:Array.from({length:7},(_,i)=>({span:String(year+3+i),title:'合成',body:'合成观察',basis:'合成依据'})),life:Array.from({length:6},()=>({span:'合成年龄',title:'节奏观察',body:'合成文字'}))},closing:'合成测试结束。',audit:{aspects:Array.from({length:3},()=>({aspect:'合成相位',body:'合成'}))},next_questions:['如何看待当前结构？','怎样观察行动？','如何记录经验？','如何理解变化？'],basis:{}};
+ const rep={schema:'xuanji.report/0.5',cover:{seen:'合成样本第一句。\n合成样本第二句，夸你的本事，写到二十字上下。\n合成原句，不代表真人。',support:['星盘','八字','人格']},progress:Array.from({length:3},()=>({state:'待确认',item:'合成样本待确认'})),hits:[],misses:[],crosscheck:[],skeleton:{question:'你想从哪里开始？',oneline:'用结构帮助观察。',bazi:'合成说明。'},gifts:{oneline:'善用已有优势。',items:Array.from({length:3},()=>section)},focus:['career','love'],chapters,years:{theme:'合成节奏',lesson:{question:'你想观察什么？',body:'保留自己的判断。'},forces:[section],windows:Array.from({length:4},()=>({when:'合成月份',area:'事业',title:'观察窗口',body:'仅为格式测试。'})),calendar,decade:Array.from({length:7},(_,i)=>({span:String(year+3+i),title:'合成',body:'合成观察',basis:'合成依据'})),life:Array.from({length:6},()=>({span:'合成年龄',title:'节奏观察',body:'合成文字'}))},closing:'合成测试结束。',audit:{aspects:Array.from({length:3},()=>({aspect:'合成相位',body:'合成'}))},next_questions:['如何看待当前结构？','怎样观察行动？','如何记录经验？','如何理解变化？'],basis:{}};
  const prof={schema:'xuanji.handoff/0.1',birth:{date:'1996-05-20',time:'10:30',city:'合成地点',sex:'female'},bazi:{status:'ok',input:{trueSolarTime:'1996-05-20T10:30:00',longitude:120},version:{config:'implementation-label'}},method:{}};
  return {prof,rep};
 }
@@ -56,4 +56,15 @@ test('cover support must list 星盘, 八字 and 人格; template shows them in 
  for(const sup of [undefined,[],['星盘','八字'],['八字','人格']]){const r=structuredClone(rep);r.cover.support=sup;assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}
  const r=structuredClone(rep);r.cover.support=['人格','八字','星盘'];assert.deepEqual(check(r,prof),[]);
  const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');assert(t.includes("['星盘', '八字', '人格'].filter"));
+});
+test('cover: line 1 from the day-stem pool verbatim, line 2 gifts 14-28 and positive, line 3 the persona line verbatim',()=>{const {prof,rep}=fixtures();const P=structuredClone(prof);P.method=P.method||{};P.method.bazi={...(P.method.bazi||{}),day_master:{gan:'庚',image:'矿石钢铁'}};P.method.persona={...(P.method.persona||{}),base:{...((P.method.persona||{}).base||{}),line:'合成判词：把最乱的局交给你。'}};
+ const errs=(seen)=>{const r=structuredClone(rep);r.cover.seen=seen;return check(r,P).filter(e=>e.startsWith('cover.seen'));};
+ const L2='敢挑头，压得住阵，做事有章法，说话有分量。';
+ assert.deepEqual(errs(`宝剑锋从磨砺出。\n${L2}\n合成判词：把最乱的局交给你。`),[]);
+ assert.match(errs(`一盏灯照得很远。\n${L2}\n合成判词：把最乱的局交给你。`).join(),/第一句要从 report_rules\.json 的 cover_seen_plain\.pool「庚」/);
+ assert.match(errs(`宝剑锋从磨砺出。\n${L2}\n你是让人愿意跟上的人。`).join(),/第三句照抄出厂底色那句/);
+ assert.match(errs(`宝剑锋从磨砺出。\n看人准。\n合成判词：把最乱的局交给你。`).join(),/第二句 \d+ 字，要 14～28 字/);
+ assert.match(errs(`宝剑锋从磨砺出。\n你不是最响的那个，却是最能扛事的那个人。\n合成判词：把最乱的局交给你。`).join(),/第2句里有「你不是」/);
+ assert.match(errs(`宝剑锋从磨砺出。\n${L2}`).join(),/要 3 句/);
+ assert.match(errs(`宝剑锋从磨砺出。\n聚人、定调、开路，事到她手里就有了章法。\n合成判词：把最乱的局交给你。`).join(),/第2句里有「她」/);   // 封面对他说「你」，不写成第三人称
 });

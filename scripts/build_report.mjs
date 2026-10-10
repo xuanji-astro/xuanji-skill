@@ -21,7 +21,7 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.6';
+const SKILL_VERSION = '0.1.0-rc.7';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
@@ -88,6 +88,13 @@ export function check(rep, prof) {
   for (const p of ['cover.seen', 'skeleton.question', 'skeleton.oneline', 'skeleton.bazi', 'gifts.oneline', 'years.theme', 'years.lesson.question', 'years.lesson.body', 'closing']) need(p);
   for (const s of rep.cover?.support ?? []) if (!R.support.includes(s)) errs.push(`cover.support 只能填 ${R.support.join('／')}`);
   if (R.support.some((s) => !(rep.cover?.support ?? []).includes(s))) errs.push('cover.support 要写全三套：星盘、八字、人格（封面这句要三套都撑得住）');
+  { const CP = R.cover_seen_plain ?? {}, raw = String(rep.cover?.seen ?? ''), lines = raw.split('\n').map((x) => x.trim()).filter(Boolean);
+    const gan = prof.method?.bazi?.day_master?.gan, pool = CP.pool?.[gan], pl = prof.method?.persona?.base?.line;
+    const bad = (x, i) => { for (const re of CP.patterns ?? []) { const m = x.match(new RegExp(re)); if (m) errs.push(`cover.seen 第${i}句里有「${m[0]}」：${CP.message}`); } };
+    if (CP.lines && raw.trim() && lines.length !== CP.lines) errs.push(`cover.seen 要 ${CP.lines} 句、换行隔开（第一句八字、第二句星盘夸天赋、第三句人格），现在 ${lines.length} 句`);
+    if (lines[0] && pool && !pool.includes(lines[0])) errs.push(`cover.seen 第一句要从 report_rules.json 的 cover_seen_plain.pool「${gan}」那一组里原样挑一句：${pool.join('／')}`);
+    if (lines[1]) { bad(lines[1], 2); const k = n(lines[1]), [lo, hi] = CP.line2 ?? [0, 99]; if (k < lo || k > hi) errs.push(`cover.seen 第二句 ${k} 字，要 ${lo}～${hi} 字（两三个短词定本事，再半句落到他做事的样子上）`); }
+    if (lines[2]) { if (pl) { if (lines[2] !== pl) errs.push(`cover.seen 第三句照抄出厂底色那句（method.persona.base.line）：${pl}`); } else { bad(lines[2], 3); if (n(lines[2]) > (CP.line3_max ?? 99)) errs.push(`cover.seen 第三句 ${n(lines[2])} 字，上限 ${CP.line3_max} 字`); } } }
   (rep.progress ?? []).forEach((p, i) => { if (!R.progress_states.includes(p.state)) errs.push(`progress 第${i + 1}条 state 只能是 ${R.progress_states.join('／')}`); });
   (rep.hits ?? []).forEach((x, i) => { if (!R.hit_feedback.includes(x.feedback)) errs.push(`hits 第${i + 1}条 feedback 只能是 准／部分准；未确认或否认的候选不能放入`); });
   const feedback=rep.persona_feedback;

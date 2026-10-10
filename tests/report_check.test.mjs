@@ -31,7 +31,7 @@ test('模板：定过时辰时表头换成「经定时辰定在某时」，不�
   assert.match(t,/var RF = D\.rectified \|\| null;/);
   assert.match(t,/RF \? '出生时辰经定时辰定在' \+ RF\.hour \+ '（按你说的大事和回答）。'/);
   assert.match(t,/var BD = RF \? null : X\.boundary \|\| null;/);
-  assert.match(t,/!\(RF && \/\^出生时间接近时辰交界\/\.test\(w\)\)/);
+  assert.match(t,/!\(RF && \/\^\(出生时间接近时辰交界\|出生时刻距\.\*时辰边界\)\/\.test\(w\)\)/);
 });
 
 test('check_report: 认得常见写法；地名取全称和最细一级；只回类别',()=>{

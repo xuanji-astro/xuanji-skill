@@ -700,11 +700,11 @@ function yearStrip() {
 // ══════════ 封面＋抬头 ══════════
 var timeKnown = !!birth.time_known, cv = R.cover || {};
 add(app, h('div', 'brand', [h('i'), '玄玑 · 命盘报告', h('i')]));
-if (cv.seen) add(app, h('div', 'cover', [h('div', 'ct', '玄玑看见的你'), h('p', 'cl', cv.seen), cv.evidence ? h('div', 'ce', cv.evidence) : null,
+if (cv.seen) add(app, h('div', 'cover', [h('div', 'ct', '玄玑看见的你'), h('p', 'cl', String(cv.seen).split('\n').map(function (x) { return x.trim(); }).join('')), cv.evidence ? h('div', 'ce', cv.evidence) : null,
   h('div', 'cf', [(cv.support || []).length ? h('span', null, ['星盘', '八字', '人格'].filter(function (s) { return cv.support.indexOf(s) >= 0; }).join(' × ') + ' 映照') : h('i'), h('b', null, 'Xuanji 玄玑')])]));   // 顺序固定：星盘 × 八字 × 人格
 var meta = [birth.sex === 'female' ? '女' : birth.sex === 'male' ? '男' : ''].filter(Boolean).join(' · ');
 var RF = D.rectified || null;   // 定过时辰（build_report --rectify，结果 a/b）：不再报离交界几分钟、两种口径的时柱、压宫头的星
-var warns = BZ ? (BZ.warnings || []).filter(function (w) { return !(RF && /^出生时间接近时辰交界/.test(w)); }) : [];
+var warns = BZ ? (BZ.warnings || []).filter(function (w) { return !(RF && /^(出生时间接近时辰交界|出生时刻距.*时辰边界)/.test(w)); }) : [];
 var BD = RF ? null : X.boundary || null;   // 出生时间边界（接口算好）：离时辰交界几分钟、压宫头的星
 if (BD && BD.hour && BD.hour.near) warns.push('真太阳时落在' + BD.hour.branch + '时，离' + (BD.hour.minutes_from_prev < 15 ? BD.hour.prev_branch + '时交界 ' + BD.hour.minutes_from_prev : BD.hour.next_branch + '时交界 ' + BD.hour.minutes_to_next) + ' 分钟。');
 if (BD && BD.cusp_planets && BD.cusp_planets.length) warns.push(BD.cusp_planets.slice(0, 3).map(function (c) { return c.n + '压在' + c.cusp + '宫宫头上（差 ' + Math.abs(c.deg_from_cusp) + '°）'; }).join('，') + '，出生时间差几分钟就会换宫。');
