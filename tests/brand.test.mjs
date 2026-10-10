@@ -14,7 +14,7 @@ function fixtures(){
  const calendar=Array.from({length:3},(_,i)=>({span:String(year+i),title:'合成观察',body:'保留自主判断。',first_half:'观察',second_half:'复核',do:'记录',avoid:'冲动',basis:'合成接口依据',areas:[{area:'事业',text:'合成'},{area:'学业',text:'合成'}]}));
  const chapters=Object.fromEntries(['career','wealth','study','love','family','social','health','growth'].map(k=>[k,{brief:k==='growth'?'人生课题需要慢慢观察':'观察后再判断',sections:[section,section]}]));
  chapters.career.question='你是否想了解这个结构？';chapters.career.gold='结构不替代选择。';
- const rep={schema:'xuanji.report/0.5',cover:{seen:'合成样本，不是真人。',support:['八字']},progress:Array.from({length:3},()=>({state:'待确认',item:'合成样本待确认'})),hits:[],crosscheck:[],skeleton:{question:'你想从哪里开始？',oneline:'用结构帮助观察。',bazi:'合成说明。'},gifts:{oneline:'善用已有优势。',items:Array.from({length:3},()=>section)},focus:['career','love'],chapters,years:{theme:'合成节奏',lesson:{question:'你想观察什么？',body:'保留自己的判断。'},forces:[section],windows:Array.from({length:4},()=>({when:'合成月份',area:'事业',title:'观察窗口',body:'仅为格式测试。'})),calendar,decade:Array.from({length:7},(_,i)=>({span:String(year+3+i),title:'合成',body:'合成观察',basis:'合成依据'})),life:Array.from({length:6},()=>({span:'合成年龄',title:'节奏观察',body:'合成文字'}))},closing:'合成测试结束。',audit:{aspects:Array.from({length:3},()=>({aspect:'合成相位',body:'合成'}))},next_questions:['如何看待当前结构？','怎样观察行动？','如何记录经验？','如何理解变化？'],basis:{}};
+ const rep={schema:'xuanji.report/0.5',cover:{seen:'合成样本，不是真人。',support:['星盘','八字','人格']},progress:Array.from({length:3},()=>({state:'待确认',item:'合成样本待确认'})),hits:[],misses:[],crosscheck:[],skeleton:{question:'你想从哪里开始？',oneline:'用结构帮助观察。',bazi:'合成说明。'},gifts:{oneline:'善用已有优势。',items:Array.from({length:3},()=>section)},focus:['career','love'],chapters,years:{theme:'合成节奏',lesson:{question:'你想观察什么？',body:'保留自己的判断。'},forces:[section],windows:Array.from({length:4},()=>({when:'合成月份',area:'事业',title:'观察窗口',body:'仅为格式测试。'})),calendar,decade:Array.from({length:7},(_,i)=>({span:String(year+3+i),title:'合成',body:'合成观察',basis:'合成依据'})),life:Array.from({length:6},()=>({span:'合成年龄',title:'节奏观察',body:'合成文字'}))},closing:'合成测试结束。',audit:{aspects:Array.from({length:3},()=>({aspect:'合成相位',body:'合成'}))},next_questions:['如何看待当前结构？','怎样观察行动？','如何记录经验？','如何理解变化？'],basis:{}};
  const prof={schema:'xuanji.handoff/0.1',birth:{date:'1996-05-20',time:'10:30',city:'合成地点',sex:'female'},bazi:{status:'ok',input:{trueSolarTime:'1996-05-20T10:30:00',longitude:120},version:{config:'implementation-label'}},method:{}};
  return {prof,rep};
 }
@@ -34,4 +34,26 @@ test('persona feedback accepts exact server sentence and rejects wrong or unconf
  }
  for(const bad of [null,{},[{target:'base',statement:'其他句',feedback:'不准'}],[{target:'base',statement:prof.method.persona.base.line,feedback:'准'}],[{target:'base',statement:prof.method.persona.base.line,feedback:'未核对'}]]){const r=structuredClone(rep);r.persona_feedback=bad;assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}
  const r=structuredClone(rep);const entry={target:'base',statement:prof.method.persona.base.line,feedback:'不准'};r.persona_feedback=[entry,entry];assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);
+});
+// 10-07 Kimi 实测两处：把 2026 写成「今年乙巳」；用户否认的 2022 年往事在正文里写成发生过
+test('year gan-zhi must match the year (今年 counts as the build year); luck, month and range spans are not years',()=>{
+ const {prof,rep}=fixtures(),y=new Date().getFullYear(),gz=(n)=>'甲乙丙丁戊己庚辛壬癸'[(n-4)%10]+'子丑寅卯辰巳午未申酉戌亥'[(n-4)%12],wrong=gz(y-1);
+ for(const bad of [`今年${wrong}，风向偏紧`,`${y} 年${wrong}`,`${wrong}年（${y}）`]){const r=structuredClone(rep);r.cover.evidence=bad;assert.ok(check(r,prof).some(e=>e.includes('的干支照')),bad);assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}
+ for(const ok of [`今年${gz(y)}`,`${y} 年（${gz(y)}）`,'丙辰（1997–2007）','2014 乙卯大运',`${y} 年庚寅月`,'2034 年乙卯十年']){const r=structuredClone(rep);r.cover.evidence=ok;assert.deepEqual(check(r,prof),[],ok);}
+});
+test('misses is required; denied years stay out of the report body but may be noted in progress and basis',()=>{
+ const {prof,rep}=fixtures(),y=new Date().getFullYear()-4;
+ const none=structuredClone(rep);delete none.misses;assert.ok(check(none,prof).some(e=>e.includes('misses')));
+ const r=structuredClone(rep);r.misses=[{year:y,area:'感情'}];r.chapters.love.brief=`${y} 年感情有过一次断裂`;assert.ok(check(r,prof).some(e=>e.includes('没对上')));assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);
+ r.chapters.love.brief='观察后再判断';r.progress[0].item=`${y} 年那条你说没对上`;r.basis={notes:`${y} 年不采信`};assert.deepEqual(check(r,prof),[]);
+ r.years.life[0].span=`${y}–${y+10}`;assert.deepEqual(check(r,prof),[]);
+ r.hits=[{statement:`${y} 年工作换了方向`,feedback:'准',basis:'合成依据'}];r.chapters.career.brief=`${y} 年换了方向`;assert.deepEqual(check(r,prof),[]);
+ for(const bad of [{},[{year:String(y)}],[{year:y+4}],[{year:y,area:'感情',note:'x'}]]){const b=structuredClone(rep);b.misses=bad;assert.ok(check(b,prof).length,JSON.stringify(bad));}
+});
+// 10-10 封面映照要三套写全，顺序固定星盘 × 八字 × 人格
+test('cover support must list 星盘, 八字 and 人格; template shows them in that fixed order',async()=>{
+ const {prof,rep}=fixtures();
+ for(const sup of [undefined,[],['星盘','八字'],['八字','人格']]){const r=structuredClone(rep);r.cover.support=sup;assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}
+ const r=structuredClone(rep);r.cover.support=['人格','八字','星盘'];assert.deepEqual(check(r,prof),[]);
+ const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');assert(t.includes("['星盘', '八字', '人格'].filter"));
 });

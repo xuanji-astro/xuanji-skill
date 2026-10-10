@@ -5,7 +5,7 @@
 | 能力 | endpoint | 请求字段 | 生辰/用户正文 | 服务端落库 | 正文日志 |
 |---|---|---|---|---|---|
 | 健康 | GET /v1/health | 无 | 无 | 否 | 否 |
-| 单人 | POST /v1/profile | date,time,city,gender,time_source,time_precision | 有生辰，无自由正文 | 当前计算分支不建长期人物档案 | 当前应用/网关配置不记正文 |
+| 单人 | POST /v1/profile | date,time,city,gender,time_source,time_precision,answers（可选，核一核的回答） | 有生辰，无自由正文 | 当前计算分支不建长期人物档案 | 当前应用/网关配置不记正文 |
 | 两人 | POST /v1/pair | a,b,relation,met_year | 两人生辰、关系及相识年，无自由正文 | 同上 | 同上 |
 
 V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph。服务未来若改变数据流，须先更新告知和版本，不沿用此事实说明。
@@ -13,6 +13,8 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 ## 请求
 
 单人需要 date（真实存在的公历 YYYY-MM-DD）、city（中国省市区）、gender（male/female）。time 为 HH:mm、null 或省略。可选 time_source：birth_certificate/family_clear/family_rough/unknown；time_precision：minute/within_15min/within_1h/unknown。钟表时间由服务端处理，不自行换算。
+
+核一核的回答：可选 `answers`，写成 `[{ "year": 2023, "pick": "弱" }]`，`pick` 只能是 弱／强／都沾／记不清，最多 12 条，同一轮累积着传。接口用它定身强身弱、挑出对得上经历的那一派，喜用和大运流年按那一派算（见 `method.bazi.check`、`method.bazi.school`）。
 
 以下仅为合成测试样本，不代表真人：
 
@@ -50,7 +52,7 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | `bazi.bazi.strengthBasis` | 身强弱的三项依据：`month` 月令、`root` 通根、`momentum` 得势 |
 | `bazi.bazi.pattern` | 格局：`name`、`isSpecial`、`status` |
 | `bazi.bazi.usefulGods` | 喜用和忌神五行 |
-| `bazi.bazi.luck.cycles[]` | 大运：起止年份与年龄、`score`（35–98）、`tier`（0 最顺，越大越逆）；每步大运里 `years[]` 是十个流年，同样带 `score` 和 `tier` |
+| `bazi.bazi.luck.cycles[]` | 大运：起止年份与年龄（`startAge` 是虚岁；新版排盘服务另给起运周岁 `startAgeFull` 和 `label`）、`score`（35–98）、`tier`（0 最顺，越大越逆）；每步大运里 `years[]` 是十个流年，同样带 `score` 和 `tier`（新版另给周岁 `ageFull`） |
 | `bazi.components.wuxingRing.type` | 给用户看的类型标签：极强型／身强型／偏强型／均衡型／偏弱型 |
 | `bazi.components.wuxingRing.rangeType` | 只是五行占比高低差的标签（比如五行很不均匀就叫「极强型」），**不是身强弱**。不要拿它和 `type` 比，也不要当反证。 |
 | `bazi.components.wuxingRing.rows` | 五行占比 |
@@ -66,10 +68,13 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | `method.bazi.pattern` | 格局名 `name`、格局小结 `label`（如「财旺身衰」）、格局花名 `huaming`（`line` 一句、`desc` 一段） |
 | `method.bazi.strength` | 身强弱七档 `level`、类型 `type`、三项依据的原话 `basis_words` |
 | `method.bazi.useful` | 喜用 `favorable`、忌 `unfavorable`、用神 `useful`、忌神 `avoid` |
-| `method.bazi.strength.vote` | 身强身弱三种判法的投票：每一票（排盘引擎、旺衰打分法、新派）的结论和理由、西盘尺子佐证、结论 `verdict`（`side` 强／弱／中／待定，`agree` 一致／多数／分歧）、两种结论各自的喜用 `favorable_if`；判法分歧时 `ask` 给出要问用户的年份（体感判官） |
+| `method.bazi.strength.vote` | 身强身弱三种判法的投票：每一票（排盘引擎、旺衰打分法、新派）的结论和理由、结论 `verdict`（`side` 强／弱／中／待定；`agree` 一致／多数／分歧／孤票；`kind` 待定的原因：硬分歧／孤票；`firm` 在票这一层一律为假——实锤只认用户用经历核过的 `decided`；`need_review` 为真＝一定要用体感核一次）、两种结论各自的喜用 `favorable_if`；要核时 `ask` 给出要问用户的年份（体感判官）。v1.4 起西盘不进身强身弱，回包不再有 `west`、`west_agrees` |
+| `method.bazi.schools` | 八字三派各自的说法：扶抑派（身强身弱那一边）、调候派（口诀）、格局派（格名、成败），各带喜忌五行和大运顺逆。报告里按 `school` 那一派说，其余两派收起 |
+| `method.bazi.school` | 这张盘的喜用和大运按哪一派：`name`；`by` 是「核核你」（用户的经历对上了）、「指定」或「默认」（还没核过、没核完或三派都对不上时先按扶抑→格局→调候整派取，`unconfirmed` 为真）；`check` 是核到哪一步（加问／降置信） |
+| `method.bazi.check` | 核一核的题：`first_ask`（首轮最多三年，每年两条说法 `readings`，按 `order` 摆）、`extra`（加问备选）；请求带了 `answers` 时多一个 `score`：`status`（定案／加问／降置信）、`next`（下一题）、`answers`（问过的年份和那年顺还是糟）。一张盘总共最多 5 题 |
 | `method.boundary` | 出生时间的边界：`hour`（真太阳时落在哪个时辰、离前后交界各几分钟、`near`）、`asc`／`mc`（星座、在星座里第几度、`near`）、`cusp_planets`（离宫头不到 1.5° 的星）、`near_any`。说时辰交界、换宫这些只用它 |
 | `method.quotes[]` | 报告里可以引的古人原句候选：`use`（适合放在哪一章）、`text`（原文）、`source`（出处）。只许用这几句 |
-| `method.bazi.luck[]` | 每步大运：起止年份和年龄、档位 `tier_name`（上上／上／中／下／下下）、大运判词 `title`（两个四字）和 `line` |
+| `method.bazi.luck[]` | 每步大运：起止年份 `start_year`／`end_year`、年龄 `start_age`／`end_age`（`age_kind` 是周岁还是虚岁，新版排盘服务给周岁）、对外写法 `label`（如「3 周岁起运 · 丙辰（1997–2007）」，老版为空）、档位 `tier_name`（上上／上／中／下／下下）、大运判词 `title`（两个四字）和 `line` |
 | `method.bazi.shensha` | 神煞图谱：`dimensions[]`（维度、分数、判词 `words`）；`featured[]`（稀有神煞、判词 `words`、来历 `origin`） |
 | `method.bazi.fit` | 喜用对应的行业 `jobs`、配偶星五行 `spouse_element` 和依据 `spouse_why` |
 | `method.bazi.lucky` | 幸运色、方位、数字 |
@@ -79,7 +84,8 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | `method.persona.rebirth[]` | 两张重生人格（不分先后）：类型、称号、适用场景 `scene`、天赋矿功能 `mine_func`、天赋矿来源 `sources[]`（哪条欲望星×痛点星的相位） |
 | `method.persona.buffs[]` | 人格 Buff 的功能和说明 |
 | `method.west.power_rank[]` | 七星力量排名（1 最强），用玄玑西盘尺子的单星公式：庙旺落陷 × 落宫 × 相位扶克 × 逆行；每颗星上也有 `power` 和 `power_rank` |
-| `method.timing.years[]` | 每一年：干支、所在大运、顺逆档位 `tier`、八字信号 `bazi`、西盘行运信号 `west`（按领域给分数和原因）、两套都指向的领域 `mirror` |
+| `method.timing.years[]` | 每一年：干支、周岁 `age`（那年过完生日）、`context`（22 周岁及以下是「学业」，其余「职场」）、所在大运、顺逆档位 `tier`、八字信号 `bazi`、西盘行运信号 `west`（按领域给分数和原因）、两套都指向的领域 `mirror`、换挡 `shift`（不是换挡年为 null） |
+| `method.timing.shift_years[]` | 换挡年：交大运那一年和前后一年，八字和星盘在同一块人生都有动静、还没到同亮。`year`、`age`、`context`、交的大运 `luck`、`when`（当年／前一年／后一年）、在动的领域 `domains`、`note`。不进 `mirror`，不当验前事 |
 | `method.timing.past_candidates[]` | 过去的候选年份（验前事用）：年份、年龄、领域、是否映照、两边的原因。映照的排在前面 |
 | `method.timing.future[]` | 今年起往后十年的信号（十年年卡用），同样带领域、映照和原因 |
 | `method.timing.months[]` | 近三年的西盘月历：每一次过境的起止月份 `start`／`end`、精准日 `exacts`、谁碰谁（`mover`、`asp`、`point`，或 `kind: 进宫` 加 `house`）、领域 `domain`、性质 `tone`（机会／顺风／压力／突变／迷雾／重塑）、原因 `why`。只列窗口，不打分 |

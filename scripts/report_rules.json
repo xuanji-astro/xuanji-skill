@@ -63,7 +63,7 @@
   "years.decade[].title": 24,
   "years.decade[].body": 140,
   "years.decade[].basis": 110,
-  "years.life[].span": 20,
+  "years.life[].span": 28,
   "years.life[].title": 24,
   "years.life[].body": 90,
   "chapters.*.brief": 40
@@ -76,6 +76,10 @@
   "hits": [
    0,
    6
+  ],
+  "misses": [
+   0,
+   8
   ],
   "crosscheck": [
    2,

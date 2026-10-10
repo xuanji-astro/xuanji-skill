@@ -36,7 +36,13 @@ function birth(v) {
 export function validate(kind, input) {
   if(!['health','profile','pair'].includes(kind)) fail('ENDPOINT_NOT_ALLOWED');
   if(kind==='health'){if(input!==undefined) fail('INPUT_INVALID');return;}
-  if(kind==='profile') birth(input);
+  if(kind==='profile'){
+    // 「核一核」的回答（接口 answers）：[{year,pick}]，pick 只能是 弱／强／都沾／记不清，最多 12 条；其余照生辰字段严格查
+    const {answers,...b}=object(input)?input:{};
+    if(!object(input)) fail('INPUT_INVALID');
+    birth(b);
+    if(answers!==undefined&&(!Array.isArray(answers)||answers.length>12||!answers.every(x=>object(x)&&Object.keys(x).every(k=>k==='year'||k==='pick')&&Number.isInteger(x.year)&&x.year>1900&&x.year<2100&&['弱','强','都沾','记不清'].includes(x.pick)))) fail('INPUT_INVALID');
+  }
   else {
     if(!object(input)||Object.keys(input).some(k=>!['a','b','relation','met_year'].includes(k))) fail('INPUT_INVALID');
     birth(input.a);birth(input.b);

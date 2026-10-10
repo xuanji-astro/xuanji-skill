@@ -68,3 +68,10 @@ test('skill entry and referenced resources are installable',async()=>{
  assert(skill.startsWith('---\nname: xuanji\ndescription: '));assert(skill.split('\n---\n')[0].length<1200);
  for(const path of ['README.md','LICENSE','NOTICE','TRADEMARKS.md','docs/api.md','scripts/client.mjs','scripts/render_report.mjs','template/report.html'])assert((await stat(new URL(path,root))).isFile());
 });
+
+test('核一核的回答 answers：只收 [{year,pick}]，pick 只能是 弱／强／都沾／记不清，最多 12 条；别的字段照旧拒',()=>{
+ validate('profile',{...birth(),answers:[{year:2023,pick:'强'},{year:2021,pick:'都沾'}]});
+ for(const answers of [[{year:2023,pick:'顺'}],[{year:2023,pick:'强',note:'x'}],[{year:'2023',pick:'强'}],'x',Array.from({length:13},(_,i)=>({year:2000+i,pick:'弱'}))])
+  assert.throws(()=>validate('profile',{...birth(),answers}),/INPUT_INVALID/);
+ assert.throws(()=>validate('profile',{...birth(),strength:'强'}),/INPUT_INVALID/);
+});

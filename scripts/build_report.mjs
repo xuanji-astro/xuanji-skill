@@ -21,7 +21,7 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.5.2';
+const SKILL_VERSION = '0.1.0-rc.6';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
@@ -42,6 +42,37 @@ function collect(obj, path) {
   return out;
 }
 
+// 年份的干支（干支纪年按年份算；年柱换在立春，这里只核「某年＋干支」的写法）
+export const yearGanZhi = (y) => '甲乙丙丁戊己庚辛壬癸'[(((y - 4) % 10) + 10) % 10] + '子丑寅卯辰巳午未申酉戌亥'[(((y - 4) % 12) + 12) % 12];
+const GZ = '[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]', GZ_NOT_YEAR = '(?![月日时运柱大十步])';
+const REL_YEAR = { 前年: -2, 去年: -1, 今年: 0, 明年: 1, 后年: 2 };
+// 10-07 Kimi 实测：把 2026 写成「今年乙巳」。报告里「某年＋干支」「X年（某年）」「今年＋干支」都核一遍；大运、月份、柱不算
+export function yearGanZhiErrors(text, cur = new Date().getFullYear()) {
+  const errs = [], say = (m, y, g) => { if (yearGanZhi(y) !== g) errs.push(`「${m.trim()}」对不上：${y} 年是${yearGanZhi(y)}年。年份的干支照 method.timing.years 里的 gan_zhi 写，不要自己推`); };
+  for (const m of text.matchAll(new RegExp(`(?<![\\d–—~～-])((?:19|20)\\d\\d)\\s*年?\\s*(?:是|为|逢|的)?\\s*(?:流年)?\\s*[（(]?\\s*(${GZ})${GZ_NOT_YEAR}`, 'g'))) say(m[0], +m[1], m[2]);
+  for (const m of text.matchAll(new RegExp(`(${GZ})年\\s*[（(]\\s*((?:19|20)\\d\\d)(?!\\d|\\s*[–—~～-])`, 'g'))) say(m[0], +m[2], m[1]);
+  for (const m of text.matchAll(new RegExp(`(前年|去年|今年|明年|后年)\\s*(?:是|为|逢|的|走到)?\\s*(?:流年)?\\s*[（(]?\\s*(${GZ})${GZ_NOT_YEAR}`, 'g'))) say(m[0], cur + REL_YEAR[m[1]], m[2]);
+  return errs;
+}
+// 验前事里用户答「不准」的年份（misses）：正文不再提。progress、basis 可以记「你说没对上」；同一年另有用户答准的事（在 hits 里）不拦
+export function deniedYearErrors(rep) {
+  const errs = [], ms = rep.misses;
+  if (ms === undefined) return ['要写 misses：验前事里用户答「不准」的年份，写成 [{"year": 2022, "area": "感情"}]；都没否认就写 []'];
+  if (!Array.isArray(ms)) return ['misses 要是列表 [...]'];
+  const cur = new Date().getFullYear(), years = [];
+  ms.forEach((x, i) => {
+    if (!isObj(x) || Object.keys(x).some((k) => !['year', 'area'].includes(k)) || !Number.isInteger(x.year) || x.year < 1900 || x.year >= cur || (x.area !== undefined && typeof x.area !== 'string')) errs.push(`misses 第${i + 1}项要写成 {"year": 2022, "area": "感情"}（year 是过去的年份，数字）`);
+    else years.push(x.year);
+  });
+  const hitText = JSON.stringify(rep.hits ?? []);
+  const { basis, progress, misses, hits, ...body } = rep, text = JSON.stringify(body);
+  for (const y of new Set(years)) {
+    if (hitText.includes(String(y))) continue;
+    if (new RegExp(`(?<![\\d–—~～-])${y}(?!\\d|\\s*[–—~～-]\\s*\\d)`).test(text)) errs.push(`正文又写了 ${y}：这一年验前事用户说没对上，不再当发生过的事写，也不换个说法再提；要记就记在 progress 或 basis 里`);
+  }
+  return errs;
+}
+
 export function check(rep, prof) {
   const errs = [], R = RULES, hasWest = !!prof.western?.data;
   const get = (path) => collect(rep, path).map(([, v]) => v);
@@ -56,6 +87,7 @@ export function check(rep, prof) {
   const need = (path, why = '') => { if (!get(path).some((v) => typeof v === 'string' && v.trim())) errs.push(`${path} 不能空` + (why ? `（${why}）` : '')); };
   for (const p of ['cover.seen', 'skeleton.question', 'skeleton.oneline', 'skeleton.bazi', 'gifts.oneline', 'years.theme', 'years.lesson.question', 'years.lesson.body', 'closing']) need(p);
   for (const s of rep.cover?.support ?? []) if (!R.support.includes(s)) errs.push(`cover.support 只能填 ${R.support.join('／')}`);
+  if (R.support.some((s) => !(rep.cover?.support ?? []).includes(s))) errs.push('cover.support 要写全三套：星盘、八字、人格（封面这句要三套都撑得住）');
   (rep.progress ?? []).forEach((p, i) => { if (!R.progress_states.includes(p.state)) errs.push(`progress 第${i + 1}条 state 只能是 ${R.progress_states.join('／')}`); });
   (rep.hits ?? []).forEach((x, i) => { if (!R.hit_feedback.includes(x.feedback)) errs.push(`hits 第${i + 1}条 feedback 只能是 准／部分准；未确认或否认的候选不能放入`); });
   const feedback=rep.persona_feedback;
@@ -119,6 +151,7 @@ export function check(rep, prof) {
   const { basis, ...dflt } = rep;
   const text = JSON.stringify(dflt);
   for (const w of R.forbidden_default) if (text.includes(w)) errs.push(`默认页出现了「${w}」：概率、置信度只能写进 basis；出厂底色不叫 MBTI；判词由版面显示，正文不写「判词」「花名」「喻物」「白话」，也不用【】；星管哪宫写「X宫主」；身强身弱说「三种判法」`);
+  errs.push(...yearGanZhiErrors(JSON.stringify(rep)), ...deniedYearErrors(rep));
   return errs;
 }
 
@@ -169,7 +202,7 @@ export async function main(args) {
   const issues=check(rep,prof);
   if(issues.length){
     // Static categories only: no manuscript text, user key names or quote values.
-    const categories=new Set(issues.map(x=>x.includes('上限')?'LENGTH_LIMIT':x.includes('条')?'ITEM_COUNT':x.includes('不能空')?'REQUIRED_FIELD':x.includes('默认页')?'DEFAULT_WORD':x.includes('古人')?'QUOTE_SOURCE':x.includes('连续写满十年')?'YEAR_SEQUENCE':'FIELD_OR_STRUCTURE'));
+    const categories=new Set(issues.map(x=>x.includes('的干支照')?'YEAR_GANZHI':x.includes('misses')||x.includes('没对上')?'DENIED_YEAR':x.includes('上限')?'LENGTH_LIMIT':x.includes('条')?'ITEM_COUNT':x.includes('不能空')?'REQUIRED_FIELD':x.includes('默认页')?'DEFAULT_WORD':x.includes('古人')?'QUOTE_SOURCE':x.includes('连续写满十年')?'YEAR_SEQUENCE':'FIELD_OR_STRUCTURE'));
     console.error('REPORT_RULES_HINT '+[...categories].join(','));throw Error('REPORT_RULES_FAILED');
   }
   const html=build(prof,rep,undefined,rect);

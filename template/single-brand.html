@@ -37,6 +37,7 @@ h1{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.35;marg
 .meta{color:var(--sub);font-size:13.5px}
 .tags{margin-top:14px}
 .timenote{margin-top:10px;font-size:13.5px;color:var(--sub);padding-left:12px;border-left:2px solid var(--line2)}
+.timenote:empty{display:none}
 .timenote.warn{border-left-color:#ee9a7c}
 
 /* 一句话 */
@@ -398,6 +399,20 @@ strong{color:#9a4f1c;font-weight:600;background:linear-gradient(transparent 62%,
 .decc .dtw{margin-left:auto;font-size:11px;color:var(--sub)}
 .decc .dt{font-family:var(--serif);font-size:15.5px;font-weight:600;color:var(--ink);margin:6px 0 2px;line-height:1.55}
 .decc .dmir{display:inline-block;font-size:11px;color:var(--lav);background:var(--lavsoft);border-radius:999px;padding:1px 8px;margin:2px 0}
+.mir.shf,.decc .dmir.shf{color:#a0561f;background:var(--soft);margin-left:6px}
+.turn{font-size:12px;line-height:1.6;color:var(--sub);margin:8px 0 0;padding-left:9px;border-left:2px solid var(--lavsoft)}
+/* 流年卡透光：不要实心板杵在页面上——半透明底让页面底色透上来，白亮边＋顶上一道高光＋左上一点光斑，外圈淡淡的紫金光；
+   里面的小块也换成半透明。backdrop-filter 只在真机 Safari 有，没有它也要好看（无头截图画不出模糊） */
+.calc,.decc{background:linear-gradient(180deg,rgba(255,255,255,.66) 0%,rgba(255,255,255,.36) 100%);
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:inset 0 1px 0 #fff,inset 0 0 18px rgba(255,255,255,.55),0 0 0 1px rgba(196,180,240,.2),0 0 26px rgba(186,168,255,.24),0 14px 34px rgba(160,132,222,.12);
+  -webkit-backdrop-filter:blur(8px) saturate(1.15);backdrop-filter:blur(8px) saturate(1.15);overflow:hidden}
+.calc::before,.decc::before{content:"";position:absolute;left:0;right:0;top:0;height:72px;pointer-events:none;
+  background:radial-gradient(60% 100% at 50% 0%,rgba(255,255,255,.9),rgba(255,255,255,0))}
+.decc{position:relative}.calc>*,.decc>*{position:relative}
+.careas{background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+.cdo .yi{background:rgba(224,246,233,.36);border:1px solid rgba(255,255,255,.8)}
+.cdo .ji{background:rgba(253,232,226,.36);border:1px solid rgba(255,255,255,.8)}
 .decc .db{font-size:14px;line-height:1.75}.decc .db p{margin:4px 0}
 .decc .cb{font-size:11.5px;color:var(--faint);margin-top:4px}
 .lifel{margin:10px 0}
@@ -417,6 +432,8 @@ strong{color:#9a4f1c;font-weight:600;background:linear-gradient(transparent 62%,
 .vwest{opacity:.92}.vgut .vsch em{color:#a0561f;background:var(--soft)}
 .vsay{margin-top:10px;font-family:var(--serif);font-size:15px;font-weight:600;color:#a0561f}
 .vnote{margin-top:4px;font-size:12.5px;color:var(--sub)}
+.card.sch{margin:12px 0}.sch .vsay{margin-top:2px}.sch details.fold{margin:8px 0 0}
+.srow{padding:8px 0;border-bottom:1px dashed var(--line)}.srow:last-child{border-bottom:0}.srow .termrow{margin:6px 0 4px}
 @media(max-width:520px){.vrow{grid-template-columns:1fr auto;gap:4px 8px}.vwhy{grid-column:1/-1}}
 /* 10-02 分层：最响的三件事、其余一句话、折叠、接着问前三 */
 .focuslead{font-size:13px;letter-spacing:.06em;color:var(--sub);margin:-4px 0 14px}
@@ -452,8 +469,21 @@ var P = D.profile || {}, R = D.report || {};
 var BZ = P.bazi && P.bazi.status === 'ok' ? P.bazi : null;
 var W = P.western && P.western.data ? P.western.data : null;
 var X = P.method || {}, XB = X.bazi || null, XW = X.west || null, XP = X.persona || null, XT = X.timing || null;
+// 被点燃转紧的年份：卡上带一句为什么（接口按上桌那一派自己的话给，turn）；三派都对不上（降置信）时不出某年顺逆，这句也不出
+function turnLine(ty) { return ty && ty.turn && !MUTE ? h('div', 'turn', ty.turn) : null; }
+// 身强身弱的定案要在封面标签之前就备好（以前写在八字盘面那段，封面的「偏强／身强」标签读不到定案，核过的人也显示偏强）
+var VDEC = XB && XB.strength && XB.strength.vote && XB.strength.vote.decided, VANS = XB && XB.check && XB.check.score && XB.check.score.answers;
+var VST = XB && XB.check && XB.check.score && XB.check.score.strength, VASK = (VANS || []).map(function (a) { return { year: a.year, gan_zhi: a.gan_zhi, answer: a.felt === '顺' ? '顺' : a.felt === '逆' ? '糟' : a.pick === '都沾' ? '都沾一点' : a.pick === '记不清' ? '记不清' : '记下了' }; });
+// 三派都对不上（降置信，10-08 定）：不出某一年顺逆的断语——流年卡不挂档、十年轴不标顺逆、为什么转紧那句也不出；大运图照默认那一派画
+var MUTE = !!(XB && XB.school && XB.school.by === '默认' && XB.school.check === '降置信');
+var SCK = R.strength_check || (VDEC ? { decided: VDEC.side, asked: VASK } : VST && VST.status === '挂起' ? { decided: '不可判', asked: VASK } : null);
 var birth = P.birth || {};
 var NOW = Number(String(D.built_at || new Date().toISOString()).slice(0, 4));
+// 学龄（10-06）：22 周岁及以下的年份按学业说，「工作」说成学业、「事业认可」说成考试升学；领域名本身不改
+var STUDY_WORD = { 工作: '学业', 事业认可: '考试升学' };
+function domWord(d, ctx) { return (ctx === '学业' && STUDY_WORD[d]) || d; }
+// 换挡年（10-06）：交大运那一年和前后一年，八字和星盘同一块都在动（没到同亮），卡上单标
+function shiftText(ty) { return ty && ty.shift && ty.shift.domains && ty.shift.domains.length ? '换挡年 · ' + ty.shift.domains.map(function (d) { return domWord(d, ty.context); }).join('、') + '在动' : null; }
 var app = document.getElementById('app');
 app.textContent = '';
 
@@ -528,8 +558,8 @@ var ASPECTS = [[0, '合', 8, ''], [60, '六合', 4, 'good'], [90, '刑', 6, 'har
 var TIER = [['顺风', '#f2a066', '#d06f2e'], ['偏顺', '#f8d2ae', '#c0844c'], ['平稳', '#cfd2f0', '#7e85c6'], ['偏紧', '#a7acde', '#6a71b8'], ['逆风', '#7f86ca', '#5a60ad']];
 var SRC = {
   birth_certificate: '按出生证上的时间排。', family_clear: '按家人明确记得的时间排。',
-  family_rough: '按家人大概记得的时间排，时辰可能有偏差。', unknown: '出生时间的来源不清楚。'
-};
+  family_rough: '按家人大概记得的时间排，时辰可能有偏差。'
+};   // 没说来源（unknown）就不写这一句：用户本来就知道自己的时间从哪来，写「来源不清楚」只会让人以为我们没记住
 var PREC = { minute: '精确到分钟', within_15min: '误差在 15 分钟内', within_1h: '误差在 1 小时内', unknown: '误差不清楚' };
 var CHAPTERS = [['career', '事业', '你该往哪走'], ['wealth', '财富', '你的财从哪来'], ['study', '学业', '你怎么学、学什么'], ['love', '感情', '你怎么爱，怕什么'], ['family', '家庭', '你从哪里来'], ['social', '社交与声誉', '别人眼里的你'], ['health', '健康', '身体在提醒什么'], ['growth', '成长与课题', '你的人生课题']];
 var AUDIT_PLANETS = ['太阳', '月亮', '水星', '金星', '火星', '木星', '土星', '天王', '海王', '冥王'];
@@ -644,15 +674,17 @@ function luckChart() {
     s += '<rect x="' + x.toFixed(1) + '" y="' + (base - hh).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="5" fill="' + TIER[c.tier][1] + '"' + (now ? ' stroke="#c9783a" stroke-width="2"' : '') + '/>';
     var cx = (x + w / 2).toFixed(1);
     s += '<text x="' + cx + '" y="' + (base + 18) + '" fill="' + (now ? '#c9783a' : '#3b2e26') + '" font-size="14" text-anchor="middle" font-family="Songti SC,STSong,serif">' + esc(c.ganZhi) + '</text>';
-    s += '<text x="' + cx + '" y="' + (base + 34) + '" fill="#b09c8c" font-size="10.5" text-anchor="middle">' + esc(c.startAge) + '–' + esc(c.endAge) + '岁</text>';
+    s += '<text x="' + cx + '" y="' + (base + 34) + '" fill="#b09c8c" font-size="10.5" text-anchor="middle">' + (c.startAgeFull != null ? esc(c.startAgeFull) + '周岁起' : esc(c.startAge) + '–' + esc(c.endAge) + '岁') + '</text>';   // 岁数统一周岁（10-06）：新版排盘服务给起运周岁，老版只有虚岁区间
     var lw = XB ? XB.luck.filter(function (x) { return x.seq === c.seq; })[0] : null;
     if (lw && lw.title) s += '<text x="' + cx + '" y="' + (base + 52) + '" fill="' + (now ? '#c9783a' : '#8b7565') + '" font-size="11" text-anchor="middle" font-family="Songti SC,STSong,serif">' + esc(lw.title[0]) + '</text>';
     if (now) s += '<text x="' + cx + '" y="' + (base - hh - 9).toFixed(1) + '" fill="#c9783a" font-size="11" text-anchor="middle">现在</text>';
   });
   return h('div', 'luck', [svg('0 0 ' + Wd + ' ' + Hd, 0, s), legend()]);
 }
-function legend() { return h('div', 'legend', TIER.map(function (t) { var i = h('i'); i.style.background = t[1]; return h('span', null, [i, t[0]]); }).concat(h('span', null, '年龄按虚岁'))); }
+function legend() { return h('div', 'legend', TIER.map(function (t) { var i = h('i'); i.style.background = t[1]; return h('span', null, [i, t[0]]); }).concat(h('span', null, BZ && BZ.bazi.luck.cycles.some(function (c) { return c.startAgeFull != null; }) ? '岁数按周岁' : '年龄按虚岁'))); }
 function yearStrip() {
+  // 核的几年三派都对不上（降置信）：先按默认那一派给喜用和大运图，流年不出「某年顺／逆」的断语（10-08 命理组定，断事归问事）
+  var SCx = XB && XB.school; if (SCx && SCx.by === '默认' && SCx.check === '降置信') return null;
   var cur = BZ.bazi.luck.cycles.filter(function (c) { return NOW >= c.startYear && NOW <= c.endYear; })[0];
   if (!cur) return null;
   return h('div', 'years', cur.years.map(function (y) {
@@ -669,7 +701,7 @@ function yearStrip() {
 var timeKnown = !!birth.time_known, cv = R.cover || {};
 add(app, h('div', 'brand', [h('i'), '玄玑 · 命盘报告', h('i')]));
 if (cv.seen) add(app, h('div', 'cover', [h('div', 'ct', '玄玑看见的你'), h('p', 'cl', cv.seen), cv.evidence ? h('div', 'ce', cv.evidence) : null,
-  h('div', 'cf', [(cv.support || []).length ? h('span', null, cv.support.join(' × ') + ' 映照') : h('i'), h('b', null, 'Xuanji 玄玑')])]));
+  h('div', 'cf', [(cv.support || []).length ? h('span', null, ['星盘', '八字', '人格'].filter(function (s) { return cv.support.indexOf(s) >= 0; }).join(' × ') + ' 映照') : h('i'), h('b', null, 'Xuanji 玄玑')])]));   // 顺序固定：星盘 × 八字 × 人格
 var meta = [birth.sex === 'female' ? '女' : birth.sex === 'male' ? '男' : ''].filter(Boolean).join(' · ');
 var RF = D.rectified || null;   // 定过时辰（build_report --rectify，结果 a/b）：不再报离交界几分钟、两种口径的时柱、压宫头的星
 var warns = BZ ? (BZ.warnings || []).filter(function (w) { return !(RF && /^出生时间接近时辰交界/.test(w)); }) : [];
@@ -678,10 +710,12 @@ if (BD && BD.hour && BD.hour.near) warns.push('真太阳时落在' + BD.hour.bra
 if (BD && BD.cusp_planets && BD.cusp_planets.length) warns.push(BD.cusp_planets.slice(0, 3).map(function (c) { return c.n + '压在' + c.cusp + '宫宫头上（差 ' + Math.abs(c.deg_from_cusp) + '°）'; }).join('，') + '，出生时间差几分钟就会换宫。');
 var tags = [];
 if (XB) { tags.push([XB.day_master.gan + XB.day_master.element + '日主']); if (strengthShown()) tags.push([strengthShown()]); tags.push([XB.pattern.name]); }
+// 喜忌放到最上面：不管核没核准都让用户一眼看到自己的喜用，跟着上桌那一派；详细的在卷下八字盘面
+if (XB) { var U0 = usefulShown(); if (U0 && U0.favorable && U0.favorable.length) tags.push(['喜', U0.favorable.join('')]); if (U0 && U0.unfavorable && U0.unfavorable.length) tags.push(['忌', U0.unfavorable.join('')]); }
 if (W) { ['太阳', '月亮'].forEach(function (n) { var p = planet(n); if (p) tags.push([n, p.sign]); }); tags.push(['上升', W.angles.asc.sign]); }
 if (XP) tags.push(['出厂底色', XP.base.type]);
 add(app, [h('h1', null, R.name ? R.name + ' 的命盘' : '你的命盘'), h('div', 'meta', meta),
-  h('div', 'timenote' + (warns.length ? ' warn' : ''), [RF ? '出生时辰经定时辰定在' + RF.hour + '（按你说的大事和回答）。' : timeKnown ? (SRC[birth.time_source] || SRC.unknown) : '没有出生时间：八字按三柱排，星盘的上升、宫位和出厂底色出不了。'].concat(warns.map(function (w) { return h('div', null, w); }))),
+  h('div', 'timenote' + (warns.length ? ' warn' : ''), [RF ? '出生时辰经定时辰定在' + RF.hour + '（按你说的大事和回答）。' : timeKnown ? (SRC[birth.time_source] || null) : '没有出生时间：八字按三柱排，星盘的上升、宫位和出厂底色出不了。'].concat(warns.map(function (w) { return h('div', null, w); }))),
   h('div', 'tags', tags.map(function (t) { return h('span', 'tag', [t[0], t[1] ? h('b', null, t[1]) : null]); }))]);
 
 // 认知进度＋玄玑说中的事
@@ -808,14 +842,15 @@ function axisFig() {
   ys.forEach(function (y, i) {
     var cxp = x0 + i * step + step / 2, t = y.tier == null ? 2 : y.tier;
     s += '<line x1="' + cxp.toFixed(1) + '" y1="56" x2="' + cxp.toFixed(1) + '" y2="150" stroke="rgba(150,110,70,.12)"/>';
-    s += '<circle cx="' + cxp.toFixed(1) + '" cy="78" r="' + (y.year === NOW ? 11 : 8) + '" fill="' + TIER[t][1] + '"' + (y.year === NOW ? ' stroke="#c9783a" stroke-width="2"' : '') + '/>';
+    s += '<circle cx="' + cxp.toFixed(1) + '" cy="78" r="' + (y.year === NOW ? 11 : 8) + '" fill="' + (MUTE ? '#e4dfeb' : TIER[t][1]) + '"' + (y.year === NOW ? ' stroke="#c9783a" stroke-width="2"' : '') + '/>';
     s += '<text x="' + cxp.toFixed(1) + '" y="106" text-anchor="middle" font-size="12" fill="' + (y.year === NOW ? '#c9783a' : '#3b2e26') + '" font-weight="600">' + y.year + '</text>';
-    s += '<text x="' + cxp.toFixed(1) + '" y="121" text-anchor="middle" font-size="10.5" fill="#8b7565">' + TIER[t][0] + '</text>';
+    if (!MUTE) s += '<text x="' + cxp.toFixed(1) + '" y="121" text-anchor="middle" font-size="10.5" fill="#8b7565">' + TIER[t][0] + '</text>';
+    if (y.shift) s += '<rect x="' + (cxp - 15).toFixed(1) + '" y="52" width="30" height="13" rx="6.5" fill="#fde6cf"/><text x="' + cxp.toFixed(1) + '" y="62" text-anchor="middle" font-size="9" fill="#a0561f">换挡</text>';
     (y.mirror || []).slice(0, 2).forEach(function (m, j) {
-      s += '<rect x="' + (cxp - 23).toFixed(1) + '" y="' + (130 + j * 18) + '" width="46" height="15" rx="7" fill="#eceafb"/><text x="' + cxp.toFixed(1) + '" y="' + (141 + j * 18) + '" text-anchor="middle" font-size="9" fill="#5b54a8">' + esc(m.slice(0, 4)) + '</text>';
+      s += '<rect x="' + (cxp - 23).toFixed(1) + '" y="' + (130 + j * 18) + '" width="46" height="15" rx="7" fill="#eceafb"/><text x="' + cxp.toFixed(1) + '" y="' + (141 + j * 18) + '" text-anchor="middle" font-size="9" fill="#5b54a8">' + esc(domWord(m, y.context).slice(0, 4)) + '</text>';
     });
   });
-  return h('div', 'fig', [svg('0 0 ' + Wd + ' 172', 0, s), h('div', 'cap', '上排是大运，圆点是每年的顺逆，紫色小签是八字流年和西盘行运同一年都指向的领域（双系统映照）')]);
+  return h('div', 'fig', [svg('0 0 ' + Wd + ' 172', 0, s), h('div', 'cap', '上排是大运，' + (MUTE ? '圆点是每一年（还没核准，先不标顺逆）' : '圆点是每年的顺逆') + '，紫色小签是八字流年和西盘行运同一年都指向的领域（双系统映照）' + (ys.some(function (y) { return y.shift; }) ? '；橙色「换挡」是交大运前后一年，两套在同一块都有动静' : ''))]);
 }
 // 近三年月历：西盘行运窗口（服务器 method.timing.months），一行一个过境，点＝精准日
 var NARROW = (window.innerWidth || 800) < 560;   // 手机上两张新图用窄画布，字不至于缩成芝麻
@@ -875,9 +910,9 @@ function decadeCards(ds) {
   if (!ds || !ds.length) return null;
   return h('div', 'dec', ds.map(function (c) {
     var yy = parseInt(c.span, 10), ty = XT ? XT.years.filter(function (v) { return v.year === yy; })[0] : null;
-    var dot = h('i', 'dtier'); if (ty && ty.tier != null) dot.style.background = TIER[ty.tier][1];
-    return h('div', 'decc', [h('div', 'dh', [dot, h('span', 'ds', c.span), c.phase ? h('span', 'cp', c.phase) : null, ty && ty.tier != null ? h('span', 'dtw', TIER[ty.tier][0]) : null]),
-      h('div', 'dt', c.title), ty && ty.mirror && ty.mirror.length ? h('div', 'dmir', '双系统映照 · ' + ty.mirror.join('、')) : null, h('div', 'db', paras(c.body)), c.basis ? h('div', 'cb', '依据　' + c.basis) : null]);
+    var dot = h('i', 'dtier'); if (ty && ty.tier != null && !MUTE) dot.style.background = TIER[ty.tier][1];
+    return h('div', 'decc', [h('div', 'dh', [dot, h('span', 'ds', c.span), c.phase ? h('span', 'cp', c.phase) : null, ty && ty.tier != null && !MUTE ? h('span', 'dtw', TIER[ty.tier][0]) : null]),
+      h('div', 'dt', c.title), ty && ty.mirror && ty.mirror.length ? h('div', 'dmir', '双系统映照 · ' + ty.mirror.map(function (d) { return domWord(d, ty.context); }).join('、')) : null, shiftText(ty) ? h('div', 'dmir shf', shiftText(ty)) : null, turnLine(ty), h('div', 'db', paras(c.body)), c.basis ? h('div', 'cb', '依据　' + c.basis) : null]);
   }));
 }
 // 一生的节奏：上排八字大运（method.bazi.luck），下排西盘人生大周期（method.timing.life_cycles）
@@ -894,7 +929,7 @@ function lifeFig() {
   });
   var ay = 72;
   s += '<line x1="' + x0 + '" y1="' + ay + '" x2="' + (Wd - x0) + '" y2="' + ay + '" stroke="#d9a057" stroke-width="1.2"/>';
-  for (var a = 0; a <= maxA; a += 10) { s += '<line x1="' + X(a).toFixed(1) + '" y1="' + (ay - 4) + '" x2="' + X(a).toFixed(1) + '" y2="' + (ay + 4) + '" stroke="#d9a057"/><text x="' + X(a).toFixed(1) + '" y="' + (ay + 16) + '" text-anchor="middle" font-size="10" fill="#b09c8c">' + a + (a === maxA ? '岁' : '') + '</text>'; }
+  for (var a = 0; a <= maxA; a += 10) { s += '<line x1="' + X(a).toFixed(1) + '" y1="' + (ay - 4) + '" x2="' + X(a).toFixed(1) + '" y2="' + (ay + 4) + '" stroke="#d9a057"/><text x="' + X(a).toFixed(1) + '" y="' + (ay + 16) + '" text-anchor="middle" font-size="10" fill="#b09c8c">' + a + (a === maxA ? (XB.luck[0].age_kind === '周岁' ? '周岁' : '岁') : '') + '</text>'; }
   var cyc = (XT && XT.life_cycles) || [], lanes = [[], [], [], [], [], [], []], ly0 = ay + 30, used = 0;
   cyc.filter(function (c) { return c.name === '木星回归'; }).forEach(function (c) { s += '<circle cx="' + X(c.age + .5).toFixed(1) + '" cy="' + ay + '" r="3" fill="#f2a066"/>'; });
   cyc.filter(function (c) { return LIFE_SHOW[c.name]; }).forEach(function (c) {
@@ -919,10 +954,11 @@ add(app, part('流年', '往后这些年', [YR.theme ? gold(YR.theme) : null, YR
   h('div', 'subhead', '往后十年，一眼看趋势'), axisFig(),
   YR.calendar && YR.calendar.length ? h('div', 'cal', YR.calendar.map(function (c) {
     var yy = parseInt(c.span, 10), ty = XT ? XT.years.filter(function (v) { return v.year === yy; })[0] : null;
-    var tierChip = ty && ty.tier != null ? h('span', 'ctier', TIER[ty.tier][0]) : null; if (tierChip) { tierChip.style.background = TIER[ty.tier][1]; tierChip.style.color = ty.tier >= 2 ? '#3b3f7a' : '#7a3f14'; }
-    var mir = ty && ty.mirror && ty.mirror.length ? h('span', 'mir', '双系统映照 · ' + ty.mirror.join('、')) : c.mirror ? h('span', 'mir', '双系统映照') : null;
+    var tierChip = ty && ty.tier != null && !MUTE ? h('span', 'ctier', TIER[ty.tier][0]) : null; if (tierChip) { tierChip.style.background = TIER[ty.tier][1]; tierChip.style.color = ty.tier >= 2 ? '#3b3f7a' : '#7a3f14'; }
+    var mir = ty && ty.mirror && ty.mirror.length ? h('span', 'mir', '双系统映照 · ' + ty.mirror.map(function (d) { return domWord(d, ty.context); }).join('、')) : c.mirror ? h('span', 'mir', '双系统映照') : null;
+    var shf = shiftText(ty) ? h('span', 'mir shf', shiftText(ty)) : null;
     return h('div', 'calc', [
-      h('div', 'ch', [h('span', 'cs', c.span), c.phase ? h('span', 'cp', c.phase) : null, h('span', 'ct2', c.title), tierChip]), mir,
+      h('div', 'ch', [h('span', 'cs', c.span), c.phase ? h('span', 'cp', c.phase) : null, h('span', 'ct2', c.title), tierChip]), mir, shf, turnLine(ty),
       c.body ? h('p', 'cov', c.body) : null,
       c.areas && c.areas.length ? h('div', 'careas', c.areas.map(function (x) { return h('div', 'car', [h('b', null, x.area), h('span', null, x.text)]); })) : null,
       c.first_half || c.second_half ? h('div', 'chalf', [h('div', null, [h('b', null, '上半年'), c.first_half || '']), h('div', null, [h('b', null, '下半年'), c.second_half || ''])]) : null,
@@ -958,22 +994,36 @@ if (W && XW) {
 }
 // 八字盘面
 // 身强身弱：几家算法投票（method.bazi.strength.vote）；默认页只给结论，待定就不说
-var SCK = R.strength_check || null;   // 对话里按体感问出来的结论，高于几家投票
+// 对话里按体感问出来的结论，高于几家投票；报告没写、接口按「核核你」的回答定了案（10-08），就用接口的定案和问过的年份
 function strengthSide() {
   var st = XB && XB.strength; if (!st) return null;
   if (SCK && (SCK.decided === '强' || SCK.decided === '弱')) return SCK.decided;
   if (SCK && SCK.decided === '不可判') return '待定';
   var v = st.vote && st.vote.verdict; return v ? v.side : null;
 }
+// v1.2（10-06）：强弱的说法只在实锤档（三票同向，或两票同向＋西盘同向）或体感定过时放行；其余有方向的只说偏强偏弱。老版接口没有 firm，照旧
+function strengthFirm() {
+  if (SCK && (SCK.decided === '强' || SCK.decided === '弱')) return true;
+  var v = XB && XB.strength && XB.strength.vote && XB.strength.vote.verdict; return !v || v.firm !== false;
+}
 function strengthShown() {
   var st = XB && XB.strength; if (!st || !st.level || st.level === '未知') return null;
   var sd = strengthSide(); if (!sd) return st.level;
   if (sd === '待定') return null;
+  if (sd === '中') return '中和';
+  if (!strengthFirm()) return '偏' + sd;
   return st.level.indexOf(sd) >= 0 || (sd === '强' && /旺/.test(st.level)) ? st.level : '身' + sd;
+}
+// 类型标签（身强型、偏弱型……）跟结论同向、又是实锤才用，否则用上面那个说法
+function typeShown() {
+  var s = strengthShown(), t = XB.strength.type || ''; if (!s) return null;
+  var ts = /强/.test(t) ? '强' : /弱/.test(t) ? '弱' : null;
+  return t && strengthFirm() && ts === strengthSide() ? t : s;
 }
 // 喜用：结论和排盘引擎方向相反（体感定的）时，换成另一套喜用
 function usefulShown() {
   var us = XB.useful, st = XB.strength, sd = strengthSide(), fi = st && st.vote && st.vote.favorable_if;
+  if (XB.school && XB.school.applied) return us;   // 按胜出的派上过色（10-08），喜用就是那一派的，不再按身强身弱换套
   var eng = /强|旺/.test(st.level || '') ? '强' : /弱/.test(st.level || '') ? '弱' : null;
   if (fi && (sd === '强' || sd === '弱') && eng && sd !== eng) return { favorable: fi[sd], unfavorable: fi[sd === '强' ? '弱' : '强'], useful: null, avoid: null };
   return us;
@@ -985,13 +1035,41 @@ function voteBox() {
   var rows = V.votes.map(function (x) {
     return h('div', 'vrow', [h('div', 'vsch', x.school), chip(x.side, x.level ? String(x.level).replace(/[(（].*[)）]/, '') : x.status), h('div', 'vwhy', x.status ? '这一票还在做，做好了接上' : (/[(（](.*)[)）]/.test(x.level || '') ? String(x.level).match(/[(（](.*)[)）]/)[1] + '。' : '') + (x.why || '') + (x.score != null ? '　总分 ' + x.score + (x.confidence ? '，把握' + x.confidence : '') : ''))]);
   });
-  var w = V.west;
-  rows.push(h('div', 'vrow vwest', [h('div', 'vsch', [w.school.replace(' v0', ''), h('em', null, '佐证')]), chip(w.tier === '缺料不判' ? null : w.tier, w.tier), h('div', 'vwhy', w.tier === '缺料不判' ? '没有出生时间，西盘算不了' : (w.why || '') + (w.S != null ? '　S＝' + w.S : ''))]));
   if (SCK) rows.push(h('div', 'vrow vgut', [h('div', 'vsch', ['你的体感', h('em', null, '定案')]), chip(SCK.decided === '不可判' ? null : SCK.decided, SCK.decided === '不可判' ? '不可判' : '身' + SCK.decided), h('div', 'vwhy', (SCK.asked || []).map(function (a) { return a.year + ' ' + (a.gan_zhi || '') + ' ' + a.answer; }).join('　'))]));
   var d = V.verdict, n = V.votes.filter(function (x) { return x.side; }).length;
-  var say = SCK && SCK.decided !== '不可判' ? '结论：身' + SCK.decided + '（按你对这几年的体感定的，体感高于几家算法）' : SCK ? '体感也分不出来，身强身弱先不下结论' : d.side === '待定' ? (d.agree === '时辰不详' ? '时辰不详，身强身弱先不下结论' : '几种判法说法不同，先不下结论，等你对过去几年的体感来定')
-    : '结论：身' + d.side + '（' + (d.agree === '一致' ? n + ' 种判法一致' : d.agree === '多数' ? '多数判法' : '偏' + d.side) + (V.votes.some(function (x) { return x.status; }) ? '，新派一票待接入' : '') + (d.west_agrees === true ? '；西盘也是' + w.tier : d.west_agrees === false ? '；西盘看是' + w.tier + '，只作参考' : '') + '）';
-  return h('div', 'card vote', [h('div', 'lb', ['身强身弱 · 三种判法', h('span', null, '多数为准，西盘只佐证')]), rows, h('div', 'vsay', say), XB.pattern && XB.pattern.is_special ? h('div', 'vnote', '这张盘按特殊格局（' + XB.pattern.name + '）论，喜忌按格局取，不按身强身弱这套') : null]);   // 有一票判到极档只是触发引擎复核；复核没成立（is_special 为假）就照常三票，不提特殊格局
+  // 待定的两种原因（v1.4）：硬分歧、孤票，都等体感来定。西盘不进身强身弱（10-07 定），老接口回包里的 west 也不显示
+  var WHY_OPEN = { 硬分歧: '几种判法有的看强、有的看弱', 孤票: '只有一种判法看出了方向，其余的没看出方向' };
+  var say = SCK && SCK.decided !== '不可判' ? '结论：身' + SCK.decided + '（按你对这几年的体感定的，体感高于几家算法）' : SCK ? '体感也分不出来，身强身弱先不下结论' : d.side === '待定' ? (d.agree === '时辰不详' ? '时辰不详，身强身弱先不下结论' : (WHY_OPEN[d.kind] || '几种判法说法不同') + '，先不下结论，等你对过去几年的体感来定')
+    : '起点：' + (d.side === '中' ? '中和' : '偏' + d.side) + '（' + (d.agree === '一致' ? n + ' 种判法一致' : d.agree === '多数' ? '多数判法' : '有判法看是中和') + (V.votes.some(function (x) { return x.status; }) ? '，新派一票待接入' : '') + '）。用你的经历核过才算定';
+  return h('div', 'card vote', [h('div', 'lb', ['身强身弱 · 三种判法', h('span', null, '判法只给起点，你的经历说了算')]), rows, h('div', 'vsay', say), XB.pattern && XB.pattern.is_special ? h('div', 'vnote', '这张盘按特殊格局（' + XB.pattern.name + '）论，喜忌按格局取，不按身强身弱这套') : null]);   // 有一票判到极档只是触发引擎复核；复核没成立（is_special 为假）就照常三票，不提特殊格局
+}
+// 三派看法（多派交叉论证，10-08）：核过以后按对上的那一派说，喜用和大运图都按它；另外两派收起、点开看。
+// 没核过、核到一半、或核的几年三派都对不上：接口替用户先定一派（主干扶抑→格局→调候，整派取），标还没核准——
+// 不管怎样都让用户知道自己的喜用。不跟用户讲「几派并列」
+var SCH_NAME = { 扶抑: '扶抑派', 调候: '调候派', 格局: '格局派' };
+var SCH_ABOUT = { 扶抑: '看身强身弱，缺什么补什么', 调候: '看生在什么季节，冷了要暖、燥了要润', 格局: '看月令定格，格成格破定喜忌' };
+function schoolRow(n, b) {
+  var one = b && b.sides ? b.sides[strengthSide()] || null : b;
+  if (!b) return null;
+  if (!one) return h('div', 'srow', [h('span', 'vsch', SCH_NAME[n]), h('div', 'vwhy', '这一派要先定身强身弱，核过再看')]);
+  if (one.abstain) return h('div', 'srow', [h('span', 'vsch', SCH_NAME[n]), h('div', 'vwhy', '这张盘这一派不表态')]);
+  var why = n === '格局' ? [one.name && '取' + one.name, one.hits && one.hits[0]].filter(Boolean).join('，') : n === '调候' ? one.rule && (one.rule.hint || one.rule.label) : one.why;
+  return h('div', 'srow', [h('span', 'vsch', SCH_NAME[n]), h('div', 'termrow', [h('span', 'term ok', '喜 ' + one.favorable.join(' ')), h('span', 'term no', '忌 ' + one.unfavorable.join(' '))]), why ? h('div', 'vwhy', why) : null]);
+}
+function schoolBox() {
+  var S = XB && XB.schools; if (!S) return null;
+  var SC = XB.school || {}, cur = SC.applied ? SC.name : null, dft = cur && SC.by === '默认';
+  var rest = ['扶抑', '格局', '调候'].filter(function (n) { return n !== cur && S[n]; });
+  // 字要少（10-08 定）：三派都对不上时不写退缩、撇清的话，只说往后玄玑陪着再核
+  // 格局派自己取的格名只在这里出：盘面「格局」那栏一直是排盘的格名，两家取法可能不同
+  var gm = cur === '格局' && S.格局 && !S.格局.abstain && S.格局.name ? '（取' + S.格局.name + '）' : '';
+  var say = !cur ? '核过几年，再定按哪一派说' : dft ? '先按' + SCH_NAME[cur] + gm + '来说' : '这张盘按' + SCH_NAME[cur] + gm + '来说';
+  var sub = !cur ? null : dft && SC.check === '降置信' ? '往后的经历，玄玑陪你一起再核' : SCH_ABOUT[cur] + (SC.by === '核核你' ? '。你核过的几年，这一派都对得上'
+    : !dft ? '' : SC.check ? '。核完再定' : '。核过几年，再定按哪一派');
+  // 报告不放「核一核」按钮（10-08 定）：核一核在对话里、出报告之前做，报告只写一次；核完喜用大运会变，放按钮等于要重出报告。
+  // 活页面（小工具、主站）核完当场重算，按钮放在那边
+  return h('div', 'card sch', [h('div', 'lb', ['三派看法', h('span', null, '八字门派说法不一，按对得上你经历的那一派')]), h('div', 'vsay', say), sub ? h('div', 'vnote', sub) : null,
+    h('details', 'fold', [h('summary', null, cur ? '另外两派怎么看' : '三派各自怎么看'), rest.map(function (n) { return schoolRow(n, S[n]); })])]);
 }
 function shenshaBox(ss) {
   return h('div', 'card ss', [h('div', 'lb', ['神煞图谱', h('span', null, '分数越高，这一维越显')]),
@@ -1004,8 +1082,9 @@ if (BZ && XB) {
     h('div', 'idn', [h('div', 'idn-t', dmx.day_gan_zhi + '日出生'), h('div', 'idn-s', ['日主 ', h('b', null, dmx.gan), '，属' + dmx.yin_yang + dmx.element + (dmx.image ? '，如' + dmx.image : '')]), dmx.image_line ? h('div', 'idn-l', dmx.image_line) : null]),
     h('div', 'card gj', [pt.huaming ? h('div', 'hm', '【' + pt.huaming.line + '】') : null, h('div', 'gjn', '格局：' + pt.name + (pt.label ? ' · ' + pt.label : '') + (pt.is_special ? '（特殊格局）' : '')), pt.huaming && pt.huaming.desc ? h('p', 'gjd', pt.huaming.desc) : null]),
     h('div', 'charts', [pillarsPanel(), shenshaBox(XB.shensha)]),
-    strengthShown() ? h('div', 'termrow', [h('span', 'term big', stx.type || stx.level)].concat(stx.basis_words.map(function (w) { return h('span', 'term', w); }))) : null,
+    strengthShown() ? h('div', 'termrow', [h('span', 'term big', typeShown())].concat(stx.basis_words.map(function (w) { return h('span', 'term', w); }))) : null,
     voteBox(),
+    schoolBox(),
     h('div', 'termrow', [h('span', 'term ok', '喜用 ' + us.favorable.join(' ')), h('span', 'term no', '忌 ' + us.unfavorable.join(' '))].concat(us.useful ? [h('span', 'term', '用神 ' + us.useful)] : []).concat(us.avoid ? [h('span', 'term', '忌神 ' + us.avoid)] : [])),
     lk && lk.elements.length ? h('div', 'lucky', [h('span', null, ['幸运色 ', h('b', null, lk.colors.map(function (c) { return c.name; }).join('、'))]), h('span', null, ['方位 ', h('b', null, lk.directions.join('、'))]), h('span', null, ['数字 ', h('b', null, lk.numbers.join('、'))])]) : null,
     luckChart(), yearStrip(), citedLine('a-bazi')]), 'a-bazi'));
@@ -1041,7 +1120,7 @@ add(app, h('section', 'part', [h('div', 'pl2', '接 着 问'), h('div', 'divd', 
 var bs = R.basis || {}, bd = h('div', 'bd');
 function dl(pairs) { return h('dl', 'kv', pairs.filter(function (p) { return p[1]; }).map(function (p) { return [h('dt', null, p[0]), h('dd', null, p[1])]; })); }
 add(bd, [h('h4', null, '出生时间与口径'), dl([
-  ['时间来源', timeKnown ? (SRC[birth.time_source] || SRC.unknown).replace(/，.*$|。$/, '') : '没有出生时间'], ['时间精度', timeKnown ? PREC[birth.time_precision] || PREC.unknown : null],
+  ['时间来源', timeKnown ? (SRC[birth.time_source] ? SRC[birth.time_source].replace(/，.*$|。$/, '') : '按你给的时间排') : '没有出生时间'], ['时间精度', timeKnown ? PREC[birth.time_precision] || PREC.unknown : null],
   ['八字', BZ ? (timeKnown ? '采用服务端时间口径排盘；报告不显示原始出生时间或地点' : '按年、月、日三柱排') : null],
   ['星盘', W ? '按钟表时间加出生地经纬度排，普拉西德分宫，回归黄道' : null],
   ['应期', XT ? '八字流年（v0）与西盘行运（土、天、海、冥的硬相位，木星合，木土进宫，小限）按年合并；两套同一年同一领域都过线才标映照' : null],
