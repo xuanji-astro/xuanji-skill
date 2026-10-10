@@ -113,3 +113,16 @@ Apache-2.0 不自动授权执天玄玑名称、Logo、官方身份。允许正�
 隐私政策（Privacy Policy）：https://xuanji-astro.com/privacy
 
 当前版本 0.1.0-rc.7 是公开的候选版（Release Candidate）。
+
+
+## 找到我们
+
+想进内测、用上了想聊聊，或者发现问题，加创始人微信最快——扫码备注「GitHub」，拉你进内测群：
+
+<img src="docs/assets/qr-wechat.png" alt="执天玄玑创始人微信二维码" width="180">
+
+手机上扫不了同屏的码，也可以直接搜微信号 **liin1223** 添加。
+
+觉得有用，也可以随缘请我们喝杯咖啡（金额随喜）：
+
+<img src="docs/assets/qr-tip.png" alt="微信赞赏码" width="180">
