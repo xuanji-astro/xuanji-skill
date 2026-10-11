@@ -35,6 +35,12 @@ test('persona feedback accepts exact server sentence and rejects wrong or unconf
  for(const bad of [null,{},[{target:'base',statement:'其他句',feedback:'不准'}],[{target:'base',statement:prof.method.persona.base.line,feedback:'准'}],[{target:'base',statement:prof.method.persona.base.line,feedback:'未核对'}]]){const r=structuredClone(rep);r.persona_feedback=bad;assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}
  const r=structuredClone(rep);const entry={target:'base',statement:prof.method.persona.base.line,feedback:'不准'};r.persona_feedback=[entry,entry];assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);
 });
+// 10-11 Codex 实测：报告「接下来可以问」写了「出生时间有误会改变职业判断吗」，这是内部的问题，用户不会问
+test('next_questions 不出内部的问题（出生时间、时柱、宫头、算法、依据）',()=>{
+ const {prof,rep}=fixtures();
+ for(const q of ['出生时间有误会改变职业判断吗？','时柱换了会怎样？','依据是什么？']){const r=structuredClone(rep);r.next_questions=[q,...rep.next_questions.slice(1)];const e=check(r,prof);assert(e.some(x=>x.startsWith('next_questions[1] 里不要用')&&x.includes('内部的事')),q);}
+ const r=structuredClone(rep);r.next_questions=['我明年换工作合适吗？',...rep.next_questions.slice(1)];assert.deepEqual(check(r,prof),[]);
+});
 // 10-07 Kimi 实测两处：把 2026 写成「今年乙巳」；用户否认的 2022 年往事在正文里写成发生过
 test('year gan-zhi must match the year (今年 counts as the build year); luck, month and range spans are not years',()=>{
  const {prof,rep}=fixtures(),y=new Date().getFullYear(),gz=(n)=>'甲乙丙丁戊己庚辛壬癸'[(n-4)%10]+'子丑寅卯辰巳午未申酉戌亥'[(n-4)%12],wrong=gz(y-1);
