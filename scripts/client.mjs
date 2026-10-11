@@ -38,10 +38,18 @@ export function validate(kind, input) {
   if(kind==='health'){if(input!==undefined) fail('INPUT_INVALID');return;}
   if(kind==='profile'){
     // 「核一核」的回答（接口 answers）：[{year,pick}]，pick 只能是 弱／强／都沾／记不清，最多 12 条；其余照生辰字段严格查
-    const {answers,...b}=object(input)?input:{};
+    // 身强身弱校正（10-10 起，接口 calib）：traits 8 个（A–E 或 null），events 最多 30 件 {year, domain?, event?, good}；跟接口同一套检查
+    const {answers,calib,...b}=object(input)?input:{};
     if(!object(input)) fail('INPUT_INVALID');
     birth(b);
     if(answers!==undefined&&(!Array.isArray(answers)||answers.length>12||!answers.every(x=>object(x)&&Object.keys(x).every(k=>k==='year'||k==='pick')&&Number.isInteger(x.year)&&x.year>1900&&x.year<2100&&['弱','强','都沾','记不清'].includes(x.pick)))) fail('INPUT_INVALID');
+    if(calib!==undefined){
+      const AREAS=['感情','事业','钱财','学业','健康','家庭'],tr=calib&&calib.traits,ev=calib&&calib.events;
+      if(!object(calib)||Object.keys(calib).some(k=>k!=='traits'&&k!=='events')) fail('INPUT_INVALID');
+      if(tr!==undefined&&(!Array.isArray(tr)||tr.length>8||!tr.every(x=>x===null||(typeof x==='string'&&/^[A-E]$/.test(x))||(Number.isInteger(x)&&x>=0&&x<5)))) fail('INPUT_INVALID');
+      if(ev!==undefined&&(!Array.isArray(ev)||ev.length>30||!ev.every(x=>object(x)&&Object.keys(x).every(k=>['year','domain','event','good'].includes(k))&&Number.isInteger(x.year)&&x.year>1900&&x.year<2100&&typeof x.good==='boolean'
+        &&(x.domain===undefined||AREAS.includes(x.domain))&&(x.event===undefined||(typeof x.event==='string'&&x.event.length<=20))))) fail('INPUT_INVALID');
+    }
   }
   else {
     if(!object(input)||Object.keys(input).some(k=>!['a','b','relation','met_year'].includes(k))) fail('INPUT_INVALID');

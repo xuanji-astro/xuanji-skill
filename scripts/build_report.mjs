@@ -21,7 +21,7 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.7';
+const SKILL_VERSION = '0.1.0-rc.8';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
@@ -176,6 +176,9 @@ function privateProfile(prof) {
   p.birth={time_known:!!birth.time,sex:birth.sex,time_source:birth.time_source,time_precision:birth.time_precision};
   if(p.bazi?.input)p.bazi.input={time_known:!!birth.time};
   if(p.bazi?.version)delete p.bazi.version.config;
+  // 身强身弱校正（10-10）：报告只要结论（身X型、四格、件数），题和留痕明细不进报告——报告链接能转发
+  const cb=p.method?.bazi?.calib;
+  if(cb)p.method.bazi.calib=cb.result?{result:Object.fromEntries(Object.entries(cb.result).filter(([k])=>k!=='detail'))}:null;
   return p;
 }
 // 定时辰结果：只取「定在哪个时辰」这一个字段进报告；--profile 要跟结果对得上（b 用 profile_alt.json）

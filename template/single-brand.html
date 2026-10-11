@@ -476,7 +476,9 @@ var VDEC = XB && XB.strength && XB.strength.vote && XB.strength.vote.decided, VA
 var VST = XB && XB.check && XB.check.score && XB.check.score.strength, VASK = (VANS || []).map(function (a) { return { year: a.year, gan_zhi: a.gan_zhi, answer: a.felt === '顺' ? '顺' : a.felt === '逆' ? '糟' : a.pick === '都沾' ? '都沾一点' : a.pick === '记不清' ? '记不清' : '记下了' }; });
 // 三派都对不上（降置信，10-08 定）：不出某一年顺逆的断语——流年卡不挂档、十年轴不标顺逆、为什么转紧那句也不出；大运图照默认那一派画
 var MUTE = !!(XB && XB.school && XB.school.by === '默认' && XB.school.check === '降置信');
-var SCK = R.strength_check || (VDEC ? { decided: VDEC.side, asked: VASK } : VST && VST.status === '挂起' ? { decided: '不可判', asked: VASK } : null);
+// 身强身弱校正（10-10 起，接口 calib）：按 8 道题和用户说的大事定的，不再列「哪年选了哪条」——那几年是接口替用户填的，用户没答过
+var VCAL = XB && XB.calib && XB.calib.result && XB.calib.result.status === '定案' ? XB.calib.result : null;
+var SCK = R.strength_check || (VCAL ? { decided: VCAL.side, calib: VCAL.used || {} } : VDEC ? { decided: VDEC.side, asked: VASK } : VST && VST.status === '挂起' ? { decided: '不可判', asked: VASK } : null);
 var birth = P.birth || {};
 var NOW = Number(String(D.built_at || new Date().toISOString()).slice(0, 4));
 // 学龄（10-06）：22 周岁及以下的年份按学业说，「工作」说成学业、「事业认可」说成考试升学；领域名本身不改
@@ -1035,11 +1037,12 @@ function voteBox() {
   var rows = V.votes.map(function (x) {
     return h('div', 'vrow', [h('div', 'vsch', x.school), chip(x.side, x.level ? String(x.level).replace(/[(（].*[)）]/, '') : x.status), h('div', 'vwhy', x.status ? '这一票还在做，做好了接上' : (/[(（](.*)[)）]/.test(x.level || '') ? String(x.level).match(/[(（](.*)[)）]/)[1] + '。' : '') + (x.why || '') + (x.score != null ? '　总分 ' + x.score + (x.confidence ? '，把握' + x.confidence : '') : ''))]);
   });
-  if (SCK) rows.push(h('div', 'vrow vgut', [h('div', 'vsch', ['你的体感', h('em', null, '定案')]), chip(SCK.decided === '不可判' ? null : SCK.decided, SCK.decided === '不可判' ? '不可判' : '身' + SCK.decided), h('div', 'vwhy', (SCK.asked || []).map(function (a) { return a.year + ' ' + (a.gan_zhi || '') + ' ' + a.answer; }).join('　'))]));
+  var calibWhy = SCK && SCK.calib ? '按你答的 ' + (SCK.calib.traits || 0) + ' 道题' + (SCK.calib.events ? '和说的 ' + SCK.calib.events + ' 件大事' : '') + '定的' : null;
+  if (SCK) rows.push(h('div', 'vrow vgut', [h('div', 'vsch', [SCK.calib ? '你的校正' : '你的体感', h('em', null, '定案')]), chip(SCK.decided === '不可判' ? null : SCK.decided, SCK.decided === '不可判' ? '不可判' : '身' + SCK.decided), h('div', 'vwhy', calibWhy || (SCK.asked || []).map(function (a) { return a.year + ' ' + (a.gan_zhi || '') + ' ' + a.answer; }).join('　'))]));
   var d = V.verdict, n = V.votes.filter(function (x) { return x.side; }).length;
   // 待定的两种原因（v1.4）：硬分歧、孤票，都等体感来定。西盘不进身强身弱（10-07 定），老接口回包里的 west 也不显示
   var WHY_OPEN = { 硬分歧: '几种判法有的看强、有的看弱', 孤票: '只有一种判法看出了方向，其余的没看出方向' };
-  var say = SCK && SCK.decided !== '不可判' ? '结论：身' + SCK.decided + '（按你对这几年的体感定的，体感高于几家算法）' : SCK ? '体感也分不出来，身强身弱先不下结论' : d.side === '待定' ? (d.agree === '时辰不详' ? '时辰不详，身强身弱先不下结论' : (WHY_OPEN[d.kind] || '几种判法说法不同') + '，先不下结论，等你对过去几年的体感来定')
+  var say = SCK && SCK.calib ? '结论：身' + SCK.decided + '（' + calibWhy + '，你的经历高于几家算法）' : SCK && SCK.decided !== '不可判' ? '结论：身' + SCK.decided + '（按你对这几年的体感定的，体感高于几家算法）' : SCK ? '体感也分不出来，身强身弱先不下结论' : d.side === '待定' ? (d.agree === '时辰不详' ? '时辰不详，身强身弱先不下结论' : (WHY_OPEN[d.kind] || '几种判法说法不同') + '，先不下结论，等你对过去几年的体感来定')
     : '起点：' + (d.side === '中' ? '中和' : '偏' + d.side) + '（' + (d.agree === '一致' ? n + ' 种判法一致' : d.agree === '多数' ? '多数判法' : '有判法看是中和') + (V.votes.some(function (x) { return x.status; }) ? '，新派一票待接入' : '') + '）。用你的经历核过才算定';
   return h('div', 'card vote', [h('div', 'lb', ['身强身弱 · 三种判法', h('span', null, '判法只给起点，你的经历说了算')]), rows, h('div', 'vsay', say), XB.pattern && XB.pattern.is_special ? h('div', 'vnote', '这张盘按特殊格局（' + XB.pattern.name + '）论，喜忌按格局取，不按身强身弱这套') : null]);   // 有一票判到极档只是触发引擎复核；复核没成立（is_special 为假）就照常三票，不提特殊格局
 }

@@ -6,7 +6,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {candidate,plan,score,RULES} from '../scripts/rectify.mjs';
+import {candidate,plan,score,RULES,domainOf,AREAS} from '../scripts/rectify.mjs';
 import {createPrivateJSON} from '../scripts/create_private_json.mjs';
 
 // 以下全是合成数据：只造打分要用的几个字段，不代表真人
@@ -44,7 +44,10 @@ test('ask：只问两张盘说法相反的年份，不问用户已经说过的�
   const ys=q.targeted.map(x=>x.year);
   assert.ok(!ys.includes(2015));assert.equal(q.targeted.length,4);
   assert.deepEqual(ys,[...ys].sort((a,b)=>a-b));
-  for(const x of q.targeted){assert.deepEqual(Object.keys(x).sort(),['domain','id','question','year']);assert.ok(!/A|B|盘/.test(x.question));}
+  for(const x of q.targeted){assert.deepEqual(Object.keys(x).sort(),['ask','domain','eg','id','question','year']);assert.ok(!/A|B|盘/.test(x.question));
+    assert.equal(x.question,`${x.year} 年，${x.ask}比如${x.eg}。`);assert.ok(!/明显的变动/.test(x.question),'10-10 起不问「明显的变动」');}
+  assert.equal(q.follow_up,'对你来说是好事还是坏事？');assert.deepEqual(q.answers,{targeted:['有','没有','记不清'],good:['好事','坏事']});
+  assert.ok(!('feel' in q),'10-10 起不单独问体感');
   assert.equal(new Set(ys).size,ys.length);
 });
 test('第一票：大事站在原时间那边 → 定原时间；站在另一边 → 定另一边',()=>{
@@ -60,31 +63,51 @@ test('阈值以下不记票：一边一件、权重差不到 25% → 时辰存�
   const one={events:[{year:2015,domain:'工作'}]},r1=score(A(),B(),one,ask(A(),B(),one),{});
   assert.equal(r1.first_vote.vote,null,'只有 1 件站在一边，不够 2 件');
 });
-test('补问：「有」算给预言它的那张盘，「没有」算给另一张，「没印象」不计',()=>{
+test('补问：「有」算给预言它的那张盘，「没有」算给另一张，「记不清」（老说法「没印象」）不计',()=>{
   const ev={events:[]},q=ask(A(),B(),ev),ans={targeted:{}};
   const sideOf=(x)=>[2011,2013,2015,2018].includes(x.year)?'a':'b';
   for(const x of q.targeted)ans.targeted[x.id]=sideOf(x)==='a'?'有':'没有';
   const r=score(A(),B(),ev,q,ans);
   assert.equal(r.first_vote.asked.answered,4);assert.equal(r.first_vote.vote,'a');assert.equal(r.result,'a');
-  for(const x of q.targeted)ans.targeted[x.id]='没印象';
+  for(const x of q.targeted)ans.targeted[x.id]='记不清';
   const r2=score(A(),B(),ev,q,ans);assert.equal(r2.first_vote.asked.unsure,4);assert.equal(r2.result,'uncertain');
+  for(const x of q.targeted)ans.targeted[x.id]='没印象';
+  assert.equal(score(A(),B(),ev,q,ans).first_vote.asked.unsure,4);
 });
-test('第二票：两张盘喜忌相反时问体感；两年都指向同一张盘才算',()=>{
-  const b=()=>B({fav:['金','水'],unfav:['木','火']}),ev={events:[]},q=ask(A(),b(),ev);
-  assert.deepEqual(q.feel.map(x=>[x.year,x.gan_zhi]),[[2025,'乙巳'],[2020,'庚子']]);
-  const r=score(A(),b(),ev,q,{feel:{f1:'顺',f2:'闷'}});   // 乙巳木火年顺、庚子金水年闷 → A 盘
-  assert.equal(r.feel_vote.vote,'a');assert.equal(r.result,'a');
-  const r2=score(A(),b(),ev,q,{feel:{f1:'顺',f2:'没感觉'}});assert.equal(r2.feel_vote.vote,null);
-  assert.equal(r2.feel_vote.need_extra,false,'近 8 年只有两年可问，没有第三年');
-  const wide=()=>B({fav:['金','水'],unfav:['木','火']}),qa=plan(A(),wide(),ev,{now:new Date('2028-06-01T00:00:00Z')});
-  assert.ok(qa.feel_extra,'放到更多年份时有第三年');
-  const rs=score(A(),wide(),ev,qa,{feel:{f1:'顺',f2:'顺'}});assert.equal(rs.feel_vote.vote,null);assert.equal(rs.feel_vote.need_extra,true,'一对一错要加问');
-  const same=ask(A(),B(),ev);assert.equal(same.feel.length,0,'喜忌一样就不问体感');
+test('第二票（10-10）：大事和补问「有」后追问的好事坏事；只看两张盘说法相反的年份，至少 2 件指向同一张才算',()=>{
+  const b=()=>B({fav:['金','水'],unfav:['木','火']});   // A 喜木火忌金水，B 反过来：乙巳（木火）A 顺 B 闷，庚子（金水）A 闷 B 顺
+  const ev={events:[{year:2025,domain:'事业',event:'升职',good:true},{year:2020,domain:'钱财',event:'投资亏损',good:false}]};
+  const r=score(A(),b(),ev,ask(A(),b(),ev),{});
+  assert.equal(r.feel_vote.vote,'a');assert.deepEqual(r.feel_vote.points,{a:2,b:0,mixed_years:0});assert.equal(r.feel_vote.need_extra,false);
+  const one={events:[{year:2025,domain:'事业',event:'升职',good:true}]};assert.equal(score(A(),b(),one,ask(A(),b(),one),{}).feel_vote.vote,null,'只有 1 件不够');
+  const mix={events:[{year:2025,domain:'事业',event:'升职',good:true},{year:2025,domain:'感情',event:'分手',good:false},{year:2020,domain:'钱财',event:'投资亏损',good:false}]};
+  const rm=score(A(),b(),mix,ask(A(),b(),mix),{});assert.equal(rm.feel_vote.points.mixed_years,1);assert.equal(rm.feel_vote.vote,null,'同一年好坏都有，那年不记');
+  const same={events:[{year:2025,domain:'事业',event:'升职',good:true},{year:2020,domain:'钱财',event:'投资亏损',good:false}]};
+  assert.equal(score(A(),B(),same,ask(A(),B(),same),{}).feel_vote.applicable,false,'两张盘喜忌一样，没有说法相反的年份');
+  // 补问答「有」再追问好坏，也进这一票；没答「有」不许填好坏
+  const wide=()=>B({fav:['金','水'],unfav:['木','火'],lit:{2025:{bazi:{钱:w(3)}},2020:{bazi:{感情:w(3)}}}});
+  const q=ask(A(),wide(),{events:[]}),t25=q.targeted.find(x=>x.year===2025),t20=q.targeted.find(x=>x.year===2020);
+  assert.ok(t25&&t20,'2025、2020 两年会被补问');
+  const ra=score(A(),wide(),{events:[]},q,{targeted:{[t25.id]:'有',[t20.id]:'有'},good:{[t25.id]:'坏事',[t20.id]:'好事'}});
+  assert.equal(ra.feel_vote.vote,'b');
+  assert.throws(()=>score(A(),wide(),{events:[]},q,{targeted:{[t25.id]:'没有'},good:{[t25.id]:'好事'}}),/INPUT_INVALID/);
+});
+test('具体的事归到哪个方面（命理组 10-10）',()=>{
+  const d=(domain,event)=>domainOf({domain,event});
+  assert.equal(d('事业','跳槽'),'工作');assert.equal(d('事业','升职'),'事业认可');assert.equal(d('事业','降职'),'事业认可');
+  assert.equal(d('学业','高考'),'事业认可');assert.equal(d('学业','休学'),'工作');assert.equal(d('学业','留学'),'迁移远方');
+  assert.equal(d('家庭','搬家移民'),'迁移远方');assert.equal(d('家庭','孩子出生'),'家庭');assert.equal(d('钱财','买房'),'钱');assert.equal(d('感情','结婚'),'感情');
+  assert.equal(d('健康','大病'),null);assert.equal(d('工作'),'工作');assert.equal(d('迁移远方'),'迁移远方');
+  for(const [k,list] of Object.entries(AREAS))for(const e of list)assert.ok(domainOf({domain:k,event:e})!==undefined);
+  const ev={events:[{year:2015,domain:'事业',event:'跳槽',good:true},{year:2018,domain:'感情',event:'结婚'}]},r=score(A(),B(),ev,ask(A(),B(),ev),{});
+  assert.equal(r.first_vote.vote,'a','新格式的大事照样进第一票');
+  const h={events:[{year:2015,domain:'健康',event:'大病',good:false}]};assert.equal(score(A(),B(),h,ask(A(),B(),h),{}).first_vote.told.other,1);
 });
 test('一比一：子女佐证打破平局；零比零：子女只给倾向，不单独定',()=>{
   const b=()=>B({fav:['金','水'],unfav:['木','火']});
   const ev={events:[{year:2015,domain:'工作'},{year:2018,domain:'感情'}],children:[{year:2015,month:6}]},q=ask(A(),b(),ev);
-  const r=score(A(),b(),ev,q,{feel:{f1:'闷',f2:'顺'}});   // 第一票 A、体感 B；2015 乙未冲乙丑时柱（B 强佐证），对甲子只是六害
+  ev.events.push({year:2025,domain:'事业',event:'失业',good:false},{year:2020,domain:'钱财',event:'意外之财',good:true});
+  const r=score(A(),b(),ev,ask(A(),b(),ev),{});   // 第一票 A、体感 B；2015 乙未冲乙丑时柱（B 强佐证），对甲子只是六害
   assert.equal(r.first_vote.vote,'a');assert.equal(r.feel_vote.vote,'b');assert.equal(r.children.lean,'b');
   assert.equal(r.result,'b');assert.equal(r.tie_broken_by_children,true);
   const ev0={events:[],children:[{year:2015,month:6}]},r0=score(A(),B(),ev0,ask(A(),B(),ev0),{});
@@ -94,7 +117,8 @@ test('一比一：子女佐证打破平局；零比零：子女只给倾向，�
   const feb={events:[],children:[{year:2016,month:2}]};assert.equal(score(A(),B(),feb,ask(A(),B(),feb),{}).children.used,0,'2 月没说日子，立春前后说不准，不用');
 });
 test('输入只收年份和方面；问过的题跟 ask 对不上就停',()=>{
-  for(const ev of [{events:[{year:2015,domain:'工作',note:'离婚'}]},{events:[{year:2015,domain:'健康'}]},{events:[],extra:1},{children:[{year:2015,name:'x'}]}])
+  for(const ev of [{events:[{year:2015,domain:'工作',note:'离婚'}]},{events:[{year:2015,domain:'运动'}]},{events:[{year:2015,domain:'事业',event:'结婚'}]},{events:[{year:2015,domain:'事业',good:'好'}]},
+    {events:Array(13).fill({year:2015,domain:'工作'})},{events:[],extra:1},{children:[{year:2015,name:'x'}]}])
     assert.throws(()=>ask(A(),B(),ev),/INPUT_INVALID/);
   const ev={events:[{year:2015,domain:'工作'}]},q=ask(A(),B(),ev);
   assert.throws(()=>score(A(),B(),{events:[{year:2018,domain:'感情'}]},q,{}),/ASK_MISMATCH/);
@@ -104,7 +128,7 @@ test('输入只收年份和方面；问过的题跟 ask 对不上就停',()=>{
   const otherBirth=B();otherBirth.birth.date='1991-03-15';
   assert.throws(()=>ask(A(),otherBirth,{events:[]}),/RECTIFY_PROFILE_MISMATCH/);
   const nextDay=B();nextDay.birth.date='1990-03-16';
-  assert.equal(ask(A(),nextDay,{events:[]}).schema,'xuanji.rectify.ask/0.1');
+  assert.equal(ask(A(),nextDay,{events:[]}).schema,'xuanji.rectify.ask/0.2');
   assert.throws(()=>score(A(),A(),ev,q,{}),/RECTIFY_SAME_HOUR/);
   assert.throws(()=>plan({schema:'x'},B(),ev),/PROFILE_INVALID/);
 });

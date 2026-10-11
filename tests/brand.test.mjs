@@ -68,3 +68,4 @@ test('cover: line 1 from the day-stem pool verbatim, line 2 gifts 14-28 and posi
  assert.match(errs(`宝剑锋从磨砺出。\n${L2}`).join(),/要 3 句/);
  assert.match(errs(`宝剑锋从磨砺出。\n聚人、定调、开路，事到她手里就有了章法。\n合成判词：把最乱的局交给你。`).join(),/第2句里有「她」/);   // 封面对他说「你」，不写成第三人称
 });
+test('身强身弱校正（10-10）：报告只带结论（身X型、四格、件数），题和留痕明细不进报告',()=>{const {prof,rep}=fixtures();const p=structuredClone(prof);p.method.bazi=p.method.bazi||{};p.method.bazi.calib={ask:{traits:[{no:1,q:'平时做事的节奏更像？',options:[]}],events:{q:'过去这些年',domains:[]}},result:{status:'定案',side:'强',type:'身强型',cards:[{title:'能量核心',text:'底气足。'}],say:'提醒',used:{traits:8,events:1},detail:{tally:{强:8,弱:0},answers:[{year:2023,pick:'强'}],events:[{year:2016,event:'离婚合成'}]}}};const html=build(p,rep);for(const raw of ['平时做事的节奏更像','离婚合成','"tally"','"detail"'])assert(!html.includes(raw),raw);assert(html.includes('身强型'));});

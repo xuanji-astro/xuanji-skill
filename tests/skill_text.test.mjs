@@ -27,11 +27,12 @@ test('身强身弱：实锤只认用户核过的，待定两种原因都问体�
   assert.match(skill,/实锤只认核过的/);
   for(const k of ['硬分歧','孤票'])assert.match(skill,new RegExp(k));
   for(const t of [skill,jd,bg])assert.doesNotMatch(t,/尺子有方向|西盘也同向/);
-  // 10-08：身强身弱待定时问体感 → 核一核（同一轮核身强身弱和派别，接口收 answers 自己定案）
-  assert.match(skill,/\*\*核一核\*\*/);
-  assert.match(skill,/`answers`/);
-  assert.match(skill,/不讲「几派并列」/);
+  // 10-10：核一核换成身强身弱校正（照网站校正页：8 道性格题一条发完＋大事，接口收 calib 自己定案；老的两条说法那套不用）
+  assert.match(skill,/\*\*身强身弱校正\*\*/);
+  assert.match(skill,/`calib`/);
+  assert.match(skill,/一条消息发完/);
   assert.match(skill,/一定在出报告之前/);
+  assert.doesNotMatch(skill,/`readings`|`first_ask`/);
   assert.doesNotMatch(skill,/`ask\.first_ask`|if_smooth/);
   assert.match(jd,/按强弱下断语的话一律收起来/);
   assert.match(jd,/神煞只讲特质，不讲分数/);

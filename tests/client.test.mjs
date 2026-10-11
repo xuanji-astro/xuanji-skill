@@ -75,3 +75,10 @@ test('核一核的回答 answers：只收 [{year,pick}]，pick 只能是 弱／�
   assert.throws(()=>validate('profile',{...birth(),answers}),/INPUT_INVALID/);
  assert.throws(()=>validate('profile',{...birth(),strength:'强'}),/INPUT_INVALID/);
 });
+test('身强身弱校正 calib：traits 8 个 A–E 或 null，events 最多 30 件；别的字段、坏值都拒',()=>{
+ validate('profile',{...birth(),calib:{traits:['D','B',null,'A','C','B','D','E'],events:[{year:2016,domain:'事业',event:'跳槽',good:true},{year:2022,good:false}]}});
+ validate('profile',{...birth(),calib:{traits:[0,4]}});
+ for(const calib of [[],'x',{traits:['F']},{traits:Array(9).fill('A')},{events:[{year:2016,domain:'运动',good:true}]},{events:[{year:2016,good:'好'}]},{events:[{year:2016,good:true,note:'细节'}]},
+   {events:Array.from({length:31},(_,i)=>({year:1990+i,good:true}))},{traits:['A'],extra:1}])
+  assert.throws(()=>validate('profile',{...birth(),calib}),/INPUT_INVALID/,JSON.stringify(calib).slice(0,60));
+});

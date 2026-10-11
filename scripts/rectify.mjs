@@ -1,6 +1,6 @@
 // Copyright 2026 杭州强势播传文化影视传媒有限公司
 // SPDX-License-Identifier: Apache-2.0
-// 定时辰：出生时间卡在时辰交界时，拿交界两侧两张盘，对用户说的大事、专门问的年份和体感打分。
+// 定时辰：出生时间卡在时辰交界时，拿交界两侧两张盘，对用户说的大事（哪年、什么事、好事坏事）和专门问的年份打分。
 // 只读接口返回和用户的回答，不排盘、不联网；用户说的大事只在本地文件里，不发给接口。规则见 reference/定时辰.md。
 import {pathToFileURL} from 'node:url';
 import {realpathSync} from 'node:fs';
@@ -12,24 +12,40 @@ const fail=code=>{throw new RectifyError(code);};
 const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 
 export const DOMAINS=['工作','事业认可','感情','家庭','钱','迁移远方'];
+// 10-10 起（命理组定案）：用户说大事跟身强身弱校正同一套——方面（感情、事业、钱财、学业、健康、家庭）＋具体的事＋好事还是坏事，
+// 同一份大事两处用。具体的事归到上面六个方面算第一票（命理组 10-10）；健康不进第一票，只进体感票的好坏
+export const AREAS={
+  感情:['初恋','遇到正缘','订婚','结婚','冷战','分手','离婚','复合','被骗'],
+  事业:['找到工作','升职','降职','跳槽','创业','公司倒闭','失业','转行'],
+  钱财:['第一桶金','投资赚钱','意外之财','买房','买车','投资亏损','负债','破产'],
+  学业:['高考','考研','留学','休学','考试受阻','考证','获奖'],
+  健康:['大病','意外受伤','心理困扰','减肥成功'],
+  家庭:['孩子出生','亲人离世','安家置业','搬家移民','家道中落','家庭变故'],
+};
+const AREA_DOMAIN={感情:'感情',事业:'工作',钱财:'钱',学业:'事业认可',健康:null,家庭:'家庭'};   // 学业照 10-06 学龄口径：考试升学＝事业认可
+const EVENT_DOMAIN={升职:'事业认可',降职:'事业认可',休学:'工作',留学:'迁移远方',搬家移民:'迁移远方'};
+// 一件大事归到哪个方面：具体的事有单列的按单列，其余按方面；老格式直接写六个方面之一的照旧
+export const domainOf=e=>(e.event&&EVENT_DOMAIN[e.event])||(e.domain in AREA_DOMAIN?AREA_DOMAIN[e.domain]:e.domain);
 export const RULES={
   lit:2,          // 一套体系的引动强度到 2 才算这一年这一块亮（跟验前事同一条线）
   ratio:1.25,     // 第一票：一边的权重和要高出另一边 25% 以上
   minSide:2,      // 第一票：至少 2 件站在同一边；阈值以下不记票
   askEach:2,      // 补问：两张盘说法相反的年份，两边各挑 2 个
   minAge:16,      // 补问和体感只问 16 岁以后
-  feelSpan:[8,12],// 体感先看近 8 年，挑不出再放到 12 年
-  feelMin:2,      // 体感：至少 2 年指向同一张盘，且多过另一张
+  feelMin:2,      // 体感票：至少 2 件指向同一张盘，且多过另一张（10-10 起体感不再单独问，用大事和补问里的好事坏事）
+  maxEvents:12,   // 大事最多 12 件（跟身强身弱校正共用一份，10-10 从 8 放到 12）
 };
+// 补问（10-10 改）：不问「有没有明显的变动」，问有没有这几类事，后面带「比如」；答「有」再追问一句好事还是坏事（命理组 10-10）
 const Q={
-  工作:y=>`${y} 年，你的工作有没有明显的变动？`,
-  事业认可:y=>`${y} 年，你在事业或名声上有没有明显的变动？`,
-  感情:y=>`${y} 年，你的感情有没有明显的变动？`,
-  家庭:y=>`${y} 年，你家里（家人、住处）有没有明显的变动？`,
-  钱:y=>`${y} 年，你在钱上有没有明显的变动？`,
-  迁移远方:y=>`${y} 年，你有没有搬家、出远门或去外地这类明显的变动？`,
+  工作:['你有没有换工作？','找到工作、跳槽、转行、失业、创业'],
+  事业认可:['你的职位或名声有没有变？','升职、降职、考上学校、拿奖、被公开表扬或批评'],
+  感情:['你有没有开始或结束一段感情？','恋爱、订婚、结婚、分手、离婚、复合'],
+  家庭:['你家里有没有大事？','添了孩子、亲人离世、家人分开、买房或换了住处'],
+  钱:['你有没有一笔大的进账或花销？','买房买车、投资大赚大亏、欠下大债'],
+  迁移远方:['你有没有去别的地方生活？','搬到别的城市、出国、去外地上学或工作'],
 };
-const FEEL=y=>`${y} 年，你整体是往上走还是往下走？事业、钱、感情，挑你有印象的说。`;
+const QT=(d,y)=>`${y} 年，${Q[d][0]}比如${Q[d][1]}。`;
+export const FOLLOW='对你来说是好事还是坏事？';
 
 // 干支五行和地支关系：公开的通用表，只用来比流年和时柱
 const EL={甲:'木',乙:'木',丙:'火',丁:'火',戊:'土',己:'土',庚:'金',辛:'金',壬:'水',癸:'水',子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
@@ -77,8 +93,10 @@ export function candidate(profile,req){
 function inputOf(v){
   if(!object(v)||Object.keys(v).some(k=>!['events','children'].includes(k)))fail('INPUT_INVALID');
   const ev=v.events??[],ch=v.children??[];
-  if(!Array.isArray(ev)||ev.length>8||!Array.isArray(ch)||ch.length>6)fail('INPUT_INVALID');
-  for(const e of ev)if(!object(e)||Object.keys(e).some(k=>!['year','domain'].includes(k))||!Number.isInteger(e.year)||e.year<1900||e.year>2100||!DOMAINS.includes(e.domain))fail('INPUT_INVALID');
+  if(!Array.isArray(ev)||ev.length>RULES.maxEvents||!Array.isArray(ch)||ch.length>6)fail('INPUT_INVALID');
+  // 一件大事：year＋domain（方面：感情、事业、钱财、学业、健康、家庭；老格式的六个方面也收）＋event（可不填，填了要是这个方面里的）＋good（好事 true、坏事 false，可不填）
+  for(const e of ev)if(!object(e)||Object.keys(e).some(k=>!['year','domain','event','good'].includes(k))||!Number.isInteger(e.year)||e.year<1900||e.year>2100
+    ||!(DOMAINS.includes(e.domain)||AREAS[e.domain])||(e.event!=null&&!(AREAS[e.domain]&&AREAS[e.domain].includes(e.event)))||(e.good!=null&&typeof e.good!=='boolean'))fail('INPUT_INVALID');
   for(const c of ch)if(!object(c)||Object.keys(c).some(k=>!['year','month','day'].includes(k))||!Number.isInteger(c.year)||c.year<1900||c.year>2100||(c.month!=null&&(!Number.isInteger(c.month)||c.month<1||c.month>12))||(c.day!=null&&(!Number.isInteger(c.day)||c.day<1||c.day>31)))fail('INPUT_INVALID');
   return {events:ev,children:ch};
 }
@@ -106,29 +124,13 @@ function targeted(A,B,input,nowY){
   return out.sort((p,q)=>p.year-q.year||DOMAINS.indexOf(p.domain)-DOMAINS.indexOf(q.domain)).map((k,i)=>({id:'t'+(i+1),...k}));
 }
 function predict(c,gz){const e=[EL[gz[0]],EL[gz[1]]];if(e.every(x=>c.fav.includes(x)))return '顺';if(e.every(x=>c.unfav.includes(x)))return '闷';return null;}
-function feelYears(A,B,nowY){
-  for(const span of RULES.feelSpan){
-    const g={a:[],b:[]};   // a：这一年 A 盘顺、B 盘闷；b：反过来
-    for(let y=nowY-1;y>=nowY-span;y--){
-      const r=A.Y.get(y);if(!r||!(r.age>=RULES.minAge))continue;
-      const gz=yearGZ(y),pa=predict(A,gz),pb=predict(B,gz);
-      if(pa&&pb&&pa!==pb)g[pa==='顺'?'a':'b'].push(y);
-    }
-    if(!g.a.length&&!g.b.length)continue;
-    const first=g.a.length&&g.b.length?[g.a[0],g.b[0]]:(g.a.length?g.a:g.b).slice(0,2);
-    const rest=[...g.a,...g.b].filter(y=>!first.includes(y)).sort((x,y)=>y-x);
-    const mk=(y,id)=>({id,year:y,gan_zhi:yearGZ(y),question:FEEL(y)});
-    return {first:first.sort((x,y)=>y-x).map((y,i)=>mk(y,'f'+(i+1))),extra:rest.length?mk(rest[0],'f3'):null};
-  }
-  return {first:[],extra:null};
-}
 export function plan(pa,pb,events,{now}={}){
   const [A,B]=pairOf(pa,pb),input=inputOf(events),nowY=nowYear(now);
-  const t=targeted(A,B,input,nowY),f=feelYears(A,B,nowY);
-  return {schema:'xuanji.rectify.ask/0.1',now_year:nowY,
-    targeted:t.map(k=>({id:k.id,year:k.year,domain:k.domain,question:Q[k.domain](k.year)})),
-    feel:f.first,feel_extra:f.extra,ask_children:true,
-    answers:{targeted:['有','没有','没印象'],feel:['顺','闷','没感觉']}};
+  const t=targeted(A,B,input,nowY);
+  return {schema:'xuanji.rectify.ask/0.2',now_year:nowY,
+    targeted:t.map(k=>({id:k.id,year:k.year,domain:k.domain,question:QT(k.domain,k.year),ask:Q[k.domain][0],eg:Q[k.domain][1]})),
+    follow_up:FOLLOW,ask_children:true,
+    answers:{targeted:['有','没有','记不清'],good:['好事','坏事']}};
 }
 
 // ── 第三步：打分 ──
@@ -149,27 +151,28 @@ function childHits(c,years){
 }
 export function score(pa,pb,events,ask,answers){
   const [A,B]=pairOf(pa,pb),input=inputOf(events);
-  if(!object(ask)||ask.schema!=='xuanji.rectify.ask/0.1'||!Number.isInteger(ask.now_year))fail('ASK_INVALID');
-  if(!object(answers)||Object.keys(answers).some(k=>!['targeted','feel'].includes(k)))fail('INPUT_INVALID');
-  const ta=answers.targeted??{},fa=answers.feel??{};
-  if(!object(ta)||!object(fa))fail('INPUT_INVALID');
+  if(!object(ask)||ask.schema!=='xuanji.rectify.ask/0.2'||!Number.isInteger(ask.now_year))fail('ASK_INVALID');
+  if(!object(answers)||Object.keys(answers).some(k=>!['targeted','good'].includes(k)))fail('INPUT_INVALID');
+  const ta=answers.targeted??{},ga=answers.good??{};
+  if(!object(ta)||!object(ga))fail('INPUT_INVALID');
   // 重算要问的年份，跟 ask.json 对不上就停（防止换了盘或改了大事再打分）
-  const T=targeted(A,B,input,ask.now_year),F=feelYears(A,B,ask.now_year);
+  const T=targeted(A,B,input,ask.now_year);
   const same=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
-  if(!same(T.map(k=>[k.id,k.year,k.domain,Q[k.domain](k.year)]),(ask.targeted??[]).map(k=>[k.id,k.year,k.domain,k.question]))||!same([...F.first,F.extra].filter(Boolean).map(k=>[k.id,k.year,k.gan_zhi,k.question]),[...(ask.feel??[]),ask.feel_extra].filter(Boolean).map(k=>[k.id,k.year,k.gan_zhi,k.question])))fail('ASK_MISMATCH');
-  for(const [k,v] of Object.entries(ta))if(!T.some(x=>x.id===k)||!['有','没有','没印象'].includes(v))fail('INPUT_INVALID');
-  const fy=[...F.first,F.extra].filter(Boolean);
-  for(const [k,v] of Object.entries(fa))if(!fy.some(x=>x.id===k)||!['顺','闷','没感觉'].includes(v))fail('INPUT_INVALID');
+  if(!same(T.map(k=>[k.id,k.year,k.domain,QT(k.domain,k.year)]),(ask.targeted??[]).map(k=>[k.id,k.year,k.domain,k.question])))fail('ASK_MISMATCH');
+  // 补问回答：有／没有／记不清（老说法「没印象」照收）；答了「有」的才能追问好事坏事
+  for(const [k,v] of Object.entries(ta))if(!T.some(x=>x.id===k)||!['有','没有','记不清','没印象'].includes(v))fail('INPUT_INVALID');
+  for(const [k,v] of Object.entries(ga))if(ta[k]!=='有'||!['好事','坏事'].includes(v))fail('INPUT_INVALID');
 
   // 第一票：用户说的大事（按权重）＋专门问的年份（准／不准才算），分开记账、合并判票
-  const told={a:0,b:0,side:{a:0,b:0},used:0,skipped:0},asked={a:0,b:0,side:{a:0,b:0},answered:0,unsure:0};
+  const told={a:0,b:0,side:{a:0,b:0},used:0,skipped:0,other:0},asked={a:0,b:0,side:{a:0,b:0},answered:0,unsure:0};
   for(const e of input.events){
-    const a=weight(A,e.year,e.domain),b=weight(B,e.year,e.domain);
+    const d=domainOf(e);if(!d){told.other++;continue;}   // 健康：不进第一票
+    const a=weight(A,e.year,d),b=weight(B,e.year,d);
     if(!A.Y.has(e.year)){told.skipped++;continue;}
     told.used++;told.a+=a;told.b+=b;if(a>b)told.side.a++;else if(b>a)told.side.b++;
   }
   for(const k of T){
-    const v=ta[k.id];if(v==null)continue;if(v==='没印象'){asked.unsure++;continue;}
+    const v=ta[k.id];if(v==null)continue;if(v==='记不清'||v==='没印象'){asked.unsure++;continue;}
     const s=v==='有'?k.side:(k.side==='a'?'b':'a');asked.answered++;asked[s]+=k.w;asked.side[s]++;
   }
   const r1=x=>Math.round(x*10)/10;
@@ -177,15 +180,19 @@ export function score(pa,pb,events,ask,answers){
   const passes=(x,y)=>tot[x]>0&&tot[x]>=RULES.ratio*tot[y]&&side[x]>=RULES.minSide;
   const v1=passes('a','b')?'a':passes('b','a')?'b':null;
 
-  // 第二票：体感（两张盘喜忌判得不一样才有）
-  const pts={a:0,b:0,none:0};
-  for(const k of fy){
-    const v=fa[k.id];if(v==null)continue;if(v==='没感觉'){pts.none++;continue;}
-    const pa=predict(A,k.gan_zhi);pts[v===pa?'a':'b']++;
+  // 第二票：体感（命理组 10-10）。不再单独问「整体往上还是往下」，用用户说的每件大事、补问答「有」后追问的好事坏事：
+  // 只看两张盘说法相反的年份（流年两个字，一张全在喜里＝顺、另一张全在忌里＝闷）；好事记给说顺的那张，坏事记给说闷的那张；
+  // 同一年好坏都有的那年不记；16 岁以前的不记；至少 2 件指向同一张、并且多过另一张才算一票
+  const items=[...input.events.filter(e=>typeof e.good==='boolean').map(e=>({year:e.year,good:e.good,from:'told'})),
+    ...T.filter(k=>ta[k.id]==='有'&&ga[k.id]).map(k=>({year:k.year,good:ga[k.id]==='好事',from:'asked'}))];
+  const mixed=new Set(items.filter(x=>items.some(y=>y.year===x.year&&y.good!==x.good)).map(x=>x.year));
+  const pts={a:0,b:0,mixed_years:mixed.size,used:0};
+  for(const it of items){
+    const r=A.Y.get(it.year);if(mixed.has(it.year)||!r||!(r.age>=RULES.minAge))continue;
+    const gz=yearGZ(it.year),pa=predict(A,gz),pb=predict(B,gz);if(!pa||!pb||pa===pb)continue;
+    pts.used++;pts[it.good===(pa==='顺')?'a':'b']++;
   }
-  const v2=fy.length?(pts.a>=RULES.feelMin&&pts.a>pts.b?'a':pts.b>=RULES.feelMin&&pts.b>pts.a?'b':null):null;
-  // 前两年一对一错（或一年有感觉一年没感觉）→ 加问第三年；宿主不知道哪年对哪张盘，由这里告诉它
-  const needExtra=!!(F.extra&&fa[F.extra.id]==null&&!v2&&pts.a+pts.b>=1);
+  const v2=pts.a>=RULES.feelMin&&pts.a>pts.b?'a':pts.b>=RULES.feelMin&&pts.b>pts.a?'b':null;
 
   // 子女：只打破平局，不单独成票
   const cy=input.children.map(childYear).filter(y=>y!=null);
@@ -199,8 +206,8 @@ export function score(pa,pb,events,ask,answers){
   const hours={a:A.gz[1]+'时',b:B.gz[1]+'时'};
   return {schema:'xuanji.rectify/0.1',result,use_profile:result==='uncertain'?null:result,hours,
     lean:result==='uncertain'?lean:null,tie_broken_by_children:tie,
-    first_vote:{vote:v1,total:tot,items_on_side:side,told:{a:r1(told.a),b:r1(told.b),used:told.used,skipped:told.skipped},asked:{a:r1(asked.a),b:r1(asked.b),answered:asked.answered,unsure:asked.unsure}},
-    feel_vote:{applicable:fy.length>0,vote:v2,points:{a:pts.a,b:pts.b,no_feel:pts.none},need_extra:needExtra},
+    first_vote:{vote:v1,total:tot,items_on_side:side,told:{a:r1(told.a),b:r1(told.b),used:told.used,skipped:told.skipped,other:told.other},asked:{a:r1(asked.a),b:r1(asked.b),answered:asked.answered,unsure:asked.unsure}},
+    feel_vote:{applicable:pts.used>0,vote:v2,points:{a:pts.a,b:pts.b,mixed_years:pts.mixed_years},need_extra:false},
     children:{used:kid.used,a:kid.a,b:kid.b,lean},
     rules:RULES};
 }
