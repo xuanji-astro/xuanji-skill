@@ -83,7 +83,7 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | `method.bazi.lucky` | 幸运色、方位、数字 |
 | `method.west.big3` | 太阳、月亮、上升（含命主星 `ruler` 和它的状态 `ruler_detail`）、天顶 |
 | `method.west.planets[]` | 每颗星：星座、度数、宫位、宫位性质 `house_kind`（角宫／续宫／果宫）、庙旺 `dignity`（入庙／入旺／落陷／落弱／平）、守护的宫 `rules_houses`、是否命主星 `is_chart_ruler`、相位 `aspects[]` |
-| `method.persona.base` | 出厂底色：类型、称号 `name`、解说 `line`、功能栈 `stack`（主导／辅助／第三／劣势，各带说明）、隔壁型 `neighbor`、第二接近的类型和领先程度 `lead` |
+| `method.persona.base` | 出厂底色：类型、称号 `name`、解说 `line`、封面用的那句 `cover_line`（正向夸人的那句）、功能栈 `stack`（主导／辅助／第三／劣势，各带说明）、隔壁型 `neighbor`、第二接近的类型和领先程度 `lead` |
 | `method.persona.rebirth[]` | 两张重生人格（不分先后）：类型、称号、适用场景 `scene`、天赋矿功能 `mine_func`、天赋矿来源 `sources[]`（哪条欲望星×痛点星的相位） |
 | `method.persona.buffs[]` | 人格 Buff 的功能和说明 |
 | `method.west.power_rank[]` | 七星力量排名（1 最强），用玄玑西盘尺子的单星公式：庙旺落陷 × 落宫 × 相位扶克 × 逆行；每颗星上也有 `power` 和 `power_rank` |

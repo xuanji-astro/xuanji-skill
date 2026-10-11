@@ -176,6 +176,20 @@ footer .motto{font-family:var(--serif);color:var(--accent);font-size:15px;letter
   .wrap{max-width:none;padding:0 0 8mm}
   .fold>summary::after,.basis>summary::after{display:none}
   .cover,.panel,.card,.cx,.luck,.next,.open,.connect,.years,svg,img,table,tr,figure{break-inside:avoid}
+  /* 10-11 她看一份真报告的 PDF：卡片、图、年卡、逐星卡被页底切成两半。比一页矮的整块挪到下一页；
+     比一页高的框（完整人生节律、依据）只能跨页，每一页各补一圈边和圆角，不露半截框 */
+  .fig,.juan,.calc,.decc,.pcd,.lrow,.win,.warm,.gold,.q,.prog,.closing,.ssf,.soult,.qrw,.pl,.careas,.timenote,.st-t,.yr,.yi,.ji,.hit,li{break-inside:avoid}
+  .juan{break-before:page}   /* 卷上、卷下各从新的一页起 */
+  .years{break-before:avoid}   /* 流年小条跟着上面的大运图，不单独掉到下一页 */
+  .fig.soul svg{max-width:250px !important}   /* 灵魂三层图印小一圈，跟篇首标题落在同一页，不空出半页（屏幕那条 360px 写在后面，要 important 才压得住） */
+  .cited,.gold,.refs{break-before:avoid}   /* 「上篇引用」、金句、依据角标都跟着上面那段走，不单独落到下一页、空出一整页 */
+  .dia,details>summary{break-after:avoid}
+  details.fold,details.basis{box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  /* 10-11 她：PDF「有点斜，右边比左边低」。几何是正的，是印出来的样子在骗眼睛：阴影在 PDF 里糊成一圈灰雾；
+     封面 155° 斜渐变右下压一块紫；卷首「照见」的渐变字印成一个往右偏的方框。打印时去阴影、渐变改竖直、字改实色 */
+  *{box-shadow:none !important}
+  .cover{background:linear-gradient(180deg,#fff 0%,#fff6ee 55%,#f3f0fd 100%) !important}   /* 屏幕那几条写在后面，打印要 important 才压得住 */
+  .juan .st-t{background:none !important;-webkit-background-clip:border-box !important;background-clip:border-box !important;color:#9a5220 !important;margin-left:0 !important;padding-left:.5em}
   h2,h3,h4,.pl2,.pt2,.divd,.sh,.subhead,.figt{break-after:avoid}
   .part{break-before:page;margin-top:0}   /* 每一篇从新的一页起，标题不会落在页底 */
   .connect{break-before:page}
@@ -229,6 +243,9 @@ footer .motto{font-family:var(--serif);color:var(--accent);font-size:15px;letter
 .pcd{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px 16px 8px;box-shadow:0 4px 18px rgba(190,140,90,.05)}
 .pcd .ph{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .pcd .pn{font-family:var(--serif);font-size:19px;font-weight:600}
+.xtra{padding:8px 16px}.xrow{display:grid;grid-template-columns:4.2em 10.5em 1fr;gap:10px;align-items:baseline;padding:7px 0;border-top:1px dashed rgba(150,110,70,.15);font-size:14px}
+.xrow:first-child{border-top:0}.xrow b{font-family:var(--serif);font-weight:600;color:var(--ink)}.xrow .xp{color:var(--sub);font-size:13px}.xrow .xm{color:var(--ink)}
+@media(max-width:420px){.xrow{grid-template-columns:4.2em 1fr}.xrow .xm{grid-column:2}}
 .pcd .ps{font-size:13px;color:var(--sub)}
 .pcd .ruler{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--soft);color:#a85a22}
 .pcd .termrow{margin:8px 0 6px}
@@ -555,7 +572,9 @@ var EL = { 木: '#3f9b6b', 火: '#e0623f', 土: '#c99636', 金: '#8e97a8', 水: 
 var GAN_EL = { 甲: '木', 乙: '木', 丙: '火', 丁: '火', 戊: '土', 己: '土', 庚: '金', 辛: '金', 壬: '水', 癸: '水' };
 var SIGNS = ['白羊', '金牛', '双子', '巨蟹', '狮子', '处女', '天秤', '天蝎', '射手', '摩羯', '水瓶', '双鱼'];
 var ZOD = ['羊', '牛', '双', '蟹', '狮', '处', '秤', '蝎', '射', '摩', '瓶', '鱼'];
-var CHAR = { 太阳: '日', 月亮: '月', 水星: '水', 金星: '金', 火星: '火', 木星: '木', 土星: '土', 天王: '天', 海王: '海', 冥王: '冥', 凯龙: '凯', 北交点: '北', 南交点: '南', 莉莉丝: '莉', 谷神: '谷', 智神: '智', 婚神: '婚', 灶神: '灶' };
+var CHAR = { 太阳: '日', 月亮: '月', 水星: '水', 金星: '金', 火星: '火', 木星: '木', 土星: '土', 天王: '天', 海王: '海', 冥王: '冥', 凯龙: '凯', 北交点: '北', 南交点: '南', 莉莉丝: '莉', 福点: '福', 宿命点: '宿', 东方点: '东', 谷神: '谷', 智神: '智', 婚神: '婚', 灶神: '灶' };
+// 进阶点位、小行星各管什么（跟主站星盘页同一套说法）
+var EXTRA_MEAN = { 凯龙: '伤在哪，天赋也在哪', 北交点: '此生功课的方向', 南交点: '带来的旧惯性', 莉莉丝: '隐秘欲望与不被驯服的部分', 福点: '天赋的福气与顺遂之处', 宿命点: '命中注定的相遇与转折', 东方点: '对外呈现的第二面相', 谷神: '如何滋养与被滋养', 智神: '天生的策略智慧', 婚神: '承诺关系里真正要的', 灶神: '心火与专注供在哪' };
 var ASPECTS = [[0, '合', 8, ''], [60, '六合', 4, 'good'], [90, '刑', 6, 'hard'], [120, '拱', 6, 'good'], [180, '冲', 8, 'hard']];
 var TIER = [['顺风', '#f2a066', '#d06f2e'], ['偏顺', '#f8d2ae', '#c0844c'], ['平稳', '#cfd2f0', '#7e85c6'], ['偏紧', '#a7acde', '#6a71b8'], ['逆风', '#7f86ca', '#5a60ad']];
 var SRC = {
@@ -598,7 +617,7 @@ function wheelPanel() {
   var R0 = 190, R1 = 163, R2 = 145, RL = 124, RA = 98;
   var ELC = ['#d8432f', '#a8841c', '#3d8f4f', '#2f5fc4'];   // 火 土 风 水
   var RULE = [['火'], ['金'], ['水'], ['月'], ['日'], ['水'], ['金'], ['火', '冥'], ['木'], ['土'], ['土', '天'], ['木', '海']];
-  var PC = { 太阳: '#d8432f', 月亮: '#2f5fc4', 水星: '#3d8f4f', 金星: '#a8841c', 火星: '#d8432f', 木星: '#d8432f', 土星: '#a8841c', 天王: '#3d8f4f', 海王: '#2f5fc4', 冥王: '#23366e', 凯龙: '#7a5fc4', 北交点: '#2a9d9d', 福点: '#2a9d9d', 升: '#d8432f', 中: '#3d8f4f' };
+  var PC = { 太阳: '#d8432f', 月亮: '#2f5fc4', 水星: '#3d8f4f', 金星: '#a8841c', 火星: '#d8432f', 木星: '#d8432f', 土星: '#a8841c', 天王: '#3d8f4f', 海王: '#2f5fc4', 冥王: '#23366e', 凯龙: '#7a5fc4', 北交点: '#2a9d9d', 南交点: '#2a9d9d', 福点: '#2a9d9d', 莉莉丝: '#8a4f7d', 宿命点: '#7a5fc4', 东方点: '#3b6ea5', 谷神: '#9a7a4a', 智神: '#9a7a4a', 婚神: '#9a7a4a', 灶神: '#9a7a4a', 升: '#d8432f', 中: '#3d8f4f' };
   function pol(L, r) { var t = (180 + (L - asc)) * Math.PI / 180; return [(200 + r * Math.cos(t)).toFixed(1), (200 - r * Math.sin(t)).toFixed(1)]; }
   function ang(a, b) { var d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d; }
   function line(p1, p2, st) { return '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" ' + st + '/>'; }
@@ -647,7 +666,7 @@ function wheelPanel() {
   s += line(pol(mc, R0 + 8), pol(mc + 180, R0 + 8), 'stroke="#3b6ea5" stroke-width="1.6"');
   // 天体：相位圈上的真实位置点＋点线＋彩色汉字，挤在一起的往两边推开
   var bodies = W.planets.map(function (p) { return { k: p.n, ch: CHAR[p.n], L: lon(p), rx: p.rx }; })
-    .concat((W.points || []).filter(function (p) { return p.n === '北交点' || p.n === '福点'; }).map(function (p) { return { k: p.n, ch: p.n === '福点' ? '福' : '北', L: lon(p) }; }))
+    .concat((W.points || []).concat(W.asteroids || []).filter(function (p) { return CHAR[p.n]; }).map(function (p) { return { k: p.n, ch: CHAR[p.n], L: lon(p), rx: p.rx && !/交点/.test(p.n), minor: true }; }))   // 10-11 她：莉莉丝这些点之前都画的，别少
     .concat([{ k: '升', ch: '升', L: asc }, { k: '中', ch: '中', L: mc }]);
   var lab = bodies.map(function (x) { return { k: x.k, L: x.L, A: x.L }; }).sort(function (p, q) { return p.L - q.L; });
   for (var it = 0; it < 80; it++) {
@@ -663,7 +682,7 @@ function wheelPanel() {
     var col = PC[x.k] || '#6a6a8a', A = LBL[x.k], dot = pol(x.L, RA), lp = pol(A, RL);
     s += line(pol(x.L, RA + 2), pol(A, RL - 9), 'stroke="' + col + '" stroke-width=".8" stroke-dasharray="1.5 2" opacity=".8"');
     s += '<circle cx="' + dot[0] + '" cy="' + dot[1] + '" r="2.3" fill="' + col + '"/>';
-    s += txt(lp, esc(x.ch) + (x.rx ? '<tspan font-size="7" dy="-5">R</tspan>' : ''), 'font-size="14" font-weight="600" fill="' + col + '" font-family="Songti SC,STSong,serif"');
+    s += txt(lp, esc(x.ch) + (x.rx ? '<tspan font-size="7" dy="-5">R</tspan>' : ''), 'font-size="' + (x.minor ? 11.5 : 14) + '" font-weight="' + (x.minor ? 500 : 600) + '" fill="' + col + '" font-family="Songti SC,STSong,serif"');
   });
   return h('div', 'panel', [h('h4', null, '星盘 · 普拉西德分宫'), svg('-12 -12 424 424', 0, s, 'wheel')]);
 }
@@ -934,6 +953,7 @@ function lifeFig() {
   for (var a = 0; a <= maxA; a += 10) { s += '<line x1="' + X(a).toFixed(1) + '" y1="' + (ay - 4) + '" x2="' + X(a).toFixed(1) + '" y2="' + (ay + 4) + '" stroke="#d9a057"/><text x="' + X(a).toFixed(1) + '" y="' + (ay + 16) + '" text-anchor="middle" font-size="10" fill="#b09c8c">' + a + (a === maxA ? (XB.luck[0].age_kind === '周岁' ? '周岁' : '岁') : '') + '</text>'; }
   var cyc = (XT && XT.life_cycles) || [], lanes = [[], [], [], [], [], [], []], ly0 = ay + 30, used = 0;
   cyc.filter(function (c) { return c.name === '木星回归'; }).forEach(function (c) { s += '<circle cx="' + X(c.age + .5).toFixed(1) + '" cy="' + ay + '" r="3" fill="#f2a066"/>'; });
+  var labels = '';   // 字最后统一画：虚线都在字底下，字的底色描边把线盖住（10-11 她看 PDF：线穿过字）
   cyc.filter(function (c) { return LIFE_SHOW[c.name]; }).forEach(function (c) {
     var x = X(c.age + .5), w = c.name.length * 11 + 24, end = x + w > Wd - 4, a = end ? x - w : x, b = end ? x : x + w, ln = 0;
     while (ln < lanes.length - 1 && lanes[ln].some(function (r) { return a < r[1] + 6 && b > r[0] - 6; })) ln++;
@@ -941,8 +961,9 @@ function lifeFig() {
     var y = ly0 + ln * 24, col = /土星|冥王/.test(c.name) ? '#7f86ca' : /凯龙/.test(c.name) ? '#c9783a' : '#a08fe0';
     s += '<line x1="' + x.toFixed(1) + '" y1="' + ay + '" x2="' + x.toFixed(1) + '" y2="' + (y - 4) + '" stroke="' + col + '" stroke-dasharray="2 2"/>';
     s += '<circle cx="' + x.toFixed(1) + '" cy="' + ay + '" r="3.6" fill="' + col + '"/>';
-    s += '<text x="' + (end ? x - 3 : x + 3).toFixed(1) + '" y="' + (y + 6) + '" font-size="11" fill="' + col + '" paint-order="stroke" stroke="#fffdfa" stroke-width="4" stroke-linejoin="round"' + (end ? ' text-anchor="end"' : '') + '>' + esc(c.name) + '<tspan fill="#b09c8c" font-size="9.5"> ' + esc(c.age) + '</tspan></text>';
+    labels += '<text x="' + (end ? x - 3 : x + 3).toFixed(1) + '" y="' + (y + 6) + '" font-size="11" fill="' + col + '" paint-order="stroke" stroke="#fffdfa" stroke-width="4" stroke-linejoin="round"' + (end ? ' text-anchor="end"' : '') + '>' + esc(c.name) + '<tspan fill="#b09c8c" font-size="9.5"> ' + esc(c.age) + '</tspan></text>';
   });
+  s += labels;
   if (age0 != null) s += '<path d="M' + X(age0 + .5).toFixed(1) + ' 62l-5 -7h10z" fill="#c9783a"/><text x="' + X(age0 + .5).toFixed(1) + '" y="11" text-anchor="middle" font-size="10.5" fill="#c9783a">现在</text>';
   return h('div', 'fig lfig', [svg('0 0 ' + Wd + ' ' + (ly0 + Math.max(1, used) * 24 + 4), 0, s), h('div', 'cap', '上排是八字大运（每步十年，颜色是顺逆），下排是西盘的人生大周期，橙点是每十二年一次的木星回归')]);
 }
@@ -992,7 +1013,18 @@ if (W && XW) {
       return h('div', 'pw', [h('em', null, String(i + 1)), h('b', null, x.n), bar, h('em', null, i === 0 ? '最强的牌' : i === pr.length - 1 ? '要补的短板' : '')]);
     })), h('div', 'cap', '庙旺落陷 × 落宫 × 相位扶克 × 逆行，玄玑西盘尺子同一套算法')])]),
     h('div', 'pgrid', auditCards),
+    extraCard(),
     AU.aspects && AU.aspects.length ? [h('div', 'dia', h('h3', null, '主要相位')), h('div', 'pgrid two', AU.aspects.map(function (x) { return h('div', 'pcd', [h('div', 'ph', h('span', 'pn', x.aspect)), paras(x.body)]); }))] : null]), 'a-west'));
+}
+// 进阶点位与小行星：凯龙、南北交、莉莉丝、福点、宿命点、东方点、四颗小行星，各一行（落在哪、管什么）
+function extraCard() {
+  if (!W) return null;
+  var ks = ['凯龙', '北交点', '南交点', '莉莉丝', '福点', '宿命点', '东方点', '谷神', '智神', '婚神', '灶神'];
+  var all = W.planets.concat(W.points || [], W.asteroids || []), rows = ks.map(function (k) { return all.filter(function (p) { return p.n === k; })[0]; }).filter(Boolean);
+  if (!rows.length) return null;
+  return [h('div', 'dia', h('h3', null, '进阶点位与小行星')), h('div', 'pcd xtra', rows.map(function (p) {
+    return h('div', 'xrow', [h('b', null, p.n), h('span', 'xp', pos(p) + (p.house ? ' · ' + p.house + ' 宫' : '') + (p.rx && !/交点/.test(p.n) ? ' · 逆行' : '')), h('span', 'xm', EXTRA_MEAN[p.n] || '')]);
+  }))];
 }
 // 八字盘面
 // 身强身弱：几家算法投票（method.bazi.strength.vote）；默认页只给结论，待定就不说
@@ -1132,9 +1164,10 @@ if ((bs.confidence && bs.confidence.length) || (bs.counter && bs.counter.length)
   bs.confidence && bs.confidence.length ? h('div', 'conf', bs.confidence.map(function (c) { return [h('span', 'lv', c.level), h('div', null, [h('b', null, c.item + '：'), c.why])]; })) : null,
   bs.counter && bs.counter.length ? h('ul', null, bs.counter.map(function (c) { return h('li', null, c); })) : null, bs.notes ? paras(bs.notes) : null]);
 if (bs.differences && bs.differences.length) add(bd, [h('h4', null, '几套体系说法不同的地方'), h('ul', null, bs.differences.map(function (d) {
-  return h('li', null, [h('b', null, d.theme + '：'), [['八字', d.bazi], ['星盘', d.west], ['人格', d.base]].filter(function (r) { return r[1]; }).map(function (r) { return r[0] + '说' + r[1]; }).join('；'), d.note ? '。' + d.note : '']);
+  if (!d || typeof d !== 'object') return h('li', null, String(d || ''));   // 10-11 Kimi 复验：宿主写成一句话或漏了 theme，页面出「undefined：」
+  return h('li', null, [d.theme ? h('b', null, d.theme + '：') : null, [['八字', d.bazi], ['星盘', d.west], ['人格', d.base]].filter(function (r) { return r[1]; }).map(function (r) { return r[0] + '说' + r[1]; }).join('；'), d.note ? (d.bazi || d.west || d.base ? '。' : '') + d.note : '']);
 }))]);
-if (W) add(bd, [h('h4', null, '星盘原始数据'), dl([['上升', pos(W.angles.asc)], ['天顶', pos(W.angles.mc)], ['小行星', (W.asteroids || []).map(function (p) { return p.n + ' ' + pos(p) + ' · ' + p.house + ' 宫'; }).join('；')]]), h('div', 'mini', (W.aspects || []).map(function (a) { return h('span', null, a); }))]);
+if (W) add(bd, [h('h4', null, '星盘原始数据'), dl([['上升', pos(W.angles.asc)], ['天顶', pos(W.angles.mc)], ['小行星', (W.asteroids || []).map(function (p) { return p.n + ' ' + pos(p) + ' · ' + p.house + ' 宫'; }).join('；')], ['进阶点位', (W.points || []).map(function (p) { return p.n + ' ' + pos(p) + ' · ' + p.house + ' 宫'; }).join('；')]]), h('div', 'mini', (W.aspects || []).map(function (a) { return h('span', null, a); }))]);
 if (XP) add(bd, [h('h4', null, '人格的推法'), dl([['出厂底色', XP.base.type + '，第二接近 ' + XP.base.runner_up + '（' + XP.base.lead + '）'], ['行星落座锁定', XP.locks.map(function (l) { return l.planet + '落' + l.sign + '→' + l.funcs.join('/'); }).join('；')], ['说明', '出厂底色是从星盘推出的人格结构，不是自测的 MBTI，也不用来猜你自测的结果。']])]);
 var v = P.version || {};
 add(bd, [h('h4', null, '版本'), dl([['数据', (v.schema || '') + (X.schema ? ' · ' + X.schema : '') + (XT ? ' · ' + XT.schema : '') + (BZ ? ' · ' + BZ.version.engine : '')], ['生成', String(D.built_at || '').slice(0, 10) + ' · 玄玑 Skill ' + (D.skill_version || '')]])]);

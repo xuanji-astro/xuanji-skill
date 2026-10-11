@@ -57,15 +57,29 @@ test('cover support must list 星盘, 八字 and 人格; template shows them in 
  const r=structuredClone(rep);r.cover.support=['人格','八字','星盘'];assert.deepEqual(check(r,prof),[]);
  const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');assert(t.includes("['星盘', '八字', '人格'].filter"));
 });
-test('cover: line 1 from the day-stem pool verbatim, line 2 gifts 14-28 and positive, line 3 the persona line verbatim',()=>{const {prof,rep}=fixtures();const P=structuredClone(prof);P.method=P.method||{};P.method.bazi={...(P.method.bazi||{}),day_master:{gan:'庚',image:'矿石钢铁'}};P.method.persona={...(P.method.persona||{}),base:{...((P.method.persona||{}).base||{}),line:'合成判词：把最乱的局交给你。'}};
+test('cover: line 1 from the day-stem pool verbatim, line 2 gifts 14-28 and positive, line 3 the persona praise line (cover_line, else line) verbatim',()=>{const {prof,rep}=fixtures();const P=structuredClone(prof);P.method=P.method||{};P.method.bazi={...(P.method.bazi||{}),day_master:{gan:'庚',image:'矿石钢铁'}};P.method.persona={...(P.method.persona||{}),base:{...((P.method.persona||{}).base||{}),line:'合成判词：把最乱的局交给你。'}};
  const errs=(seen)=>{const r=structuredClone(rep);r.cover.seen=seen;return check(r,P).filter(e=>e.startsWith('cover.seen'));};
  const L2='敢挑头，压得住阵，做事有章法，说话有分量。';
  assert.deepEqual(errs(`宝剑锋从磨砺出。\n${L2}\n合成判词：把最乱的局交给你。`),[]);
  assert.match(errs(`一盏灯照得很远。\n${L2}\n合成判词：把最乱的局交给你。`).join(),/第一句要从 report_rules\.json 的 cover_seen_plain\.pool「庚」/);
- assert.match(errs(`宝剑锋从磨砺出。\n${L2}\n你是让人愿意跟上的人。`).join(),/第三句照抄出厂底色那句/);
+ assert.match(errs(`宝剑锋从磨砺出。\n${L2}\n你是让人愿意跟上的人。`).join(),/第三句照抄出厂底色封神那句/);
+ // 10-11：接口给了 cover_line（封神那句）就只认它，抽中的戳痛那句 line 不能上封面
+ P.method.persona.base.cover_line='合成封神句：你一来，局就稳了。';
+ assert.deepEqual(errs(`宝剑锋从磨砺出。\n${L2}\n合成封神句：你一来，局就稳了。`),[]);
+ assert.match(errs(`宝剑锋从磨砺出。\n${L2}\n合成判词：把最乱的局交给你。`).join(),/封神那句.*合成封神句/);
+ delete P.method.persona.base.cover_line;
  assert.match(errs(`宝剑锋从磨砺出。\n看人准。\n合成判词：把最乱的局交给你。`).join(),/第二句 \d+ 字，要 14～28 字/);
  assert.match(errs(`宝剑锋从磨砺出。\n你不是最响的那个，却是最能扛事的那个人。\n合成判词：把最乱的局交给你。`).join(),/第2句里有「你不是」/);
  assert.match(errs(`宝剑锋从磨砺出。\n${L2}`).join(),/要 3 句/);
  assert.match(errs(`宝剑锋从磨砺出。\n聚人、定调、开路，事到她手里就有了章法。\n合成判词：把最乱的局交给你。`).join(),/第2句里有「她」/);   // 封面对他说「你」，不写成第三人称
 });
 test('身强身弱校正（10-10）：报告只带结论（身X型、四格、件数），题和留痕明细不进报告',()=>{const {prof,rep}=fixtures();const p=structuredClone(prof);p.method.bazi=p.method.bazi||{};p.method.bazi.calib={ask:{traits:[{no:1,q:'平时做事的节奏更像？',options:[]}],events:{q:'过去这些年',domains:[]}},result:{status:'定案',side:'强',type:'身强型',cards:[{title:'能量核心',text:'底气足。'}],say:'提醒',used:{traits:8,events:1},detail:{tally:{强:8,弱:0},answers:[{year:2023,pick:'强'}],events:[{year:2016,event:'离婚合成'}]}}};const html=build(p,rep);for(const raw of ['平时做事的节奏更像','离婚合成','"tally"','"detail"'])assert(!html.includes(raw),raw);assert(html.includes('身强型'));});
+test('星盘图和卷下点位卡：接口给的进阶点位、小行星都有字和说法，不能再被筛掉（10-11 她：莉莉丝这些之前都画的）',async()=>{const {readFile}=await import('node:fs/promises');const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
+ const charLine=t.match(/var CHAR = \{[^\n]+\}/)[0], mean=t.match(/var EXTRA_MEAN = \{[^\n]+\}/)[0];
+ for(const n of ['北交点','南交点','莉莉丝','福点','宿命点','东方点','谷神','智神','婚神','灶神']){assert(charLine.includes(n+':'),n+' 星盘图上要有字');assert(mean.includes(n+':'),n+' 点位卡要有说法');}
+ assert(t.includes("(W.points || []).concat(W.asteroids || []).filter(function (p) { return CHAR[p.n]; })"),'星盘图要把 points 和 asteroids 都画上');
+ assert(!/W\.points[^\n]{0,80}p\.n === '北交点' \|\| p\.n === '福点'/.test(t),'不能再只挑北交点和福点');
+});
+test('依据里「几套体系说法不同」：宿主写成一句话或漏了 theme，也不出 undefined（10-11 Kimi 复验）',async()=>{const {readFile}=await import('node:fs/promises');const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
+ assert(t.includes("if (!d || typeof d !== 'object') return h('li', null, String(d || ''));"));assert(t.includes("d.theme ? h('b', null, d.theme + '：') : null"));
+});
