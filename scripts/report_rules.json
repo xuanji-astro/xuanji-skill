@@ -241,6 +241,13 @@
   ],
   "years.windows[].title": [
    "股"
+  ],
+  "next_questions[]": [
+   "出生时间",
+   "时柱",
+   "宫头",
+   "算法",
+   "依据"
   ]
  },
  "must_contain": {},

@@ -1,0 +1,4 @@
+interface:
+  display_name: "执天玄玑"
+  short_description: "八字、星盘、出厂底色：排盘、解读、出报告"
+  default_prompt: "用 $xuanji 帮我看看我的盘"
