@@ -21,7 +21,7 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.9';
+const SKILL_VERSION = '0.1.0-rc.10';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
@@ -152,7 +152,7 @@ export function check(rep, prof) {
     if (!R.strength_check.decided.includes(sc.decided)) errs.push('strength_check.decided 只能是 强／弱／不可判');
     (sc.asked ?? []).forEach((a, i) => { if (!R.strength_check.answer.includes(a.answer)) errs.push(`strength_check.asked 第${i + 1}条 answer 只能是 顺／闷／没感觉`); });
   }
-  for (const [path, words] of Object.entries(R.forbidden_in ?? {})) for (const [where, v] of collect(rep, path)) for (const w of words) if (typeof v === 'string' && v.includes(w)) errs.push(`${where} 里不要用「${w}」：今年的天象写成「天象 · 落在哪 · 意味着什么」`);
+  for (const [path, words] of Object.entries(R.forbidden_in ?? {})) for (const [where, v] of collect(rep, path)) for (const w of words) if (typeof v === 'string' && v.includes(w)) errs.push(`${where} 里不要用「${w}」：` + (path.startsWith('next_questions') ? '接下来可以问的，写用户自己会问的事，不问出生时间、算法这些内部的事' : '今年的天象写成「天象 · 落在哪 · 意味着什么」'));
   for (const [path, word] of Object.entries(R.must_contain ?? {})) { const vals = collect(rep, path).map(([, v]) => v).filter((v) => typeof v === 'string'); if (vals.length && !vals.some((v) => v.includes(word))) errs.push(`${path} 里至少要有一节标题带「${word}」（成长与课题要讲人生课题）`); }
   (rep.basis?.confidence ?? []).forEach((c, i) => { if (!R.levels.includes(c.level)) errs.push(`basis.confidence 第${i + 1}条 level 只能是 高／中／欠定`); });
   const { basis, ...dflt } = rep;
