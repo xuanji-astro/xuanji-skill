@@ -35,7 +35,7 @@
 前提：Node.js ≥ 18.19.1。无 npm/pip 第三方依赖，无需模型 Key、CloudBase Key 或数据库配置。克隆安装另需 Git。
 
 1. 拿到 `xuanji/` 目录，二选一：
-   - 下载发布包 `Xuanji-Skill-0.1.0-rc.10.zip`，解压到一个**新建的空目录**（macOS 可用 Finder 或 `ditto -x -k`，Linux 用支持 UTF-8 文件名的解压工具，Windows 用系统解压或 PowerShell `Expand-Archive`）。解压后核对 `reference/报告.md` 存在。
+   - 下载发布包 `Xuanji-Skill-0.1.0-rc.10.1.zip`，解压到一个**新建的空目录**（macOS 可用 Finder 或 `ditto -x -k`，Linux 用支持 UTF-8 文件名的解压工具，Windows 用系统解压或 PowerShell `Expand-Archive`）。解压后核对 `reference/报告.md` 存在。
    - 或克隆本仓库：`git clone <本仓库地址> xuanji`
 2. 把整个 `xuanji/` 目录放进你的 AI 宿主的技能目录。Codex 示例：复制到项目的 `.agents/skills/xuanji/`；其他宿主按各自的方式安装。不要只复制 SKILL.md，否则脚本和模板缺失；不要覆盖现有同名 Skill。本仓不自动安装、不修改宿主设置。
    - **Codex（含 ChatGPT 桌面版里的 Codex）**：放到项目的 `.agents/skills/xuanji/` 只在这个项目里用；放到 `~/.agents/skills/xuanji/` 所有项目都能用。Codex 的沙箱默认不联网，第一次排盘它会请你批准一条 `client.mjs` 命令联网（只连 `api.xuanji-astro.com`），点同意就行；不用另装浏览器插件。
@@ -81,6 +81,7 @@ node scripts/check_report.mjs --request request.json --report report.html   # �
 
 ## 更新记录
 
+- **rc.10.1**：说话更像当面看盘——盘上看到的直接说，不再句句加「仅供参考」「盘不能证明」，提醒只在第一次给你看盘时说一次；「接下来可以问我」更顺着你的问题往深里问；在别的项目文件夹里打开时，会提醒你换一个空文件夹。
 - **rc.10**：对话更自然——少念规矩、不贴电脑路径、同一个提醒只说一次；排盘前的同意说明换成一句人话；你在这段对话里讲过的情况，它会一起参考（你说「只按盘看」就不用）；报告结尾「接下来可以问我」更贴你的问题；新增 Codex 的安装说明。
 - **rc.9**：报告存 PDF 时不再把卡片切成两半；星盘图补上更多点位。
 - **rc.8**：身强身弱校正、定时辰换了更好答的问法。
@@ -100,7 +101,7 @@ Apache-2.0 不自动授权执天玄玑名称、Logo、官方身份。允许正�
 
 隐私政策（Privacy Policy）：https://xuanji-astro.com/privacy
 
-当前版本 0.1.0-rc.10 是公开的候选版（Release Candidate）。
+当前版本 0.1.0-rc.10.1 是公开的候选版（Release Candidate）。
 
 ## 找到我们
 
