@@ -32,6 +32,10 @@ test('身强身弱：实锤只认用户核过的，待定两种原因都问体�
   assert.match(skill,/`calib`/);
   assert.match(skill,/一条消息发完/);
   assert.match(skill,/一定在出报告之前/);
+  // 10-13／10-14 命理组：每题第六项「说不准」；几种判法一致的盘不主动问；翻到原判反面要明说
+  assert.match(skill,/A–F 六个选项/);
+  assert.match(skill,/verdict\.agree` 是「一致」）的不主动问/);
+  assert.match(skill,/`flip` 不为空/);
   // 10-14 åå§äºº：报告不完整就不给，出不了完整的请用户加创始人；带 --pdf 出 PDF
   assert.match(skill,/--pdf report\.pdf/);
   assert.match(skill,/宁可不给也不给残缺的/);

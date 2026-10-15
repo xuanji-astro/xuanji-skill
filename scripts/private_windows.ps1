@@ -2,11 +2,12 @@
 # Windows PowerShell 5.1, local NTFS only. Never change an existing file's ACL.
 param([string]$Operation,[string]$Path,[int]$MaxBytes=2097152)
 $ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'   # 别往标准错误写进度记录
 $stream=$null
 try {
   [Console]::InputEncoding=[Text.UTF8Encoding]::new($false)
   [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false)
-  $limit=2097152;if($Operation -eq 'create-b64'){$limit=33554432}   # create-b64：报告 PDF 这类二进制，标准输入传 base64（10-14）
+  $limit=2097152;if($Operation -eq 'create-b64' -or $Operation -eq 'check'){$limit=33554432}   # create-b64：报告 PDF 这类二进制，标准输入传 base64（10-14）；check 只核权限，PDF 也要能核（10-15 Windows 实测：3.5MB 的 PDF 被 2MB 上限判成不合格）
   if($PSVersionTable.PSEdition -ne 'Desktop' -or $MaxBytes -lt 1 -or $MaxBytes -gt $limit){throw 'invalid'}
   $full=[IO.Path]::GetFullPath($Path)
   if($full -notmatch '^[A-Za-z]:\\' -or $full.Substring(2).Contains(':')){throw 'invalid'}

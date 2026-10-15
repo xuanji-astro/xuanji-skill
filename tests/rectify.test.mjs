@@ -160,3 +160,17 @@ test('定时辰脚本不联网：不调用 fetch、http、client 的请求函数
   const src=await readFile(cli,'utf8');
   assert.ok(!/\bfetch\s*\(|node:https?|callAPI/.test(src));
 });
+test('ask（10-13）：22 岁及以下问学业；同一种问法的几个年份并成一题，打分仍按每一年',()=>{
+  const a=prof({gz:'甲子',lit:{2011:{bazi:{事业认可:w(3)}},2016:{bazi:{事业认可:w(3)}}}}),b=prof({gz:'乙丑',lit:{2020:{bazi:{事业认可:w(3)}},2024:{bazi:{事业认可:w(3)}}}});
+  const q=ask(a,b,{events:[]});
+  const y11=q.targeted.find(x=>x.year===2011);assert.ok(y11&&/学业/.test(y11.question)&&!/职位/.test(y11.question),'2011 年 21 岁问学业');
+  const big=q.groups.find(g=>g.years.length>1);assert.ok(big,'职位那几年并成一题');
+  assert.equal(big.question,`${big.years.join('、')} 这几年，你的职位或名声有没有变？比如升职、降职、考上学校、拿奖、被公开表扬或批评。哪一年有，就说哪一年。`);
+  assert.equal(q.groups.reduce((n,g)=>n+g.ids.length,0),q.targeted.length);
+  const ans={targeted:Object.fromEntries(q.targeted.map(x=>[x.id,'没有'])),good:{}};
+  assert.doesNotThrow(()=>score(a,b,{events:[]},q,ans));
+});
+test('candidate（10-13）：给了时间没写来源就停（TIME_SOURCE_MISSING），不提议定时辰',()=>{
+  const req={date:'1990-03-15',time:'10:56',city:'浙江省杭州市',gender:'female',time_precision:'minute'};
+  assert.throws(()=>candidate(A(),req),e=>e.code==='TIME_SOURCE_MISSING');
+});

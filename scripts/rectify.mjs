@@ -44,7 +44,20 @@ const Q={
   钱:['你有没有一笔大的进账或花销？','买房买车、投资大赚大亏、欠下大债'],
   迁移远方:['你有没有去别的地方生活？','搬到别的城市、出国、去外地上学或工作'],
 };
-const QT=(d,y)=>`${y} 年，${Q[d][0]}比如${Q[d][1]}。`;
+// 10-13 åå§äºº 实测：2011 年她在读高中，补问还在问「职位或名声」——那一年 22 岁及以下的，工作和事业认可两块换学业的问法（同 10-06 验前事学龄口径）
+const Q_STUDY={
+  工作:['你的学业有没有转向？','转学、换专业、休学、开始实习或打工'],
+  事业认可:['你在学业上有没有大的变化？','升学考试、考上或没考上、转学、拿奖、被公开表扬或批评'],
+};
+const studyAge=age=>Number.isFinite(age)&&age<=22;
+const QQ=(d,age)=>studyAge(age)&&Q_STUDY[d]?Q_STUDY[d]:Q[d];
+const QT=(d,y,age)=>`${y} 年，${QQ(d,age)[0]}比如${QQ(d,age)[1]}。`;
+// 10-13 她：「你这啥问题，124 都长一样」——同一种问法的几个年份并成一题问；打分仍按每一年各记一条（targeted）
+function groupsOf(T){
+  const g=new Map();
+  for(const k of T){const [ask,eg]=QQ(k.domain,k.age),key=ask+'|'+eg;if(!g.has(key))g.set(key,{ids:[],years:[],ask,eg});const x=g.get(key);x.ids.push(k.id);x.years.push(k.year);}
+  return [...g.values()].map(x=>({...x,question:x.years.length>1?`${x.years.join('、')} 这几年，${x.ask}比如${x.eg}。哪一年有，就说哪一年。`:`${x.years[0]} 年，${x.ask}比如${x.eg}。`}));
+}
 export const FOLLOW='对你来说是好事还是坏事？';
 
 // 干支五行和地支关系：公开的通用表，只用来比流年和时柱
@@ -121,14 +134,15 @@ function targeted(A,B,input,nowY){
   for(let round=0;round<RULES.askEach;round++)for(const s of ['a','b']){
     const k=L[s].find(x=>!used.has(x.year));if(!k||n[s]>=RULES.askEach)continue;used.add(k.year);n[s]++;out.push({...k,side:s});
   }
-  return out.sort((p,q)=>p.year-q.year||DOMAINS.indexOf(p.domain)-DOMAINS.indexOf(q.domain)).map((k,i)=>({id:'t'+(i+1),...k}));
+  return out.sort((p,q)=>p.year-q.year||DOMAINS.indexOf(p.domain)-DOMAINS.indexOf(q.domain)).map((k,i)=>({id:'t'+(i+1),...k,age:(A.Y.get(k.year)||{}).age}));
 }
 function predict(c,gz){const e=[EL[gz[0]],EL[gz[1]]];if(e.every(x=>c.fav.includes(x)))return '顺';if(e.every(x=>c.unfav.includes(x)))return '闷';return null;}
 export function plan(pa,pb,events,{now}={}){
   const [A,B]=pairOf(pa,pb),input=inputOf(events),nowY=nowYear(now);
   const t=targeted(A,B,input,nowY);
   return {schema:'xuanji.rectify.ask/0.2',now_year:nowY,
-    targeted:t.map(k=>({id:k.id,year:k.year,domain:k.domain,question:QT(k.domain,k.year),ask:Q[k.domain][0],eg:Q[k.domain][1]})),
+    targeted:t.map(k=>({id:k.id,year:k.year,domain:k.domain,question:QT(k.domain,k.year,k.age),ask:QQ(k.domain,k.age)[0],eg:QQ(k.domain,k.age)[1]})),
+    groups:groupsOf(t).map(g=>({ids:g.ids,years:g.years,question:g.question})),
     follow_up:FOLLOW,ask_children:true,
     answers:{targeted:['有','没有','记不清'],good:['好事','坏事']}};
 }
@@ -158,7 +172,7 @@ export function score(pa,pb,events,ask,answers){
   // 重算要问的年份，跟 ask.json 对不上就停（防止换了盘或改了大事再打分）
   const T=targeted(A,B,input,ask.now_year);
   const same=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
-  if(!same(T.map(k=>[k.id,k.year,k.domain,QT(k.domain,k.year)]),(ask.targeted??[]).map(k=>[k.id,k.year,k.domain,k.question])))fail('ASK_MISMATCH');
+  if(!same(T.map(k=>[k.id,k.year,k.domain,QT(k.domain,k.year,k.age)]),(ask.targeted??[]).map(k=>[k.id,k.year,k.domain,k.question])))fail('ASK_MISMATCH');
   // 补问回答：有／没有／记不清（老说法「没印象」照收）；答了「有」的才能追问好事坏事
   for(const [k,v] of Object.entries(ta))if(!T.some(x=>x.id===k)||!['有','没有','记不清','没印象'].includes(v))fail('INPUT_INVALID');
   for(const [k,v] of Object.entries(ga))if(ta[k]!=='有'||!['好事','坏事'].includes(v))fail('INPUT_INVALID');

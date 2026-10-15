@@ -6,7 +6,7 @@
 // 不要自己在命令或 node -e 里写生辰去搜：命令和输出会留在宿主的记录里。
 import { realpathSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { readPrivateJSON, readPrivateText } from './private_files.mjs';
+import { readPrivateJSON, readPrivateText, reasonOf } from './private_files.mjs';
 
 const pad = (x) => String(x).padStart(2, '0');
 // 一个人的出生信息 → 要搜的写法（同一个日期、时间常见的几种写法；地名取全称和最细的一级）
@@ -50,5 +50,5 @@ export async function main(args) {
   if (hit.size) process.exitCode = 1;
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) main(process.argv.slice(2)).catch((e) => {
-  console.error(['CHECK_CONFIG_INVALID', 'PRIVATE_FILE_INVALID'].includes(e.message) ? e.message : 'CHECK_FAILED'); process.exitCode = 2;
+  console.error(['CHECK_CONFIG_INVALID', 'PRIVATE_FILE_INVALID'].includes(e.message) ? e.message : 'CHECK_FAILED'); const w = reasonOf(e); if (w) console.error('WINDOWS_REASON ' + w); process.exitCode = 2;
 });
