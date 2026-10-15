@@ -759,7 +759,7 @@ function vennFig(items) {
   var head = function (x, y, a, b, c) { return T(x, y, a, 'font-size="15" font-weight="700" fill="' + c + '" font-family="Songti SC,STSong,serif" letter-spacing="2"') + T(x, y + 15, b, 'font-size="9.5" fill="#a08c7c" letter-spacing="2"'); };
   s += head(118, 34, '八 字', '东方 · 命理', '#c0652a') + head(342, 34, '星 盘', '西方 · 占星', '#5b62c4') + head(230, 404, '人 格', '出厂底色', '#2f7d57');
   var ev = function (x, y, lines) { return lines.filter(Boolean).slice(0, 3).map(function (t, i) { return T(x, y + i * 16, t, 'font-size="11.5" fill="#6b5a4e"'); }).join(''); };
-  var bzL = XB ? [XB.day_master.gan + XB.day_master.element + '日主', (strengthShown() ? strengthShown() + ' · ' : '') + XB.pattern.name, '喜' + usefulShown().favorable.slice(0, 2).join('') + ' 忌' + usefulShown().unfavorable.join('')] : [];
+  var bzL = XB ? [XB.day_master.gan + XB.day_master.element + '日主', (strengthShown() ? strengthShown() + ' · ' : '') + XB.pattern.name, '喜' + usefulShown().favorable.join('') + ' 忌' + usefulShown().unfavorable.join('')] : [];
   var hard = function (p) { return p ? p.aspects.filter(function (x) { return x.type === '冲' || x.type === '刑' || x.type === '合'; }).slice(0, 1).map(function (x) { return p.n.slice(0, 1) + x.type + x.with.slice(0, 1); })[0] : null; };
   var wL = XW ? ['上升' + XW.big3.asc.sign, '命主星' + XW.big3.asc.ruler + (XW.big3.asc.ruler_detail ? '落' + XW.big3.asc.ruler_detail.house + '宫' : ''), [hard(XW.big3.sun), hard(XW.big3.moon)].filter(Boolean).join(' · ')] : [];
   var pL = XP ? ['出厂底色 ' + XP.base.type, '主导' + XP.base.stack.dom.f + ' · 辅助' + XP.base.stack.aux.f, '重生 ' + XP.rebirth.map(function (x) { return x.type; }).join(' / ')] : [];
@@ -1163,7 +1163,9 @@ add(bd, [h('h4', null, '出生时间与口径'), dl([
 if ((bs.confidence && bs.confidence.length) || (bs.counter && bs.counter.length) || bs.notes) add(bd, [h('h4', null, '把握和反证'),
   bs.confidence && bs.confidence.length ? h('div', 'conf', bs.confidence.map(function (c) { return [h('span', 'lv', c.level), h('div', null, [h('b', null, c.item + '：'), c.why])]; })) : null,
   bs.counter && bs.counter.length ? h('ul', null, bs.counter.map(function (c) { return h('li', null, c); })) : null, bs.notes ? paras(bs.notes) : null]);
-if (bs.differences && bs.differences.length) add(bd, [h('h4', null, '几套体系说法不同的地方'), h('ul', null, bs.differences.map(function (d) {
+// 10-11 复验：空的一条（空字符串、四样都没写的对象）会画出一个空圆点，先滤掉；滤完没了就不出这一节
+var DIFF = (bs.differences || []).filter(function (d) { return d && (typeof d !== 'object' ? String(d).trim() : d.theme || d.bazi || d.west || d.base || d.note); });
+if (DIFF.length) add(bd, [h('h4', null, '几套体系说法不同的地方'), h('ul', null, DIFF.map(function (d) {
   if (!d || typeof d !== 'object') return h('li', null, String(d || ''));   // 10-11 Kimi 复验：宿主写成一句话或漏了 theme，页面出「undefined：」
   return h('li', null, [d.theme ? h('b', null, d.theme + '：') : null, [['八字', d.bazi], ['星盘', d.west], ['人格', d.base]].filter(function (r) { return r[1]; }).map(function (r) { return r[0] + '说' + r[1]; }).join('；'), d.note ? (d.bazi || d.west || d.base ? '。' : '') + d.note : '']);
 }))]);
