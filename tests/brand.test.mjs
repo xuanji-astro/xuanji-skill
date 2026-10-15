@@ -14,11 +14,13 @@ import {readFileSync,existsSync} from 'node:fs';
 import {readPrivateJSON,assertPrivateFile} from '../scripts/private_files.mjs';
 function fixtures(){
  const year=new Date().getFullYear();const section={title:'结构观察',body:'合成测试文字，不代表真人或未来承诺。'};
- const calendar=Array.from({length:3},(_,i)=>({span:String(year+i),title:'合成观察',body:'保留自主判断。',first_half:'观察',second_half:'复核',do:'记录',avoid:'冲动',basis:'合成接口依据',areas:[{area:'事业',text:'合成'},{area:'学业',text:'合成'}]}));
+ const calendar=Array.from({length:3},(_,i)=>({span:String(year+i),title:'合成观察',body:'保留自主判断。',first_half:'观察',second_half:'复核',do:'记录',avoid:'冲动',basis:'合成依据',areas:[{area:'事业',text:'合成'},{area:'学业',text:'合成'}]}));
  const chapters=Object.fromEntries(['career','wealth','study','love','family','social','health','growth'].map(k=>[k,{brief:k==='growth'?'人生课题需要慢慢观察':'观察后再判断',sections:[section,section]}]));
+ for(const k of ['career','love','wealth'])chapters[k].refs=['八字·日支'];
  chapters.career.question='你是否想了解这个结构？';chapters.career.gold='结构不替代选择。';
- const rep={schema:'xuanji.report/0.5',cover:{seen:'合成样本第一句。\n合成样本第二句，夸你的本事，写到二十字上下。\n合成原句，不代表真人。',support:['星盘','八字','人格']},progress:Array.from({length:3},()=>({state:'待确认',item:'合成样本待确认'})),hits:[],misses:[],crosscheck:[],skeleton:{question:'你想从哪里开始？',oneline:'用结构帮助观察。',bazi:'合成说明。'},gifts:{oneline:'善用已有优势。',items:Array.from({length:3},()=>section)},focus:['career','love'],chapters,years:{theme:'合成节奏',lesson:{question:'你想观察什么？',body:'保留自己的判断。'},forces:[section],windows:Array.from({length:4},()=>({when:'合成月份',area:'事业',title:'观察窗口',body:'仅为格式测试。'})),calendar,decade:Array.from({length:7},(_,i)=>({span:String(year+3+i),title:'合成',body:'合成观察',basis:'合成依据'})),life:Array.from({length:6},()=>({span:'合成年龄',title:'节奏观察',body:'合成文字'}))},closing:'合成测试结束。',audit:{aspects:Array.from({length:3},()=>({aspect:'合成相位',body:'合成'}))},next_questions:['如何看待当前结构？','怎样观察行动？','如何记录经验？','如何理解变化？'],basis:{}};
+ const rep={schema:'xuanji.report/0.5',cover:{seen:'合成样本第一句。\n合成样本第二句，夸你的本事，写到二十字上下。\n合成原句，不代表真人。',support:['星盘','八字','人格']},progress:Array.from({length:3},()=>({state:'待确认',item:'合成样本待确认'})),hits:[],misses:[],crosscheck:[],skeleton:{question:'你想从哪里开始？',oneline:'用结构帮助观察。',bazi:'合成说明。'},gifts:{oneline:'善用已有优势。',items:Array.from({length:3},(_,i)=>({...section,refs:[['八字·日主'],['人格·Te'],['八字·日支']][i]}))},focus:['career','love','wealth'],chapters,years:{theme:'合成节奏',lesson:{question:'你想观察什么？',body:'保留自己的判断。'},forces:[section],windows:Array.from({length:4},()=>({when:'合成月份',area:'事业',title:'观察窗口',body:'仅为格式测试。'})),calendar,decade:Array.from({length:7},(_,i)=>({span:String(year+3+i),title:'合成',body:'合成观察',basis:'合成依据'})),life:Array.from({length:6},()=>({span:'合成年龄',title:'节奏观察',body:'合成文字'}))},closing:'合成测试结束。',audit:{aspects:Array.from({length:3},()=>({aspect:'合成相位',body:'合成'}))},next_questions:['如何看待当前结构？','怎样观察行动？','如何记录经验？','如何理解变化？'],basis:{}};
  const prof={schema:'xuanji.handoff/0.1',birth:{date:'1996-05-20',time:'10:30',city:'合成地点',sex:'female'},bazi:{status:'ok',input:{trueSolarTime:'1996-05-20T10:30:00',longitude:120},version:{config:'implementation-label'}},method:{}};
+ fill(rep);
  return {prof,rep};
 }
 /* 10-14 报告生成时整份画好、核对完整才出文件：简化的假盘画出来本来就缺东西，出文件的测试改用接口算的一份完整编造盘（1993-08-17 杭州，虚构），合成稿照它补齐 */
@@ -45,6 +47,7 @@ function fill(rep){
 }
 test('denied and unconfirmed candidates cannot enter confirmed report hits',()=>{const {prof,rep}=fixtures();for(const feedback of ['不准',null,undefined]){const r=structuredClone(rep);r.hits=[{statement:'合成候选',feedback,basis:'合成依据'}];assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}for(const feedback of ['准','部分准']){const r=structuredClone(rep);r.hits=[{statement:'合成候选',feedback,basis:'合成依据'}];assert.deepEqual(check(r,prof),[]);}});
 test('brand rules accept valid report and reject length, forbidden words and missing counts',()=>{const {prof,rep}=fixtures();assert.deepEqual(check(rep,prof),[]);for(const alter of [r=>r.cover.seen='字'.repeat(61),r=>r.cover.seen='准确率',r=>r.gifts.items=[]]){const r=structuredClone(rep);alter(r);assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}});
+test('报告按盘写全：重点章固定 3 个、天赋和重点章依据三套都要有、留后路的词限量、问卷答案不进报告（10-14 Codex 报告照聊天写）',()=>{const {prof,rep}=fixtures();assert.deepEqual(check(rep,prof),[]);const cases=[[r=>r.focus=['career','love'],/focus 要正好 3/],[r=>r.gifts.items.forEach(x=>x.refs=['人格·Te']),/覆盖：天赋.*缺八字/],[r=>{for(const k of r.focus)r.chapters[k].refs=['人格·Ni'];},/覆盖：最响的几件事.*缺八字/],[r=>r.closing+='你更倾向探索，也值得验证，按象征读法看还要验证。',/软话：/],[r=>r.closing+='你在问卷里选了这一项。',/问卷/]];for(const [alter,re] of cases){const r=structuredClone(rep);alter(r);assert(check(r,prof).some(e=>re.test(e)),String(re));}const w=structuredClone(prof);w.western={data:{}};const r=structuredClone(rep);assert(check(r,w).some(e=>/覆盖：天赋.*缺星盘/.test(e)));});
 test('brand HTML omits raw birth and save while retaining offline CSP and safe JSON',()=>{const {prof,rep}=fixtures();rep.cover.evidence='</script><svg onload=alert(1)>';const html=build(prof,rep);for(const raw of ['1996-05-20','10:30','合成地点','claim_url','saveBox'])assert(!html.includes(raw));assert(html.includes("connect-src 'none'"));assert(!html.includes('</script><svg'));assert(html.includes('\\u003c/svg')||html.includes('\\u003c/script'));assert(!html.includes('d.innerHTML'));assert(html.includes('el.removeAttribute'));});
 test('POSIX private JSON rejects permissive files without changing them and rejects symlinks',{skip:process.platform==='win32'},async()=>{const d=await mkdtemp(join(tmpdir(),'xj-private-'));const p=join(d,'input.json');await writeFile(p,'{}',{mode:0o644});await assert.rejects(readPrivateJSON(p),/PRIVATE_FILE_INVALID/);assert.equal((await stat(p)).mode&0o777,0o644);await symlink(p,join(d,'link.json'));await assert.rejects(readPrivateJSON(join(d,'link.json')),/PRIVATE_FILE_INVALID/);});
 test('SVG esc encodes attacker text; script parses and numeric text is escaped',async()=>{const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');const fn=t.match(/function esc\(s\) \{[^\n]+\}/)[0];const escaped=vm.runInNewContext(fn+';esc',{})('<svg onload="evil">&');assert.equal(escaped,'&lt;svg onload=&quot;evil&quot;&gt;&amp;');new vm.Script(t.match(/<script>\n([\s\S]*)<\/script>/)[1]);for(const x of ['esc(c.ganZhi)','esc(c.startAge)','esc(c.endAge)','esc(c.age)','esc(t)','esc(c.title[0])'])assert(t.includes(x));});
@@ -113,6 +116,20 @@ test('星盘图和卷下点位卡：接口给的进阶点位、小行星都有�
 });
 test('依据里「几套体系说法不同」：宿主写成一句话或漏了 theme，也不出 undefined（10-11 Kimi 复验）',async()=>{const {readFile}=await import('node:fs/promises');const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
  assert(t.includes("if (!d || typeof d !== 'object') return h('li', null, String(d || ''));"));assert(t.includes("d.theme ? h('b', null, d.theme + '：') : null"));
+});
+test('依据里空的一条不出空圆点；三镜映照写全喜用（10-11 Kimi 复验 PDF 第 41 页）',async()=>{const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
+ const m=t.match(/var DIFF = \(bs\.differences \|\| \[\]\)\.filter\((function[^\n]+?)\);\n/);assert(m,'DIFF 过滤还在');const keep=vm.runInNewContext('('+m[1]+')');
+ assert.deepEqual(['','  ',null,{},{theme:''},'一句话',{bazi:'喜火'}].filter(keep),['一句话',{bazi:'喜火'}]);assert(t.includes('if (DIFF.length) add(bd'));assert(!t.includes('favorable.slice(0, 2)'));
+});
+test('正文不写「接口」：「接口给的原话」这类后台话会被拦（10-11 命理组 Kimi Code 实测漏出）',()=>{const {prof,rep}=fixtures();const r=structuredClone(rep);r.chapters.career.gold='接口给的原话是机会不少。';assert(check(r,prof).some(e=>e.includes('「接口」')));});
+test('字数下限（10-13）：某处写少了、全篇不够都不出文件；时辰不详全篇按 10000',()=>{
+ const {prof,rep}=fixtures();assert.deepEqual(check(rep,prof),[]);
+ const a=structuredClone(rep);a.chapters.love.sections[0].body='合成太短的一节。';
+ assert(check(a,prof).some(e=>/chapters\.love\.sections\[1\]\.body 只有 \d+ 个汉字，最少 200 个/.test(e)));
+ const b=structuredClone(rep);for(const c of Object.values(b.chapters))c.sections=c.sections.map(x=>({...x,body:zh(205)}));
+ assert(check(b,prof).some(e=>/整份报告只有 \d+ 个汉字，最少 10000 个/.test(e)));
+ const w=structuredClone(prof);w.western={data:{planets:[]}};
+ assert(check(rep,w).some(e=>/最少 15000 个/.test(e)));
 });
 
 // —— 10-14 åå§äºº：报告不完整就不给。生成时整份画好写进 HTML（打开不靠脚本），逐项核对，核不过不出文件；有浏览器再打 PDF ——

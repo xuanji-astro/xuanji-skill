@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {assertPrivateFile} from '../scripts/private_files.mjs';
 import {callAPI,validate,ORIGIN} from '../scripts/client.mjs';
 import {render} from '../scripts/render_report.mjs';
-const birth=()=>({date:'1996-05-20',time:'10:30',city:'浙江省杭州市西湖区',gender:'female'});
+const birth=()=>({date:'1996-05-20',time:'10:30',city:'浙江省杭州市西湖区',gender:'female',time_source:'unknown'});   // 10-13 起给了时间必须写来源
 const profile=()=>({schema:'xuanji.handoff/0.1',method:{},bazi:{status:'ok'}});
 const response=(data,status=200)=>new Response(JSON.stringify(data),{status});
 test('normal request uses exact first-party URL, POST body, no secrets/redirects',async()=>{
@@ -75,10 +75,16 @@ test('核一核的回答 answers：只收 [{year,pick}]，pick 只能是 弱／�
   assert.throws(()=>validate('profile',{...birth(),answers}),/INPUT_INVALID/);
  assert.throws(()=>validate('profile',{...birth(),strength:'强'}),/INPUT_INVALID/);
 });
-test('身强身弱校正 calib：traits 8 个 A–E 或 null，events 最多 30 件；别的字段、坏值都拒',()=>{
+test('身强身弱校正 calib：traits 8 个 A–F 或 null（F＝说不准），events 最多 30 件；别的字段、坏值都拒',()=>{
  validate('profile',{...birth(),calib:{traits:['D','B',null,'A','C','B','D','E'],events:[{year:2016,domain:'事业',event:'跳槽',good:true},{year:2022,good:false}]}});
- validate('profile',{...birth(),calib:{traits:[0,4]}});
- for(const calib of [[],'x',{traits:['F']},{traits:Array(9).fill('A')},{events:[{year:2016,domain:'运动',good:true}]},{events:[{year:2016,good:'好'}]},{events:[{year:2016,good:true,note:'细节'}]},
+ validate('profile',{...birth(),calib:{traits:[0,4,5,'F']}});
+ for(const calib of [[],'x',{traits:['G']},{traits:[6]},{traits:Array(9).fill('A')},{events:[{year:2016,domain:'运动',good:true}]},{events:[{year:2016,good:'好'}]},{events:[{year:2016,good:true,note:'细节'}]},
    {events:Array.from({length:31},(_,i)=>({year:1990+i,good:true}))},{traits:['A'],extra:1}])
   assert.throws(()=>validate('profile',{...birth(),calib}),/INPUT_INVALID/,JSON.stringify(calib).slice(0,60));
+});
+test('给了出生时间却没写来源：TIME_SOURCE_MISSING（10-13）',async()=>{
+  const {validate}=await import('../scripts/client.mjs');
+  assert.throws(()=>validate('profile',{date:'1996-05-20',time:'10:30',city:'浙江省杭州市西湖区',gender:'female'}),e=>e.code==='TIME_SOURCE_MISSING');
+  assert.doesNotThrow(()=>validate('profile',{date:'1996-05-20',time:'10:30',city:'浙江省杭州市西湖区',gender:'female',time_source:'birth_certificate',time_precision:'minute'}));
+  assert.doesNotThrow(()=>validate('profile',{date:'1996-05-20',city:'浙江省杭州市西湖区',gender:'female'}));
 });
