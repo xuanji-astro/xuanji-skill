@@ -18,7 +18,7 @@
 
 <p><img src="docs/assets/report-checks.png" width="560" alt="报告第 1 页：命盘标签，和你亲手核对过的往事"></p>
 
-你说「生成报告」，会得到一个离线 HTML 文件，双击就能打开，不联网、无追踪。报告分八章：事业、财富、学业、感情、家庭、社交与声誉、健康、成长与课题；页面右上角可以「存为 PDF」。
+你说「生成报告」，会得到一个离线 HTML 文件，双击就能打开，不联网、无追踪；电脑上装了 Chrome 或 Edge（Windows 自带 Edge），还会同时给一份 PDF。报告分八章：事业、财富、学业、感情、家庭、社交与声誉、健康、成长与课题；页面右上角可以「存为 PDF」。
 
 <p>
 <img src="docs/assets/report-first-screen.png" width="270" alt="报告首屏">
@@ -35,10 +35,10 @@
 前提：Node.js ≥ 18.19.1。无 npm/pip 第三方依赖，无需模型 Key、CloudBase Key 或数据库配置。克隆安装另需 Git。
 
 1. 拿到 `xuanji/` 目录，二选一：
-   - 下载发布包 `Xuanji-Skill-0.1.0-rc.10.1.zip`，解压到一个**新建的空目录**（macOS 可用 Finder 或 `ditto -x -k`，Linux 用支持 UTF-8 文件名的解压工具，Windows 用系统解压或 PowerShell `Expand-Archive`）。解压后核对 `reference/报告.md` 存在。
+   - 下载发布包 `Xuanji-Skill-0.1.0-rc.10.2.zip`，解压到一个**新建的空目录**（macOS 可用 Finder 或 `ditto -x -k`，Linux 用支持 UTF-8 文件名的解压工具，Windows 用系统解压或 PowerShell `Expand-Archive`）。解压后核对 `reference/报告.md` 存在。
    - 或克隆本仓库：`git clone <本仓库地址> xuanji`
 2. 把整个 `xuanji/` 目录放进你的 AI 宿主的技能目录。Codex 示例：复制到项目的 `.agents/skills/xuanji/`；其他宿主按各自的方式安装。不要只复制 SKILL.md，否则脚本和模板缺失；不要覆盖现有同名 Skill。本仓不自动安装、不修改宿主设置。
-   - **Codex（含 ChatGPT 桌面版里的 Codex）**：放到项目的 `.agents/skills/xuanji/` 只在这个项目里用；放到 `~/.agents/skills/xuanji/` 所有项目都能用。Codex 的沙箱默认不联网，第一次排盘它会请你批准一条 `client.mjs` 命令联网（只连 `api.xuanji-astro.com`），点同意就行；不用另装浏览器插件。
+   - **Codex（含 ChatGPT 桌面版里的 Codex）**：放到项目的 `.agents/skills/xuanji/` 只在这个项目里用；放到 `~/.agents/skills/xuanji/` 所有项目都能用。Codex 的沙箱默认不联网，第一次排盘它会请你批准一条 `client.mjs` 命令联网（只连 `api.xuanji-astro.com`），点同意就行；生成报告时它还会请你批准一条 `make_pdf.mjs` 命令在沙箱外打开浏览器出 PDF（Codex 的沙箱里起不了浏览器），同意就行；不用另装浏览器插件。
 3. **新开会话**，输入「用 Xuanji 看我的人格结构并生成 HTML」。宿主需有授权的联网工具及 Node 执行工具；不支持脚本执行的宿主只能改用 [API 契约](docs/api.md) 的 HTTP 方式。
 
 进目录可以先跑两条命令自检：
@@ -57,7 +57,7 @@ node scripts/client.mjs health
 ```sh
 node scripts/client.mjs profile --input request.json --output profile.json
 node scripts/client.mjs pair --input pair-request.json --output pair.json
-node scripts/build_report.mjs --profile profile.json --report report.json --out report.html
+node scripts/build_report.mjs --profile profile.json --report report.json --out report.html --pdf report.pdf
 node scripts/rectify.mjs check --profile profile.json --request request.json --output request_alt.json
 node scripts/rectify.mjs ask --a profile.json --b profile_alt.json --events events.json --output ask.json
 node scripts/rectify.mjs score --a profile.json --b profile_alt.json --events events.json --ask ask.json --answers answers.json --output rectify.json
@@ -81,6 +81,7 @@ node scripts/check_report.mjs --request request.json --report report.html   # �
 
 ## 更新记录
 
+- **rc.10.2**：报告生成时就整份画好，换个地方打开（手机、预览窗口）也是完整的；电脑上装了 Chrome 或 Edge，会同时给一份 PDF；出不了完整报告就不给残缺的。
 - **rc.10.1**：说话更像当面看盘——盘上看到的直接说，不再句句加「仅供参考」「盘不能证明」，提醒只在第一次给你看盘时说一次；「接下来可以问我」更顺着你的问题往深里问；在别的项目文件夹里打开时，会提醒你换一个空文件夹。
 - **rc.10**：对话更自然——少念规矩、不贴电脑路径、同一个提醒只说一次；排盘前的同意说明换成一句人话；你在这段对话里讲过的情况，它会一起参考（你说「只按盘看」就不用）；报告结尾「接下来可以问我」更贴你的问题；新增 Codex 的安装说明。
 - **rc.9**：报告存 PDF 时不再把卡片切成两半；星盘图补上更多点位。
@@ -101,7 +102,7 @@ Apache-2.0 不自动授权执天玄玑名称、Logo、官方身份。允许正�
 
 隐私政策（Privacy Policy）：https://xuanji-astro.com/privacy
 
-当前版本 0.1.0-rc.10.1 是公开的候选版（Release Candidate）。
+当前版本 0.1.0-rc.10.2 是公开的候选版（Release Candidate）。
 
 ## 找到我们
 

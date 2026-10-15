@@ -32,6 +32,13 @@ test('身强身弱：实锤只认用户核过的，待定两种原因都问体�
   assert.match(skill,/`calib`/);
   assert.match(skill,/一条消息发完/);
   assert.match(skill,/一定在出报告之前/);
+  // 10-14 åå§äºº：报告不完整就不给，出不了完整的请用户加创始人；带 --pdf 出 PDF
+  assert.match(skill,/--pdf report\.pdf/);
+  assert.match(skill,/宁可不给也不给残缺的/);
+  assert.match(skill,/REPORT_INCOMPLETE/);
+  assert.match(skill,/加创始人微信 liin1223/);
+  assert.match(skill,/也不把报告正文贴进对话顶替/);
+  assert.match(skill,/make_pdf\.mjs --html report\.html --out report\.pdf/);
   assert.doesNotMatch(skill,/`readings`|`first_ask`/);
   assert.doesNotMatch(skill,/`ask\.first_ask`|if_smooth/);
   assert.match(jd,/按强弱下断语的话一律收起来/);

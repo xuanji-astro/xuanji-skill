@@ -44,6 +44,18 @@ export async function readPrivateText(path,maxBytes=8192){
     const text=await f.readFile('utf8');if(Buffer.byteLength(text)>maxBytes)throw Error();return text;
   }catch{throw Error('PRIVATE_FILE_INVALID');}finally{await f?.close();}
 }
+// 二进制（报告 PDF，10-14）：跟 writePrivateText 一样只新建、只给本人读写，上限 32MB；Windows 走同一个 PowerShell 助手的 create-b64
+const MAX_BYTES=32*1024*1024;
+export async function writePrivateBytes(path,buf){
+  if(!Buffer.isBuffer(buf)||buf.length>MAX_BYTES)throw Error('INPUT_TOO_LARGE');
+  if(!posix()&&process.platform!=='win32')throw Error('PERMISSION_ENVIRONMENT_UNVERIFIED');
+  let f;
+  try{
+    if(process.platform==='win32'){await windows('create-b64',path,buf.toString('base64'),MAX_BYTES);return;}
+    f=await open(path,constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,0o600);
+    owned(await f.stat());await f.writeFile(buf);await f.sync();owned(await f.stat());
+  }catch{throw Error('PRIVATE_CREATE_FAILED');}finally{await f?.close();}
+}
 // Only the new named file is created: no overwrite, chmod or recursive changes.
 export async function writePrivateText(path,text){
   if(typeof text!=='string'||Buffer.byteLength(text)>MAX)throw Error('INPUT_TOO_LARGE');

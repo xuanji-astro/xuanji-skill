@@ -2,13 +2,17 @@
 // 单人品牌报告（Node版；不需要Python）
 // Copyright 2026 杭州强势播传文化影视传媒有限公司
 // SPDX-License-Identifier: Apache-2.0
-// 用法：node build_report.mjs --profile profile.json --report report.json --out report.html [--rectify rectify.json]
+// 用法：node build_report.mjs --profile profile.json --report report.json --out report.html [--pdf report.pdf] [--rectify rectify.json]
+// 10-14 起：报告在这里就整份画好写进 HTML（打开不靠脚本），逐项核对完整才出文件，核不过报 REPORT_INCOMPLETE、一个文件都不写；
+// 带 --pdf 时，电脑上有 Chrome／Edge 这类浏览器就再打一份 PDF（PDF_SAVED），没有就只出 HTML（PDF_SKIPPED_…）
 // 定过时辰的（rectify.json 结果是 a 或 b）：表头改成「出生时辰经定时辰定在某时」，不再报离交界几分钟、两种口径的时柱和压宫头的星（交界另一侧那张盘用的是代表时间）
-import { readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { readPrivateJSON,writePrivateText } from './private_files.mjs';
 import { safeData } from './client.mjs';
 import { dirname, join, resolve } from 'node:path';
+import { prerender, verifyReport } from './prerender.mjs';
+import { printPDF } from './make_pdf.mjs';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -21,7 +25,7 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.10.1';
+const SKILL_VERSION = '0.1.0-rc.10.2';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
@@ -117,6 +121,8 @@ export function check(rep, prof) {
   if (new Set(focus).size !== focus.length) errs.push('focus 里有重复');
   for (const c of R.chapters) {
     const ch = chapters[c] ?? {}, n = (ch.sections ?? []).length;
+    // 每一节只认 title、body：依据 refs 写进小节里页面不显示，成品核对会当缺字拦下（10-14 Kimi 桌面端实测撞过）
+    (ch.sections ?? []).forEach((s, i) => { const extra = isObj(s) ? Object.keys(s).filter((k) => !['title', 'body'].includes(k)) : []; if (extra.length) errs.push(`chapters.${c}.sections 第${i + 1}节多了 ${extra.join('、')}：每一节只写 title 和 body${extra.includes('refs') ? `；依据 refs 写在整章上（chapters.${c}.refs）` : ''}，写在小节里页面上不显示`); });
     if (focus.includes(c)) { if (n < FR.focus_sections[0] || n > FR.focus_sections[1]) errs.push(`chapters.${c} 是最响的几件事之一，sections 要 ${FR.focus_sections[0]}～${FR.focus_sections[1]} 节，现在 ${n} 节`); }
     else {
       if (!ch.brief) errs.push(`chapters.${c}.brief 不能空（不在 focus 里的方面写一句结论）`);
@@ -137,6 +143,8 @@ export function check(rep, prof) {
     for (const p of R.audit_planets) for (const f of ['role', 'p1', 'p2', 'p3']) if (!planets[p]?.[f]) errs.push(`audit.planets.${p}.${f} 不能空（下篇逐星审计十颗星都要写）`);
   } else if (rep.audit?.planets || rep.crosscheck?.length) errs.push('没有出生时间，星盘出不了，audit.planets 和 crosscheck 留空');
   (rep.crosscheck ?? []).forEach((c, i) => { const sy = c.systems ?? []; if (sy.length < 2 || sy.some((s) => !R.support.includes(s))) errs.push(`crosscheck 第${i + 1}条 systems 要列出两套以上：八字／星盘／人格（只摆说法一致的；说法不同的写进 basis.differences）`); });
+  // 三镜映照图每块交叠（八字×星盘、八字×人格、星盘×人格、三套都有）最多画两条主题，第三条画不上——成品核对会当缺字拦下，这里先说清楚（10-14 台架 Claude 撞过）
+  { const used = {}; (rep.crosscheck ?? []).forEach((c, i) => { const sy = c.systems ?? [], has = (k) => sy.includes(k); const slot = has('八字') && has('星盘') && has('人格') ? '三套都有' : has('八字') && has('星盘') ? '八字×星盘' : has('八字') && has('人格') ? '八字×人格' : has('星盘') && has('人格') ? '星盘×人格' : null; if (!slot) return; used[slot] = (used[slot] || 0) + 1; if (used[slot] > 2) errs.push(`crosscheck 第${i + 1}条：「${slot}」这块交叠图里已经放了两条，第三条画不上——换一块交叠（看它真正是哪几套都这么说），或者删掉这条`); }); }
   for (const [where, v] of [...collect(rep, 'skeleton.refs'), ...collect(rep, 'gifts.items[].refs'), ...collect(rep, 'chapters.*.refs')])
     for (const r of v ?? []) if (!/^(星盘|八字|人格)·.+/.test(String(r))) errs.push(`${where} 里的「${r}」要写成「星盘·金星」「八字·日支」「人格·Te」这种格式`);
   for (const [path, fields] of Object.entries(R.required_each ?? {})) for (const [where, v] of collect(rep, path)) for (const f of fields) if (!(v && typeof v === 'object' && v[f])) errs.push(`${where}.${f} 不能空（每条都要写全：${fields.join('、')}）`);
@@ -154,7 +162,8 @@ export function check(rep, prof) {
   }
   for (const [path, words] of Object.entries(R.forbidden_in ?? {})) for (const [where, v] of collect(rep, path)) for (const w of words) if (typeof v === 'string' && v.includes(w)) errs.push(`${where} 里不要用「${w}」：` + (path.startsWith('next_questions') ? '接下来可以问的，写用户自己会问的事，不问出生时间、算法这些内部的事' : '今年的天象写成「天象 · 落在哪 · 意味着什么」'));
   for (const [path, word] of Object.entries(R.must_contain ?? {})) { const vals = collect(rep, path).map(([, v]) => v).filter((v) => typeof v === 'string'); if (vals.length && !vals.some((v) => v.includes(word))) errs.push(`${path} 里至少要有一节标题带「${word}」（成长与课题要讲人生课题）`); }
-  (rep.basis?.confidence ?? []).forEach((c, i) => { if (!R.levels.includes(c.level)) errs.push(`basis.confidence 第${i + 1}条 level 只能是 高／中／欠定`); });
+  (rep.basis?.confidence ?? []).forEach((c, i) => { if (!R.levels.includes(c.level)) errs.push(`basis.confidence 第${i + 1}条 level 只能是 高／中／欠定`); if (!isObj(c) || typeof c.item !== 'string' || !c.item.trim() || typeof c.why !== 'string' || !c.why.trim()) errs.push(`basis.confidence 第${i + 1}条要写成 { level, item, why }：item 写是哪件事，why 写凭什么这么有把握（写成别的字段名，页面上会冒出 undefined）`); });
+  (rep.basis?.counter ?? []).forEach((c, i) => { if (typeof c !== 'string') errs.push(`basis.counter 第${i + 1}条要写成一句话（字符串），不要写成对象`); });
   const { basis, ...dflt } = rep;
   const text = JSON.stringify(dflt);
   for (const w of R.forbidden_default) if (text.includes(w)) errs.push(`默认页出现了「${w}」：概率、置信度只能写进 basis；出厂底色不叫 MBTI；判词由版面显示，正文不写「判词」「花名」「喻物」「白话」，也不用【】；星管哪宫写「X宫主」；身强身弱说「三种判法」`);
@@ -204,22 +213,28 @@ export function build(prof,rep,template=readFileSync(TEMPLATE,'utf8'),rect=null)
 }
 export async function main(args) {
   const flags={};
-  for(let i=0;i<args.length;i+=2){const k=args[i],v=args[i+1];if(!['--profile','--report','--out','--rectify'].includes(k)||!v||v.startsWith('--')||flags[k])throw Error('REPORT_CONFIG_INVALID');flags[k]=v;}
+  for(let i=0;i<args.length;i+=2){const k=args[i],v=args[i+1];if(!['--profile','--report','--out','--pdf','--rectify'].includes(k)||!v||v.startsWith('--')||flags[k])throw Error('REPORT_CONFIG_INVALID');flags[k]=v;}
   if(!flags['--profile']||!flags['--report']||!flags['--out'])throw Error('REPORT_CONFIG_INVALID');
+  if(flags['--pdf']&&(resolve(flags['--pdf'])===resolve(flags['--out'])||!/\.pdf$/i.test(flags['--pdf'])))throw Error('REPORT_CONFIG_INVALID');
+  for(const o of [flags['--out'],flags['--pdf']])if(o&&existsSync(o))throw Error('OUTPUT_EXISTS');   // 不覆盖：换个文件名再出
   const prof=await readPrivateJSON(flags['--profile'],2097152),rep=await readPrivateJSON(flags['--report'],1048576);
   const rect=flags['--rectify']?await readPrivateJSON(flags['--rectify'],262144):null;
   rectifiedOf(prof,rect);
   const issues=check(rep,prof);
   if(issues.length){
     // Static categories only: no manuscript text, user key names or quote values.
-    const categories=new Set(issues.map(x=>x.includes('的干支照')?'YEAR_GANZHI':x.includes('misses')||x.includes('没对上')?'DENIED_YEAR':x.includes('上限')?'LENGTH_LIMIT':x.includes('条')?'ITEM_COUNT':x.includes('不能空')?'REQUIRED_FIELD':x.includes('默认页')?'DEFAULT_WORD':x.includes('古人')?'QUOTE_SOURCE':x.includes('连续写满十年')?'YEAR_SEQUENCE':'FIELD_OR_STRUCTURE'));
+    const categories=new Set(issues.map(x=>x.includes('的干支照')?'YEAR_GANZHI':x.includes('misses')||x.includes('没对上')?'DENIED_YEAR':x.includes('上限')?'LENGTH_LIMIT':x.includes('这块交叠')?'CROSSCHECK_SLOT':x.includes('条')?'ITEM_COUNT':x.includes('不能空')?'REQUIRED_FIELD':x.includes('默认页')?'DEFAULT_WORD':x.includes('古人')?'QUOTE_SOURCE':x.includes('连续写满十年')?'YEAR_SEQUENCE':'FIELD_OR_STRUCTURE'));
     console.error('REPORT_RULES_HINT '+[...categories].join(','));throw Error('REPORT_RULES_FAILED');
   }
-  const html=build(prof,rep,undefined,rect);
+  // 整份画好、逐项核对：缺一章、缺一张图、有一段字没上页面，都不出文件（10-14 åå§äºº：不完整就不要给）
+  const {html,app,data}=prerender(build(prof,rep,undefined,rect));
+  const gaps=verifyReport(app,data);
+  if(gaps.length){console.error('REPORT_INCOMPLETE_HINT '+gaps.slice(0,8).join('; '));throw Error('REPORT_INCOMPLETE');}   // 只报类别和字段路径（report.json 的键名、星名），不报正文
   await writePrivateText(flags['--out'],html);
   console.log('REPORT_SAVED');
+  if(flags['--pdf']){let r;try{r=await printPDF(html,flags['--pdf']);}catch{r='FAILED';}console.log(r==='SAVED'?'PDF_SAVED':'PDF_SKIPPED_'+r);}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(realpathSync(process.argv[1])).href)main(process.argv.slice(2)).catch(e=>{
- const allowed=['PROFILE_INVALID','REPORT_INVALID','REPORT_RULES_FAILED','TEMPLATE_INVALID','REPORT_CONFIG_INVALID','PRIVATE_FILE_INVALID','RECTIFY_INVALID','RECTIFY_PROFILE_MISMATCH'];
- console.error(allowed.includes(e.message)?e.message:'REPORT_FAILED');process.exitCode=1;
+ const allowed=['PROFILE_INVALID','REPORT_INVALID','REPORT_RULES_FAILED','TEMPLATE_INVALID','REPORT_CONFIG_INVALID','PRIVATE_FILE_INVALID','RECTIFY_INVALID','RECTIFY_PROFILE_MISMATCH','OUTPUT_EXISTS'];
+ console.error(String(e.message).startsWith('REPORT_INCOMPLETE')?'REPORT_INCOMPLETE':allowed.includes(e.message)?e.message:'REPORT_FAILED');process.exitCode=1;
 });

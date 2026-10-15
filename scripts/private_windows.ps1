@@ -6,7 +6,8 @@ $stream=$null
 try {
   [Console]::InputEncoding=[Text.UTF8Encoding]::new($false)
   [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false)
-  if($PSVersionTable.PSEdition -ne 'Desktop' -or $MaxBytes -lt 1 -or $MaxBytes -gt 2097152){throw 'invalid'}
+  $limit=2097152;if($Operation -eq 'create-b64'){$limit=33554432}   # create-b64：报告 PDF 这类二进制，标准输入传 base64（10-14）
+  if($PSVersionTable.PSEdition -ne 'Desktop' -or $MaxBytes -lt 1 -or $MaxBytes -gt $limit){throw 'invalid'}
   $full=[IO.Path]::GetFullPath($Path)
   if($full -notmatch '^[A-Za-z]:\\' -or $full.Substring(2).Contains(':')){throw 'invalid'}
   $root=[IO.Path]::GetPathRoot($full)
@@ -28,9 +29,9 @@ try {
     $r=$rules[0]
     if($r.IsInherited -or $r.IdentityReference.Value -ne $sid.Value -or $r.AccessControlType -ne [Security.AccessControl.AccessControlType]::Allow -or $r.FileSystemRights -ne $rights){throw 'invalid'}
   }
-  if($Operation -eq 'create'){
+  if($Operation -eq 'create' -or $Operation -eq 'create-b64'){
     $text=[Console]::In.ReadToEnd()
-    $bytes=[Text.Encoding]::UTF8.GetBytes($text)
+    if($Operation -eq 'create-b64'){$bytes=[Convert]::FromBase64String($text.Trim())}else{$bytes=[Text.Encoding]::UTF8.GetBytes($text)}
     if($bytes.Length -gt $MaxBytes){throw 'invalid'}
     $security=[Security.AccessControl.FileSecurity]::new()
     $security.SetOwner($sid)
