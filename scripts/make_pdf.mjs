@@ -7,13 +7,13 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, posix as P, win32 as W } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { realpathSync } from 'node:fs';
-import { readPrivateText, writePrivateBytes } from './private_files.mjs';
+import { readPrivateText, writePrivateBytes, reasonOf } from './private_files.mjs';
 
 export function browserCandidates(env = process.env, platform = process.platform) {
-  const c = [];
+  const c = [], join = platform === 'win32' ? W.join : P.join;   // 按目标系统拼路径：在 Windows 上跑 Linux 分支的测试也该拼出 /usr/bin/chromium（10-15 Windows 实测挂过）
   if (platform === 'win32') {
     for (const base of [env['ProgramFiles(x86)'], env.ProgramFiles, env.LOCALAPPDATA].filter(Boolean)) {
       c.push(join(base, 'Microsoft', 'Edge', 'Application', 'msedge.exe'), join(base, 'Google', 'Chrome', 'Application', 'chrome.exe'), join(base, 'BraveSoftware', 'Brave-Browser', 'Application', 'brave.exe'));
@@ -87,5 +87,5 @@ export async function main(args) {
   if (r !== 'SAVED') process.exitCode = 1;
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) main(process.argv.slice(2)).catch((e) => {
-  console.error(['PDF_CONFIG_INVALID', 'OUTPUT_EXISTS', 'PRIVATE_FILE_INVALID'].includes(e.message) ? e.message : 'PDF_FAILED'); process.exitCode = 1;
+  console.error(['PDF_CONFIG_INVALID', 'OUTPUT_EXISTS', 'PRIVATE_FILE_INVALID'].includes(e.message) ? e.message : 'PDF_FAILED'); const w = reasonOf(e); if (w) console.error('WINDOWS_REASON ' + w); process.exitCode = 1;
 });

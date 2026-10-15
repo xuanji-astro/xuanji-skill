@@ -8,7 +8,7 @@
 // 定过时辰的（rectify.json 结果是 a 或 b）：表头改成「出生时辰经定时辰定在某时」，不再报离交界几分钟、两种口径的时柱和压宫头的星（交界另一侧那张盘用的是代表时间）
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { readPrivateJSON,writePrivateText } from './private_files.mjs';
+import { readPrivateJSON,writePrivateText,reasonOf } from './private_files.mjs';
 import { safeData } from './client.mjs';
 import { dirname, join, resolve } from 'node:path';
 import { prerender, verifyReport } from './prerender.mjs';
@@ -25,9 +25,10 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.10.2';
+const SKILL_VERSION = '0.1.0-rc.11';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
+const han = (s) => (String(s ?? '').match(/[\u4e00-\u9fff]/g) || []).length;   // 下限只数汉字（10-13）
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
 
 // 按 a.b.*.c / a[].b 取出所有 [位置, 值]
@@ -82,6 +83,12 @@ export function check(rep, prof) {
   const get = (path) => collect(rep, path).map(([, v]) => v);
   for (const [path, lim] of Object.entries(R.limits))
     for (const [where, v] of collect(rep, path)) if (typeof v === 'string' && n(v) > lim) errs.push(`${where} 有 ${n(v)} 字，上限 ${lim} 字`);
+  /* 下限（10-13 åå§äºº：跟她 10-02 那份差不多、多一成到两成，有的 AI 不听话会写少）：每处正文最少多少汉字＋全篇汉字下限 */
+  for (const [path, lo] of Object.entries(R.mins ?? {})) {
+    if (path.startsWith('_')) continue;
+    for (const [where, v] of collect(rep, path)) if (typeof v === 'string' && v.trim() && han(v) < lo) errs.push(`${where} 只有 ${han(v)} 个汉字，最少 ${lo} 个：照这一处的盘面依据接着写具体的场合、人、事，写足再出`);
+  }
+  if (R.total_min?.han) { const tot = han(JSON.stringify(rep)), lo = hasWest ? R.total_min.han : R.total_min.han_no_time; if (tot < lo) errs.push(`整份报告只有 ${tot} 个汉字，最少 ${lo} 个：每一章、流年和逐星审计都照 profile.json 的盘面写足，收起来的章也按完整版写`); }
   for (const [path, [lo, hi]] of Object.entries(R.counts)) {
     if (path === 'crosscheck' && !hasWest) continue;
     const found = collect(rep, path);
@@ -119,6 +126,16 @@ export function check(rep, prof) {
   const FR = R.focus_rules, focus = rep.focus ?? [];
   for (const k of focus) if (!R.chapters.includes(k)) errs.push(`focus 里的「${k}」不是八个方面之一`);
   if (new Set(focus).size !== focus.length) errs.push('focus 里有重复');
+  /* 10-14 åå§äºº 同盘对比：Codex 报告照聊天写，重点章只挑两个、感情降成一句、八字一条没写——重点章固定 3 个，天赋和重点章的依据三套都要有（按盘挑，不按对话里聊得多的挑） */
+  if (FR.focus_count && (focus.length < FR.focus_count[0] || focus.length > FR.focus_count[1])) errs.push(`focus 要正好 ${FR.focus_count[0]} 个，按盘挑证据最硬的，不按对话里聊得多的挑；现在 ${focus.length} 个`);
+  const sysOf = (refs) => (Array.isArray(refs) ? refs : []).map((r) => String(r).split('·')[0]);
+  const needSys = hasWest ? R.support : R.support.filter((x) => x !== '星盘');
+  const giftSys = new Set(collect(rep, 'gifts.items[].refs').flatMap(([, v]) => sysOf(v)));
+  const giftMiss = needSys.filter((x) => !giftSys.has(x));
+  if (giftMiss.length) errs.push(`覆盖：天赋几条的 refs 合起来要有${needSys.join('、')}，现在缺${giftMiss.join('、')}`);
+  const focusSys = new Set(focus.flatMap((c) => sysOf(chapters[c]?.refs)));
+  const focusMiss = needSys.filter((x) => x !== '人格' && !focusSys.has(x));
+  if (focusMiss.length) errs.push(`覆盖：最响的几件事的 refs 合起来要有${needSys.filter((x) => x !== '人格').join('、')}，现在缺${focusMiss.join('、')}`);
   for (const c of R.chapters) {
     const ch = chapters[c] ?? {}, n = (ch.sections ?? []).length;
     // 每一节只认 title、body：依据 refs 写进小节里页面不显示，成品核对会当缺字拦下（10-14 Kimi 桌面端实测撞过）
@@ -166,7 +183,8 @@ export function check(rep, prof) {
   (rep.basis?.counter ?? []).forEach((c, i) => { if (typeof c !== 'string') errs.push(`basis.counter 第${i + 1}条要写成一句话（字符串），不要写成对象`); });
   const { basis, ...dflt } = rep;
   const text = JSON.stringify(dflt);
-  for (const w of R.forbidden_default) if (text.includes(w)) errs.push(`默认页出现了「${w}」：概率、置信度只能写进 basis；出厂底色不叫 MBTI；判词由版面显示，正文不写「判词」「花名」「喻物」「白话」，也不用【】；星管哪宫写「X宫主」；身强身弱说「三种判法」`);
+  if (R.hedge) { const n = (text.match(new RegExp(R.hedge.words.join('|'), 'g')) || []).length; if (n > R.hedge.max) errs.push(`软话：「${R.hedge.words.join('」「')}」这类留后路的词用了 ${n} 次，全篇最多 ${R.hedge.max} 次；盘上有的直说`); }
+  for (const w of R.forbidden_default) if (text.includes(w)) errs.push(`默认页出现了「${w}」：概率、置信度只能写进 basis；出厂底色不叫 MBTI；判词由版面显示，正文不写「判词」「花名」「喻物」「白话」「接口」，也不用【】；星管哪宫写「X宫主」；身强身弱说「三种判法」`);
   errs.push(...yearGanZhiErrors(JSON.stringify(rep)), ...deniedYearErrors(rep));
   return errs;
 }
@@ -223,7 +241,7 @@ export async function main(args) {
   const issues=check(rep,prof);
   if(issues.length){
     // Static categories only: no manuscript text, user key names or quote values.
-    const categories=new Set(issues.map(x=>x.includes('的干支照')?'YEAR_GANZHI':x.includes('misses')||x.includes('没对上')?'DENIED_YEAR':x.includes('上限')?'LENGTH_LIMIT':x.includes('这块交叠')?'CROSSCHECK_SLOT':x.includes('条')?'ITEM_COUNT':x.includes('不能空')?'REQUIRED_FIELD':x.includes('默认页')?'DEFAULT_WORD':x.includes('古人')?'QUOTE_SOURCE':x.includes('连续写满十年')?'YEAR_SEQUENCE':'FIELD_OR_STRUCTURE'));
+    const categories=new Set(issues.map(x=>x.startsWith('覆盖：')?'SYSTEM_COVERAGE':x.startsWith('软话：')?'HEDGE_WORDS':x.startsWith('focus 要正好')?'FOCUS_COUNT':x.includes('的干支照')?'YEAR_GANZHI':x.includes('misses')||x.includes('没对上')?'DENIED_YEAR':x.includes('上限')?'LENGTH_LIMIT':x.includes('这块交叠')?'CROSSCHECK_SLOT':x.includes('条')?'ITEM_COUNT':x.includes('不能空')?'REQUIRED_FIELD':x.includes('默认页')?'DEFAULT_WORD':x.includes('古人')?'QUOTE_SOURCE':x.includes('连续写满十年')?'YEAR_SEQUENCE':'FIELD_OR_STRUCTURE'));
     console.error('REPORT_RULES_HINT '+[...categories].join(','));throw Error('REPORT_RULES_FAILED');
   }
   // 整份画好、逐项核对：缺一章、缺一张图、有一段字没上页面，都不出文件（10-14 åå§äºº：不完整就不要给）
@@ -236,5 +254,5 @@ export async function main(args) {
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(realpathSync(process.argv[1])).href)main(process.argv.slice(2)).catch(e=>{
  const allowed=['PROFILE_INVALID','REPORT_INVALID','REPORT_RULES_FAILED','TEMPLATE_INVALID','REPORT_CONFIG_INVALID','PRIVATE_FILE_INVALID','RECTIFY_INVALID','RECTIFY_PROFILE_MISMATCH','OUTPUT_EXISTS'];
- console.error(String(e.message).startsWith('REPORT_INCOMPLETE')?'REPORT_INCOMPLETE':allowed.includes(e.message)?e.message:'REPORT_FAILED');process.exitCode=1;
+ console.error(String(e.message).startsWith('REPORT_INCOMPLETE')?'REPORT_INCOMPLETE':allowed.includes(e.message)?e.message:'REPORT_FAILED');const w=reasonOf(e);if(w)console.error('WINDOWS_REASON '+w);process.exitCode=1;
 });

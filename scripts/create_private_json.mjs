@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import {writePrivateText} from './private_files.mjs';
+import {writePrivateText,reasonOf} from './private_files.mjs';
 import {pathToFileURL} from 'node:url';
 import {realpathSync} from 'node:fs';
 // Creates only the new explicitly selected file; never overwrites or chmods other files.
@@ -19,4 +19,4 @@ async function main(){
   let value;try{value=JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw Error('INPUT_INVALID');}
   await createPrivateJSON(process.argv[2],value);console.log('PRIVATE_FILE_CREATED');
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(realpathSync(process.argv[1])).href)main().catch(e=>{console.error(['CONFIG_INVALID','INPUT_TOO_LARGE','INPUT_INVALID','PERMISSION_ENVIRONMENT_UNVERIFIED','PRIVATE_CREATE_FAILED'].includes(e.message)?e.message:'PRIVATE_CREATE_FAILED');process.exitCode=1;});
+if(process.argv[1]&&import.meta.url===pathToFileURL(realpathSync(process.argv[1])).href)main().catch(e=>{console.error(['CONFIG_INVALID','INPUT_TOO_LARGE','INPUT_INVALID','PERMISSION_ENVIRONMENT_UNVERIFIED','PRIVATE_CREATE_FAILED'].includes(e.message)?e.message:'PRIVATE_CREATE_FAILED');const w=reasonOf(e);if(w)console.error('WINDOWS_REASON '+w);process.exitCode=1;});

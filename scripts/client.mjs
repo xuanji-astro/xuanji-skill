@@ -30,6 +30,7 @@ function birth(v) {
   if (!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==v.date) fail('INPUT_INVALID');
   if (typeof v.city!=='string'||!v.city.trim()||v.city.length>100||!['male','female'].includes(v.gender)) fail('INPUT_INVALID');
   if (v.time!=null&&(typeof v.time!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(v.time))) fail('INPUT_INVALID');
+  if(v.time!=null&&v.time_source===undefined) fail('TIME_SOURCE_MISSING');   // 10-13 åå§äºº 实测：Kimi Code 没标「出生证」，出生证的时辰被定时辰翻掉了；给了时间就必须说来源
   if(v.time_source!==undefined&&!['birth_certificate','family_clear','family_rough','unknown'].includes(v.time_source)) fail('INPUT_INVALID');
   if(v.time_precision!==undefined&&!['minute','within_15min','within_1h','unknown'].includes(v.time_precision)) fail('INPUT_INVALID');
 }
@@ -38,7 +39,7 @@ export function validate(kind, input) {
   if(kind==='health'){if(input!==undefined) fail('INPUT_INVALID');return;}
   if(kind==='profile'){
     // 「核一核」的回答（接口 answers）：[{year,pick}]，pick 只能是 弱／强／都沾／记不清，最多 12 条；其余照生辰字段严格查
-    // 身强身弱校正（10-10 起，接口 calib）：traits 8 个（A–E 或 null），events 最多 30 件 {year, domain?, event?, good}；跟接口同一套检查
+    // 身强身弱校正（10-10 起，接口 calib）：traits 8 个（A–F 或 null，F＝说不准），events 最多 30 件 {year, domain?, event?, good}；跟接口同一套检查
     const {answers,calib,...b}=object(input)?input:{};
     if(!object(input)) fail('INPUT_INVALID');
     birth(b);
@@ -46,7 +47,7 @@ export function validate(kind, input) {
     if(calib!==undefined){
       const AREAS=['感情','事业','钱财','学业','健康','家庭'],tr=calib&&calib.traits,ev=calib&&calib.events;
       if(!object(calib)||Object.keys(calib).some(k=>k!=='traits'&&k!=='events')) fail('INPUT_INVALID');
-      if(tr!==undefined&&(!Array.isArray(tr)||tr.length>8||!tr.every(x=>x===null||(typeof x==='string'&&/^[A-E]$/.test(x))||(Number.isInteger(x)&&x>=0&&x<5)))) fail('INPUT_INVALID');
+      if(tr!==undefined&&(!Array.isArray(tr)||tr.length>8||!tr.every(x=>x===null||(typeof x==='string'&&/^[A-F]$/.test(x))||(Number.isInteger(x)&&x>=0&&x<6)))) fail('INPUT_INVALID');
       if(ev!==undefined&&(!Array.isArray(ev)||ev.length>30||!ev.every(x=>object(x)&&Object.keys(x).every(k=>['year','domain','event','good'].includes(k))&&Number.isInteger(x.year)&&x.year>1900&&x.year<2100&&typeof x.good==='boolean'
         &&(x.domain===undefined||AREAS.includes(x.domain))&&(x.event===undefined||(typeof x.event==='string'&&x.event.length<=20))))) fail('INPUT_INVALID');
     }
