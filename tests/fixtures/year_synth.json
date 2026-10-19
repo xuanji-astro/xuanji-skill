@@ -1,0 +1,1175 @@
+{
+ "schema": "xuanji.year/0.1",
+ "version": {
+  "schema": "xuanji.handoff/0.1",
+  "natal": "c2801c09f54b",
+  "astro_mbti": "ab4604ff0f7e",
+  "asteroids": "4737d506f12c",
+  "vedic": "ece507009c9c+f7b664fe14f5"
+ },
+ "year": 2027,
+ "tz": "Asia/Shanghai",
+ "span": {
+  "from": "2027-02-04",
+  "to": "2028-02-04",
+  "starts_at": "2027-02-04 09:46"
+ },
+ "bazi": {
+  "year_gz": "丁未",
+  "day_master": {
+   "gan": "壬",
+   "element": "水",
+   "yinYang": "阳"
+  },
+  "useful": {
+   "favorable": [
+    "火",
+    "木",
+    "金",
+    "水"
+   ],
+   "unfavorable": [
+    "土"
+   ],
+   "useful": "财星",
+   "avoid": "官杀"
+  },
+  "luck": {
+   "gan_zhi": "辛未",
+   "start_year": 2022,
+   "end_year": 2031,
+   "tier_name": "中",
+   "title": [
+    "稳扎稳打",
+    "小步向前"
+   ],
+   "line": "别指望一口吃胖，每月进步一点，十年下来很可观。"
+  },
+  "year_light": {
+   "tier": 2,
+   "score": 70,
+   "context": "职场",
+   "bazi": {
+    "钱": {
+     "w": 2.8,
+     "why": [
+      "流年天干合日主（正财来合我）",
+      "财星年（主题）"
+     ],
+     "neg": false
+    },
+    "工作": {
+     "w": 2.3,
+     "why": [
+      "食伤生财（产出变现）",
+      "流年刑月柱戌"
+     ],
+     "neg": false
+    }
+   },
+   "west": {
+    "家庭": {
+     "w": 2,
+     "why": [
+      "天王刑本命土星（4宫主）"
+     ]
+    },
+    "迁移远方": {
+     "w": 2,
+     "why": [
+      "土星冲本命月亮（9宫主）"
+     ]
+    },
+    "钱": {
+     "w": 2,
+     "why": [
+      "土星冲本命水星（8宫主）"
+     ]
+    },
+    "事业认可": {
+     "w": 2.5,
+     "why": [
+      "木星合本命天顶（四轴）",
+      "木星进10宫"
+     ]
+    }
+   },
+   "mirror": [
+    "钱"
+   ],
+   "gray": [
+    "工作"
+   ]
+  },
+  "months": [
+   {
+    "gz": "壬寅",
+    "from": "2027-02-04",
+    "to": "2027-03-06",
+    "starts_at": "2027-02-04 09:46",
+    "stem": {
+     "gan": "壬",
+     "element": "水",
+     "god": "比肩"
+    },
+    "branch": {
+     "zhi": "寅",
+     "element": "木",
+     "god": "食神"
+    },
+    "tone": 2,
+    "favorable": {
+     "stem": true,
+     "branch": true
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": false
+    },
+    "relations": [],
+    "forms": [
+     {
+      "type": "半合",
+      "zhi": "寅戌",
+      "element": "火",
+      "god": "财",
+      "with": [
+       "年支",
+       "月支"
+      ]
+     }
+    ],
+    "hints": [
+     "同伴",
+     "钱外流",
+     "工作",
+     "表达作品",
+     "钱"
+    ]
+   },
+   {
+    "gz": "癸卯",
+    "from": "2027-03-06",
+    "to": "2027-04-05",
+    "starts_at": "2027-03-06 03:39",
+    "stem": {
+     "gan": "癸",
+     "element": "水",
+     "god": "劫财"
+    },
+    "branch": {
+     "zhi": "卯",
+     "element": "木",
+     "god": "伤官"
+    },
+    "tone": 2,
+    "favorable": {
+     "stem": true,
+     "branch": true
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": false
+    },
+    "relations": [
+     {
+      "type": "六合",
+      "with": "年支",
+      "zhi": "戌"
+     },
+     {
+      "type": "六合",
+      "with": "月支",
+      "zhi": "戌"
+     },
+     {
+      "type": "害",
+      "with": "日支",
+      "zhi": "辰"
+     },
+     {
+      "type": "害",
+      "with": "时支",
+      "zhi": "辰"
+     }
+    ],
+    "forms": [
+     {
+      "type": "半合",
+      "zhi": "卯未",
+      "element": "木",
+      "god": "食伤",
+      "with": [
+       "流年",
+       "大运"
+      ]
+     }
+    ],
+    "hints": [
+     "同伴",
+     "钱外流",
+     "工作",
+     "表达作品"
+    ]
+   },
+   {
+    "gz": "甲辰",
+    "from": "2027-04-05",
+    "to": "2027-05-06",
+    "starts_at": "2027-04-05 08:17",
+    "stem": {
+     "gan": "甲",
+     "element": "木",
+     "god": "食神"
+    },
+    "branch": {
+     "zhi": "辰",
+     "element": "土",
+     "god": "七杀"
+    },
+    "tone": 0,
+    "favorable": {
+     "stem": true,
+     "branch": false
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": true
+    },
+    "relations": [
+     {
+      "type": "冲",
+      "with": "年支",
+      "zhi": "戌"
+     },
+     {
+      "type": "冲",
+      "with": "月支",
+      "zhi": "戌"
+     },
+     {
+      "type": "自刑",
+      "with": "日支",
+      "zhi": "辰"
+     },
+     {
+      "type": "自刑",
+      "with": "时支",
+      "zhi": "辰"
+     }
+    ],
+    "forms": [],
+    "hints": [
+     "工作",
+     "表达作品",
+     "事业认可"
+    ]
+   },
+   {
+    "gz": "乙巳",
+    "from": "2027-05-06",
+    "to": "2027-06-06",
+    "starts_at": "2027-05-06 01:24",
+    "stem": {
+     "gan": "乙",
+     "element": "木",
+     "god": "伤官"
+    },
+    "branch": {
+     "zhi": "巳",
+     "element": "火",
+     "god": "偏财"
+    },
+    "tone": 2,
+    "favorable": {
+     "stem": true,
+     "branch": true
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": false
+    },
+    "relations": [],
+    "forms": [],
+    "hints": [
+     "工作",
+     "表达作品",
+     "钱"
+    ]
+   },
+   {
+    "gz": "丙午",
+    "from": "2027-06-06",
+    "to": "2027-07-07",
+    "starts_at": "2027-06-06 05:25",
+    "stem": {
+     "gan": "丙",
+     "element": "火",
+     "god": "偏财"
+    },
+    "branch": {
+     "zhi": "午",
+     "element": "火",
+     "god": "正财"
+    },
+    "tone": 2,
+    "favorable": {
+     "stem": true,
+     "branch": true
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": false
+    },
+    "relations": [
+     {
+      "type": "六合",
+      "with": "流年",
+      "zhi": "未"
+     },
+     {
+      "type": "六合",
+      "with": "大运",
+      "zhi": "未"
+     }
+    ],
+    "forms": [
+     {
+      "type": "半合",
+      "zhi": "午戌",
+      "element": "火",
+      "god": "财",
+      "with": [
+       "年支",
+       "月支"
+      ]
+     }
+    ],
+    "hints": [
+     "钱"
+    ]
+   },
+   {
+    "gz": "丁未",
+    "from": "2027-07-07",
+    "to": "2027-08-08",
+    "starts_at": "2027-07-07 15:36",
+    "stem": {
+     "gan": "丁",
+     "element": "火",
+     "god": "正财"
+    },
+    "branch": {
+     "zhi": "未",
+     "element": "土",
+     "god": "正官"
+    },
+    "tone": 0,
+    "favorable": {
+     "stem": true,
+     "branch": false
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": true
+    },
+    "relations": [
+     {
+      "type": "伏吟",
+      "with": "流年",
+      "zhi": "未"
+     },
+     {
+      "type": "伏吟",
+      "with": "大运",
+      "zhi": "未"
+     }
+    ],
+    "forms": [],
+    "hints": [
+     "钱",
+     "事业认可"
+    ]
+   },
+   {
+    "gz": "戊申",
+    "from": "2027-08-08",
+    "to": "2027-09-08",
+    "starts_at": "2027-08-08 01:26",
+    "stem": {
+     "gan": "戊",
+     "element": "土",
+     "god": "七杀"
+    },
+    "branch": {
+     "zhi": "申",
+     "element": "金",
+     "god": "偏印"
+    },
+    "tone": 0,
+    "favorable": {
+     "stem": false,
+     "branch": true
+    },
+    "unfavorable": {
+     "stem": true,
+     "branch": false
+    },
+    "relations": [],
+    "forms": [
+     {
+      "type": "半合",
+      "zhi": "申辰",
+      "element": "水",
+      "god": "比劫",
+      "with": [
+       "日支",
+       "时支"
+      ]
+     }
+    ],
+    "hints": [
+     "事业认可",
+     "家庭",
+     "文书学习",
+     "同伴",
+     "钱外流"
+    ]
+   },
+   {
+    "gz": "己酉",
+    "from": "2027-09-08",
+    "to": "2027-10-08",
+    "starts_at": "2027-09-08 04:28",
+    "stem": {
+     "gan": "己",
+     "element": "土",
+     "god": "正官"
+    },
+    "branch": {
+     "zhi": "酉",
+     "element": "金",
+     "god": "正印"
+    },
+    "tone": 0,
+    "favorable": {
+     "stem": false,
+     "branch": true
+    },
+    "unfavorable": {
+     "stem": true,
+     "branch": false
+    },
+    "relations": [
+     {
+      "type": "害",
+      "with": "年支",
+      "zhi": "戌"
+     },
+     {
+      "type": "害",
+      "with": "月支",
+      "zhi": "戌"
+     },
+     {
+      "type": "六合",
+      "with": "日支",
+      "zhi": "辰"
+     },
+     {
+      "type": "六合",
+      "with": "时支",
+      "zhi": "辰"
+     }
+    ],
+    "forms": [],
+    "hints": [
+     "事业认可",
+     "家庭",
+     "文书学习"
+    ]
+   },
+   {
+    "gz": "庚戌",
+    "from": "2027-10-08",
+    "to": "2027-11-07",
+    "starts_at": "2027-10-08 20:16",
+    "stem": {
+     "gan": "庚",
+     "element": "金",
+     "god": "偏印"
+    },
+    "branch": {
+     "zhi": "戌",
+     "element": "土",
+     "god": "七杀"
+    },
+    "tone": 0,
+    "favorable": {
+     "stem": true,
+     "branch": false
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": true
+    },
+    "relations": [
+     {
+      "type": "伏吟",
+      "with": "年支",
+      "zhi": "戌"
+     },
+     {
+      "type": "伏吟",
+      "with": "月支",
+      "zhi": "戌"
+     },
+     {
+      "type": "冲",
+      "with": "日支",
+      "zhi": "辰"
+     },
+     {
+      "type": "冲",
+      "with": "时支",
+      "zhi": "辰"
+     },
+     {
+      "type": "刑",
+      "with": "流年",
+      "zhi": "未"
+     },
+     {
+      "type": "刑",
+      "with": "大运",
+      "zhi": "未"
+     }
+    ],
+    "forms": [],
+    "hints": [
+     "家庭",
+     "文书学习",
+     "事业认可"
+    ]
+   },
+   {
+    "gz": "辛亥",
+    "from": "2027-11-07",
+    "to": "2027-12-07",
+    "starts_at": "2027-11-07 23:38",
+    "stem": {
+     "gan": "辛",
+     "element": "金",
+     "god": "正印"
+    },
+    "branch": {
+     "zhi": "亥",
+     "element": "水",
+     "god": "比肩"
+    },
+    "tone": 2,
+    "favorable": {
+     "stem": true,
+     "branch": true
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": false
+    },
+    "relations": [],
+    "forms": [
+     {
+      "type": "半合",
+      "zhi": "亥未",
+      "element": "木",
+      "god": "食伤",
+      "with": [
+       "流年",
+       "大运"
+      ]
+     }
+    ],
+    "hints": [
+     "家庭",
+     "文书学习",
+     "同伴",
+     "钱外流",
+     "工作",
+     "表达作品"
+    ]
+   },
+   {
+    "gz": "壬子",
+    "from": "2027-12-07",
+    "to": "2028-01-06",
+    "starts_at": "2027-12-07 16:37",
+    "stem": {
+     "gan": "壬",
+     "element": "水",
+     "god": "比肩"
+    },
+    "branch": {
+     "zhi": "子",
+     "element": "水",
+     "god": "劫财"
+    },
+    "tone": 2,
+    "favorable": {
+     "stem": true,
+     "branch": true
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": false
+    },
+    "relations": [
+     {
+      "type": "害",
+      "with": "流年",
+      "zhi": "未"
+     },
+     {
+      "type": "害",
+      "with": "大运",
+      "zhi": "未"
+     }
+    ],
+    "forms": [
+     {
+      "type": "半合",
+      "zhi": "子辰",
+      "element": "水",
+      "god": "比劫",
+      "with": [
+       "日支",
+       "时支"
+      ]
+     }
+    ],
+    "hints": [
+     "同伴",
+     "钱外流"
+    ]
+   },
+   {
+    "gz": "癸丑",
+    "from": "2028-01-06",
+    "to": "2028-02-04",
+    "starts_at": "2028-01-06 03:54",
+    "stem": {
+     "gan": "癸",
+     "element": "水",
+     "god": "劫财"
+    },
+    "branch": {
+     "zhi": "丑",
+     "element": "土",
+     "god": "正官"
+    },
+    "tone": 0,
+    "favorable": {
+     "stem": true,
+     "branch": false
+    },
+    "unfavorable": {
+     "stem": false,
+     "branch": true
+    },
+    "relations": [
+     {
+      "type": "刑",
+      "with": "年支",
+      "zhi": "戌"
+     },
+     {
+      "type": "刑",
+      "with": "月支",
+      "zhi": "戌"
+     },
+     {
+      "type": "冲",
+      "with": "流年",
+      "zhi": "未"
+     },
+     {
+      "type": "冲",
+      "with": "大运",
+      "zhi": "未"
+     }
+    ],
+    "forms": [
+     {
+      "type": "三刑",
+      "zhi": "丑戌未",
+      "with": [
+       "年支",
+       "月支",
+       "流年",
+       "大运"
+      ]
+     }
+    ],
+    "hints": [
+     "同伴",
+     "钱外流",
+     "事业认可"
+    ]
+   }
+  ],
+  "lit_months": [
+   {
+    "domain": "钱",
+    "months": [
+     {
+      "gz": "丙午",
+      "from": "2027-06-06",
+      "to": "2027-07-07",
+      "score": 3,
+      "why": [
+       "二次引动原局壬",
+       "月干透偏财"
+      ]
+     },
+     {
+      "gz": "丁未",
+      "from": "2027-07-07",
+      "to": "2027-08-08",
+      "score": 6,
+      "why": [
+       "临月（未和流年同字）",
+       "二次引动原局壬",
+       "月干透正财"
+      ]
+     },
+     {
+      "gz": "癸丑",
+      "from": "2028-01-06",
+      "to": "2028-02-04",
+      "score": 3,
+      "why": [
+       "丑冲流年未"
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "west": {
+  "houses": "birth_place",
+  "windows": [
+   {
+    "kind": "相位",
+    "mover": "木星",
+    "asp": "六合",
+    "point": "月亮",
+    "domain": "远方",
+    "tone": "顺风",
+    "start": "2027-03",
+    "end": "2027-05",
+    "exacts": [
+     "2027-04-13"
+    ],
+    "why": "木星六合本命月亮（9宫主）"
+   },
+   {
+    "kind": "相位",
+    "mover": "土星",
+    "asp": "冲",
+    "point": "月亮",
+    "domain": "远方",
+    "tone": "压力",
+    "start": "2027-03",
+    "end": "2027-04",
+    "exacts": [
+     "2027-04-01"
+    ],
+    "why": "土星冲本命月亮（9宫主）"
+   },
+   {
+    "kind": "相位",
+    "mover": "土星",
+    "asp": "冲",
+    "point": "水星",
+    "domain": "钱",
+    "tone": "压力",
+    "start": "2027-04",
+    "end": "2028-02",
+    "exacts": [
+     "2027-05-09",
+     "2028-01-16"
+    ],
+    "why": "土星冲本命水星（8宫主）"
+   },
+   {
+    "kind": "相位",
+    "mover": "天王",
+    "asp": "刑",
+    "point": "土星",
+    "domain": "家庭居所",
+    "tone": "突变",
+    "start": "2027-05",
+    "end": "2028-02",
+    "exacts": [
+     "2027-05-27",
+     "2028-02-04"
+    ],
+    "why": "天王刑本命土星（4宫主）"
+   },
+   {
+    "kind": "相位",
+    "mover": "木星",
+    "asp": "合",
+    "point": "天顶",
+    "domain": "事业认可",
+    "tone": "机会",
+    "start": "2027-07",
+    "end": "2027-07",
+    "exacts": [
+     "2027-07-21"
+    ],
+    "why": "木星合本命天顶（四轴）"
+   },
+   {
+    "kind": "进宫",
+    "mover": "木星",
+    "house": 10,
+    "domain": "事业认可",
+    "tone": "机会",
+    "start": "2027-07",
+    "end": "2027-07",
+    "exacts": [
+     "2027-07-22"
+    ],
+    "why": "木星进10宫"
+   },
+   {
+    "kind": "相位",
+    "mover": "木星",
+    "asp": "六合",
+    "point": "太阳",
+    "domain": "事业认可",
+    "tone": "顺风",
+    "start": "2027-09",
+    "end": "2027-09",
+    "exacts": [
+     "2027-09-08"
+    ],
+    "why": "木星六合本命太阳（10宫主）"
+   }
+  ]
+ },
+ "sky": {
+  "eclipses": [
+   {
+    "type": "日食",
+    "kind": "日环食",
+    "at": "2027-02-06 23:59",
+    "sign": "水瓶",
+    "deg": 17.6,
+    "house": 3,
+    "hits": [
+     {
+      "point": "火星",
+      "aspect": "冲",
+      "orb": 2.8
+     }
+    ]
+   },
+   {
+    "type": "月食",
+    "kind": "半影月食",
+    "at": "2027-02-21 07:12",
+    "sign": "处女",
+    "deg": 2,
+    "house": 10,
+    "hits": []
+   },
+   {
+    "type": "月食",
+    "kind": "半影月食",
+    "at": "2027-07-19 00:02",
+    "sign": "摩羯",
+    "deg": 26,
+    "house": 3,
+    "hits": []
+   },
+   {
+    "type": "日食",
+    "kind": "日全食",
+    "at": "2027-08-02 18:06",
+    "sign": "狮子",
+    "deg": 9.9,
+    "house": 9,
+    "hits": [
+     {
+      "point": "太阳",
+      "aspect": "刑",
+      "orb": 0.6
+     },
+     {
+      "point": "金星",
+      "aspect": "刑",
+      "orb": 1
+     }
+    ]
+   },
+   {
+    "type": "月食",
+    "kind": "半影月食",
+    "at": "2027-08-17 15:13",
+    "sign": "水瓶",
+    "deg": 24.1,
+    "house": 3,
+    "hits": []
+   },
+   {
+    "type": "月食",
+    "kind": "月偏食",
+    "at": "2028-01-12 12:13",
+    "sign": "巨蟹",
+    "deg": 21.6,
+    "house": 8,
+    "hits": [
+     {
+      "point": "水星",
+      "aspect": "刑",
+      "orb": 0
+     },
+     {
+      "point": "海王",
+      "aspect": "冲",
+      "orb": 0.7
+     },
+     {
+      "point": "天王",
+      "aspect": "冲",
+      "orb": 1.2
+     }
+    ]
+   },
+   {
+    "type": "日食",
+    "kind": "日环食",
+    "at": "2028-01-26 23:07",
+    "sign": "水瓶",
+    "deg": 6.2,
+    "house": 3,
+    "hits": []
+   }
+  ],
+  "mercury_rx": [
+   {
+    "start": "2027-02-10",
+    "end": "2027-03-03",
+    "from": {
+     "sign": "双鱼",
+     "deg": 6
+    },
+    "to": {
+     "sign": "水瓶",
+     "deg": 20.9
+    },
+    "houses": [
+     4,
+     3
+    ],
+    "station_hits": [
+     {
+      "point": "土星",
+      "aspect": "合",
+      "orb": 0.3
+     }
+    ],
+    "direct_hits": []
+   },
+   {
+    "start": "2027-06-11",
+    "end": "2027-07-05",
+    "from": {
+     "sign": "巨蟹",
+     "deg": 6.4
+    },
+    "to": {
+     "sign": "双子",
+     "deg": 27.5
+    },
+    "houses": [
+     8
+    ],
+    "station_hits": [],
+    "direct_hits": []
+   },
+   {
+    "start": "2027-10-07",
+    "end": "2027-10-28",
+    "from": {
+     "sign": "天蝎",
+     "deg": 4.9
+    },
+    "to": {
+     "sign": "天秤",
+     "deg": 19.3
+    },
+    "houses": [
+     12,
+     11
+    ],
+    "station_hits": [],
+    "direct_hits": []
+   },
+   {
+    "start": "2028-01-24",
+    "end": "2028-02-14",
+    "from": {
+     "sign": "水瓶",
+     "deg": 19.7
+    },
+    "to": {
+     "sign": "水瓶",
+     "deg": 4
+    },
+    "houses": [
+     3
+    ],
+    "station_hits": [],
+    "direct_hits": []
+   }
+  ],
+  "ingresses": [
+   {
+    "body": "木星",
+    "date": "2027-07-26",
+    "at": "2027-07-26 12:46",
+    "sign": "处女",
+    "house": 10
+   },
+   {
+    "body": "土星",
+    "stays": "白羊"
+   }
+  ]
+ },
+ "vedic": {
+  "asc": {
+   "sign": "天秤",
+   "lord": "金星",
+   "nakshatra": "Vishakha"
+  },
+  "moon": {
+   "sign": "处女",
+   "nakshatra": "Hasta"
+  },
+  "yogakaraka": "土星",
+  "periods": [
+   {
+    "maha": "木星",
+    "antar": "计都",
+    "start": "2026-12",
+    "end": "2027-12"
+   },
+   {
+    "maha": "木星",
+    "antar": "金星",
+    "start": "2027-12",
+    "end": "2030-08"
+   }
+  ],
+  "transits": [
+   {
+    "body": "木星",
+    "date": "2027-02-04",
+    "sign": "巨蟹",
+    "house": 10,
+    "at_start": true
+   },
+   {
+    "body": "土星",
+    "date": "2027-02-04",
+    "sign": "双鱼",
+    "house": 6,
+    "at_start": true
+   },
+   {
+    "body": "罗睺",
+    "date": "2027-02-04",
+    "sign": "摩羯",
+    "house": 4,
+    "at_start": true,
+    "ketu": {
+     "sign": "巨蟹",
+     "house": 10
+    }
+   },
+   {
+    "body": "土星",
+    "date": "2027-06-03",
+    "sign": "白羊",
+    "house": 7
+   },
+   {
+    "body": "木星",
+    "date": "2027-06-26",
+    "sign": "狮子",
+    "house": 11
+   },
+   {
+    "body": "土星",
+    "date": "2027-10-20",
+    "sign": "双鱼",
+    "house": 6
+   },
+   {
+    "body": "木星",
+    "date": "2027-11-26",
+    "sign": "处女",
+    "house": 12
+   }
+  ],
+  "sade_sati": {
+   "now": null,
+   "next_start": "2036-08-27",
+   "periods": [
+    {
+     "phase": 1,
+     "start": "2036-08-27",
+     "end": "2038-10-22"
+    },
+    {
+     "phase": 2,
+     "start": "2038-10-22",
+     "end": "2039-04-06"
+    },
+    {
+     "phase": 1,
+     "start": "2039-04-06",
+     "end": "2039-07-13"
+    },
+    {
+     "phase": 2,
+     "start": "2039-07-13",
+     "end": "2041-01-28"
+    },
+    {
+     "phase": 3,
+     "start": "2041-01-28",
+     "end": "2041-02-06"
+    },
+    {
+     "phase": 2,
+     "start": "2041-02-06",
+     "end": "2041-09-26"
+    },
+    {
+     "phase": 3,
+     "start": "2041-09-26",
+     "end": "2043-12-12"
+    }
+   ]
+  }
+ },
+ "persona": {
+  "type": "INTJ",
+  "name": "暗夜军师",
+  "cover_line": "棋盘早在你脑子里了，你只是在等他们，自己入局。"
+ }
+}

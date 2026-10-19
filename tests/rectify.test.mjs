@@ -45,9 +45,9 @@ test('ask：只问两张盘说法相反的年份，不问用户已经说过的�
   assert.ok(!ys.includes(2015));assert.equal(q.targeted.length,4);
   assert.deepEqual(ys,[...ys].sort((a,b)=>a-b));
   for(const x of q.targeted){assert.deepEqual(Object.keys(x).sort(),['ask','domain','eg','id','question','year']);assert.ok(!/A|B|盘/.test(x.question));
-    assert.equal(x.question,`${x.year} 年，${x.ask}比如${x.eg}。`);assert.ok(!/明显的变动/.test(x.question),'10-10 起不问「明显的变动」');}
+    assert.equal(x.question,`${x.year} 年，${x.ask}比如${x.eg}。`);assert.ok(!/明显的变动/.test(x.question),'不问「明显的变动」');}
   assert.equal(q.follow_up,'对你来说是好事还是坏事？');assert.deepEqual(q.answers,{targeted:['有','没有','记不清'],good:['好事','坏事']});
-  assert.ok(!('feel' in q),'10-10 起不单独问体感');
+  assert.ok(!('feel' in q),'不单独问体感');
   assert.equal(new Set(ys).size,ys.length);
 });
 test('第一票：大事站在原时间那边 → 定原时间；站在另一边 → 定另一边',()=>{
@@ -74,7 +74,7 @@ test('补问：「有」算给预言它的那张盘，「没有」算给另一�
   for(const x of q.targeted)ans.targeted[x.id]='没印象';
   assert.equal(score(A(),B(),ev,q,ans).first_vote.asked.unsure,4);
 });
-test('第二票（10-10）：大事和补问「有」后追问的好事坏事；只看两张盘说法相反的年份，至少 2 件指向同一张才算',()=>{
+test('第二票：大事和补问「有」后追问的好事坏事；只看两张盘说法相反的年份，至少 2 件指向同一张才算',()=>{
   const b=()=>B({fav:['金','水'],unfav:['木','火']});   // A 喜木火忌金水，B 反过来：乙巳（木火）A 顺 B 闷，庚子（金水）A 闷 B 顺
   const ev={events:[{year:2025,domain:'事业',event:'升职',good:true},{year:2020,domain:'钱财',event:'投资亏损',good:false}]};
   const r=score(A(),b(),ev,ask(A(),b(),ev),{});
@@ -92,7 +92,7 @@ test('第二票（10-10）：大事和补问「有」后追问的好事坏事；
   assert.equal(ra.feel_vote.vote,'b');
   assert.throws(()=>score(A(),wide(),{events:[]},q,{targeted:{[t25.id]:'没有'},good:{[t25.id]:'好事'}}),/INPUT_INVALID/);
 });
-test('具体的事归到哪个方面（命理组 10-10）',()=>{
+test('具体的事归到哪个方面',()=>{
   const d=(domain,event)=>domainOf({domain,event});
   assert.equal(d('事业','跳槽'),'工作');assert.equal(d('事业','升职'),'事业认可');assert.equal(d('事业','降职'),'事业认可');
   assert.equal(d('学业','高考'),'事业认可');assert.equal(d('学业','休学'),'工作');assert.equal(d('学业','留学'),'迁移远方');
@@ -132,7 +132,7 @@ test('输入只收年份和方面；问过的题跟 ask 对不上就停',()=>{
   assert.throws(()=>score(A(),A(),ev,q,{}),/RECTIFY_SAME_HOUR/);
   assert.throws(()=>plan({schema:'x'},B(),ev),/PROFILE_INVALID/);
 });
-test('规则常数照 10-04 定案',()=>{assert.equal(RULES.ratio,1.25);assert.equal(RULES.minSide,2);assert.equal(RULES.askEach,2);});
+test('规则常数保持固定',()=>{assert.equal(RULES.ratio,1.25);assert.equal(RULES.minSide,2);assert.equal(RULES.askEach,2);});
 
 const cli=fileURLToPath(new URL('../scripts/rectify.mjs',import.meta.url));
 test('命令行：结果写进 600 文件，终端只打固定代码；输入文件不是 600 就拒绝',{skip:process.platform==='win32'},async()=>{
@@ -160,7 +160,7 @@ test('定时辰脚本不联网：不调用 fetch、http、client 的请求函数
   const src=await readFile(cli,'utf8');
   assert.ok(!/\bfetch\s*\(|node:https?|callAPI/.test(src));
 });
-test('ask（10-13）：22 岁及以下问学业；同一种问法的几个年份并成一题，打分仍按每一年',()=>{
+test('ask：22 岁及以下问学业；同一种问法的几个年份并成一题，打分仍按每一年',()=>{
   const a=prof({gz:'甲子',lit:{2011:{bazi:{事业认可:w(3)}},2016:{bazi:{事业认可:w(3)}}}}),b=prof({gz:'乙丑',lit:{2020:{bazi:{事业认可:w(3)}},2024:{bazi:{事业认可:w(3)}}}});
   const q=ask(a,b,{events:[]});
   const y11=q.targeted.find(x=>x.year===2011);assert.ok(y11&&/学业/.test(y11.question)&&!/职位/.test(y11.question),'2011 年 21 岁问学业');
@@ -170,7 +170,7 @@ test('ask（10-13）：22 岁及以下问学业；同一种问法的几个年份
   const ans={targeted:Object.fromEntries(q.targeted.map(x=>[x.id,'没有'])),good:{}};
   assert.doesNotThrow(()=>score(a,b,{events:[]},q,ans));
 });
-test('candidate（10-13）：给了时间没写来源就停（TIME_SOURCE_MISSING），不提议定时辰',()=>{
+test('candidate：给了时间没写来源就停（TIME_SOURCE_MISSING），不提议定时辰',()=>{
   const req={date:'1990-03-15',time:'10:56',city:'浙江省杭州市',gender:'female',time_precision:'minute'};
   assert.throws(()=>candidate(A(),req),e=>e.code==='TIME_SOURCE_MISSING');
 });

@@ -1,0 +1,861 @@
+{
+ "schema": "xuanji.yishi_cast/0.1",
+ "asked": {
+  "local": "2026-10-18 20:36",
+  "at": "2026-10-18T20:36+08:00"
+ },
+ "question": "年底前能不能拿到这家公司的 offer",
+ "question_type": "career",
+ "span": "一季内",
+ "asker": "self",
+ "waiying": {
+  "status": "given",
+  "text": "在地铁上，听见报站下一站人民广场，旁边有人打电话说已经定了"
+ },
+ "liuyao": {
+  "input": {
+   "method": "time",
+   "year": 2026,
+   "month": 10,
+   "day": 18,
+   "hour": 20,
+   "minute": 36,
+   "lateZiSwitch": true,
+   "question_type": "career",
+   "asker": "self"
+  },
+  "ganzhi": {
+   "year": "丙午",
+   "month": "戊戌",
+   "day": "乙丑",
+   "hour": "丙戌"
+  },
+  "lunar": {
+   "year": 2026,
+   "month": 9,
+   "day": 9,
+   "isLeapMonth": false
+  },
+  "original": {
+   "name": "天雷无妄",
+   "lines": [
+    1,
+    0,
+    0,
+    1,
+    1,
+    1
+   ]
+  },
+  "changed": {
+   "name": "泽雷随",
+   "lines": [
+    1,
+    0,
+    0,
+    1,
+    1,
+    0
+   ]
+  },
+  "mutual": {
+   "name": "风山渐"
+  },
+  "palace": {
+   "name": "巽",
+   "wuxing": "木"
+  },
+  "palaceStage": "四世",
+  "worldAndResponse": [
+   "应",
+   "",
+   "",
+   "世",
+   "",
+   ""
+  ],
+  "yaos": [
+   {
+    "position": 1,
+    "rawValue": 7,
+    "line": 1,
+    "najiaGan": "庚",
+    "najiaZhi": "子",
+    "wuxing": "水",
+    "liuQin": "父母",
+    "liuShen": "青龙",
+    "isWorld": false,
+    "isResponse": true,
+    "isChanging": false,
+    "changeType": "少阳",
+    "isVoid": false,
+    "isMonthBreak": false,
+    "isDayClash": false,
+    "isDarkMove": false,
+    "isDayBreak": false,
+    "isLiuHeDay": true,
+    "isLinYueJian": false,
+    "seasonState": "死",
+    "changedYao": null,
+    "timingCandidates": []
+   },
+   {
+    "position": 2,
+    "rawValue": 8,
+    "line": 0,
+    "najiaGan": "庚",
+    "najiaZhi": "寅",
+    "wuxing": "木",
+    "liuQin": "兄弟",
+    "liuShen": "朱雀",
+    "isWorld": false,
+    "isResponse": false,
+    "isChanging": false,
+    "changeType": "少阴",
+    "isVoid": false,
+    "isMonthBreak": false,
+    "isDayClash": false,
+    "isDarkMove": false,
+    "isDayBreak": false,
+    "isLiuHeDay": false,
+    "isLinYueJian": false,
+    "seasonState": "囚",
+    "changedYao": null,
+    "timingCandidates": []
+   },
+   {
+    "position": 3,
+    "rawValue": 8,
+    "line": 0,
+    "najiaGan": "庚",
+    "najiaZhi": "辰",
+    "wuxing": "土",
+    "liuQin": "妻财",
+    "liuShen": "勾陈",
+    "isWorld": false,
+    "isResponse": false,
+    "isChanging": false,
+    "changeType": "少阴",
+    "isVoid": false,
+    "isMonthBreak": true,
+    "isDayClash": false,
+    "isDarkMove": false,
+    "isDayBreak": false,
+    "isLiuHeDay": false,
+    "isLinYueJian": true,
+    "seasonState": "旺",
+    "changedYao": null,
+    "timingCandidates": [
+     {
+      "mechanism": "逢值",
+      "triggerBranch": "辰",
+      "meaning": "月破逢值，本支（辰）值期",
+      "timingReal": {
+       "days": [
+        "2026-10-21（戊辰）",
+        "2026-11-02（庚辰）",
+        "2026-11-14（壬辰）"
+       ],
+       "month": "2027-04-05～2027-05-05（辰月）"
+      }
+     },
+     {
+      "mechanism": "逢合",
+      "triggerBranch": "酉",
+      "meaning": "月破逢合，六合支（酉）值期",
+      "timingReal": {
+       "days": [
+        "2026-10-26（癸酉）",
+        "2026-11-07（乙酉）",
+        "2026-11-19（丁酉）"
+       ],
+       "month": "2027-09-08～2027-10-07（酉月）"
+      }
+     },
+     {
+      "mechanism": "出月",
+      "triggerBranch": "戌",
+      "meaning": "出本月后逢月建之支（戌）值期，月破得解",
+      "timingReal": {
+       "days": [
+        "2026-10-27（甲戌）",
+        "2026-11-08（丙戌）",
+        "2026-11-20（戊戌）"
+       ],
+       "month": "2026-10-08～2026-11-06（戌月）"
+      }
+     }
+    ]
+   },
+   {
+    "position": 4,
+    "rawValue": 7,
+    "line": 1,
+    "najiaGan": "壬",
+    "najiaZhi": "午",
+    "wuxing": "火",
+    "liuQin": "子孙",
+    "liuShen": "螣蛇",
+    "isWorld": true,
+    "isResponse": false,
+    "isChanging": false,
+    "changeType": "少阳",
+    "isVoid": false,
+    "isMonthBreak": false,
+    "isDayClash": false,
+    "isDarkMove": false,
+    "isDayBreak": false,
+    "isLiuHeDay": false,
+    "isLinYueJian": false,
+    "seasonState": "休",
+    "changedYao": null,
+    "timingCandidates": []
+   },
+   {
+    "position": 5,
+    "rawValue": 7,
+    "line": 1,
+    "najiaGan": "壬",
+    "najiaZhi": "申",
+    "wuxing": "金",
+    "liuQin": "官鬼",
+    "liuShen": "白虎",
+    "isWorld": false,
+    "isResponse": false,
+    "isChanging": false,
+    "changeType": "少阳",
+    "isVoid": false,
+    "isMonthBreak": false,
+    "isDayClash": false,
+    "isDarkMove": false,
+    "isDayBreak": false,
+    "isLiuHeDay": false,
+    "isLinYueJian": false,
+    "seasonState": "相",
+    "changedYao": null,
+    "timingCandidates": []
+   },
+   {
+    "position": 6,
+    "rawValue": 9,
+    "line": 1,
+    "najiaGan": "壬",
+    "najiaZhi": "戌",
+    "wuxing": "土",
+    "liuQin": "妻财",
+    "liuShen": "玄武",
+    "isWorld": false,
+    "isResponse": false,
+    "isChanging": true,
+    "changeType": "老阳",
+    "isVoid": true,
+    "isMonthBreak": false,
+    "isDayClash": false,
+    "isDarkMove": false,
+    "isDayBreak": false,
+    "isLiuHeDay": false,
+    "isLinYueJian": true,
+    "seasonState": "旺",
+    "changedYao": {
+     "zhi": "未",
+     "gan": "丁",
+     "wuxing": "土",
+     "liuQin": "妻财",
+     "isVoid": false,
+     "changeDirection": "化退神",
+     "changeRelations": []
+    },
+    "timingCandidates": [
+     {
+      "mechanism": "填实",
+      "triggerBranch": "戌",
+      "meaning": "空亡填实，逢本支（戌）值期",
+      "timingReal": {
+       "days": [
+        "2026-10-27（甲戌）",
+        "2026-11-08（丙戌）",
+        "2026-11-20（戊戌）"
+       ],
+       "month": "2026-10-08～2026-11-06（戌月）"
+      }
+     },
+     {
+      "mechanism": "冲空",
+      "triggerBranch": "辰",
+      "meaning": "冲空则实，逢冲支（辰）值期",
+      "timingReal": {
+       "days": [
+        "2026-10-21（戊辰）",
+        "2026-11-02（庚辰）",
+        "2026-11-14（壬辰）"
+       ],
+       "month": "2027-04-05～2027-05-05（辰月）"
+      }
+     },
+     {
+      "mechanism": "逢值",
+      "triggerBranch": "戌",
+      "meaning": "动爻逢值，本支（戌）值期",
+      "timingReal": {
+       "days": [
+        "2026-10-27（甲戌）",
+        "2026-11-08（丙戌）",
+        "2026-11-20（戊戌）"
+       ],
+       "month": "2026-10-08～2026-11-06（戌月）"
+      }
+     },
+     {
+      "mechanism": "逢合",
+      "triggerBranch": "卯",
+      "meaning": "动爻逢合，六合支（卯）值期",
+      "timingReal": {
+       "days": [
+        "2026-10-20（丁卯）",
+        "2026-11-01（己卯）",
+        "2026-11-13（辛卯）"
+       ],
+       "month": "2027-03-06～2027-04-04（卯月）"
+      }
+     }
+    ]
+   }
+  ],
+  "voidBranches": [
+   "戌",
+   "亥"
+  ],
+  "hiddenSpirits": [],
+  "hexagramRelations": {
+   "isLiuHe": false,
+   "isLiuChong": true,
+   "transition": null
+  },
+  "fanfu": {
+   "fanyin": [],
+   "fuyin": []
+  },
+  "timingSummary": [
+   {
+    "source": {
+     "kind": "爻",
+     "position": 3,
+     "liuQin": "妻财",
+     "zhi": "辰"
+    },
+    "mechanism": "逢值",
+    "triggerBranch": "辰",
+    "meaning": "月破逢值，本支（辰）值期",
+    "timingReal": {
+     "days": [
+      "2026-10-21（戊辰）",
+      "2026-11-02（庚辰）",
+      "2026-11-14（壬辰）"
+     ],
+     "month": "2027-04-05～2027-05-05（辰月）"
+    }
+   },
+   {
+    "source": {
+     "kind": "爻",
+     "position": 3,
+     "liuQin": "妻财",
+     "zhi": "辰"
+    },
+    "mechanism": "逢合",
+    "triggerBranch": "酉",
+    "meaning": "月破逢合，六合支（酉）值期",
+    "timingReal": {
+     "days": [
+      "2026-10-26（癸酉）",
+      "2026-11-07（乙酉）",
+      "2026-11-19（丁酉）"
+     ],
+     "month": "2027-09-08～2027-10-07（酉月）"
+    }
+   },
+   {
+    "source": {
+     "kind": "爻",
+     "position": 3,
+     "liuQin": "妻财",
+     "zhi": "辰"
+    },
+    "mechanism": "出月",
+    "triggerBranch": "戌",
+    "meaning": "出本月后逢月建之支（戌）值期，月破得解",
+    "timingReal": {
+     "days": [
+      "2026-10-27（甲戌）",
+      "2026-11-08（丙戌）",
+      "2026-11-20（戊戌）"
+     ],
+     "month": "2026-10-08～2026-11-06（戌月）"
+    }
+   },
+   {
+    "source": {
+     "kind": "爻",
+     "position": 6,
+     "liuQin": "妻财",
+     "zhi": "戌"
+    },
+    "mechanism": "填实",
+    "triggerBranch": "戌",
+    "meaning": "空亡填实，逢本支（戌）值期",
+    "timingReal": {
+     "days": [
+      "2026-10-27（甲戌）",
+      "2026-11-08（丙戌）",
+      "2026-11-20（戊戌）"
+     ],
+     "month": "2026-10-08～2026-11-06（戌月）"
+    }
+   },
+   {
+    "source": {
+     "kind": "爻",
+     "position": 6,
+     "liuQin": "妻财",
+     "zhi": "戌"
+    },
+    "mechanism": "冲空",
+    "triggerBranch": "辰",
+    "meaning": "冲空则实，逢冲支（辰）值期",
+    "timingReal": {
+     "days": [
+      "2026-10-21（戊辰）",
+      "2026-11-02（庚辰）",
+      "2026-11-14（壬辰）"
+     ],
+     "month": "2027-04-05～2027-05-05（辰月）"
+    }
+   },
+   {
+    "source": {
+     "kind": "爻",
+     "position": 6,
+     "liuQin": "妻财",
+     "zhi": "戌"
+    },
+    "mechanism": "逢值",
+    "triggerBranch": "戌",
+    "meaning": "动爻逢值，本支（戌）值期",
+    "timingReal": {
+     "days": [
+      "2026-10-27（甲戌）",
+      "2026-11-08（丙戌）",
+      "2026-11-20（戊戌）"
+     ],
+     "month": "2026-10-08～2026-11-06（戌月）"
+    }
+   },
+   {
+    "source": {
+     "kind": "爻",
+     "position": 6,
+     "liuQin": "妻财",
+     "zhi": "戌"
+    },
+    "mechanism": "逢合",
+    "triggerBranch": "卯",
+    "meaning": "动爻逢合，六合支（卯）值期",
+    "timingReal": {
+     "days": [
+      "2026-10-20（丁卯）",
+      "2026-11-01（己卯）",
+      "2026-11-13（辛卯）"
+     ],
+     "month": "2027-03-06～2027-04-04（卯月）"
+    }
+   }
+  ],
+  "sanXing": [],
+  "sanHe": [
+   {
+    "group": "申子辰",
+    "wuxing": "水",
+    "presentBranches": [
+     "申",
+     "子",
+     "辰"
+    ],
+    "missingBranches": [],
+    "complete": true,
+    "half": false,
+    "sources": {
+     "申": [
+      "爻5"
+     ],
+     "子": [
+      "爻1"
+     ],
+     "辰": [
+      "爻3"
+     ]
+    }
+   },
+   {
+    "group": "寅午戌",
+    "wuxing": "火",
+    "presentBranches": [
+     "寅",
+     "午",
+     "戌"
+    ],
+    "missingBranches": [],
+    "complete": true,
+    "half": false,
+    "sources": {
+     "寅": [
+      "爻2"
+     ],
+     "午": [
+      "爻4"
+     ],
+     "戌": [
+      "爻6",
+      "月建"
+     ]
+    }
+   }
+  ],
+  "guaShen": {
+   "branch": "卯",
+   "liuQin": "兄弟"
+  },
+  "yongshen": {
+   "questionType": "career",
+   "asker": "self",
+   "roles": [
+    {
+     "role": "用神",
+     "liuQin": "官鬼"
+    },
+    {
+     "role": "辅神",
+     "liuQin": "父母"
+    }
+   ],
+   "occurrences": [
+    {
+     "role": "用神",
+     "liuQin": "官鬼",
+     "where": "明现",
+     "position": 5,
+     "zhi": "申",
+     "wuxing": "金",
+     "isVoid": false,
+     "isMonthBreak": false,
+     "seasonState": "相",
+     "isChanging": false,
+     "isWorld": false,
+     "isResponse": false
+    },
+    {
+     "role": "辅神",
+     "liuQin": "父母",
+     "where": "明现",
+     "position": 1,
+     "zhi": "子",
+     "wuxing": "水",
+     "isVoid": false,
+     "isMonthBreak": false,
+     "seasonState": "死",
+     "isChanging": false,
+     "isWorld": false,
+     "isResponse": true
+    }
+   ],
+   "primary": {
+    "role": "用神",
+    "liuQin": "官鬼",
+    "where": "明现",
+    "position": 5,
+    "zhi": "申",
+    "wuxing": "金",
+    "isVoid": false,
+    "isMonthBreak": false,
+    "seasonState": "相",
+    "isChanging": false,
+    "isWorld": false,
+    "isResponse": false,
+    "reason": "用神仅此一处，取用"
+   },
+   "personYao": null,
+   "subjectRelation": null,
+   "relations": [
+    {
+     "from": "月建戌",
+     "type": "生",
+     "note": "月建戌土生用神申金"
+    },
+    {
+     "from": "日辰丑",
+     "type": "生",
+     "note": "日辰丑土生用神申金"
+    },
+    {
+     "from": "动爻6戌",
+     "type": "生",
+     "note": "动爻6 戌土生用神申金"
+    },
+    {
+     "from": "月建戌",
+     "type": "克",
+     "note": "月建戌土克辅神子水"
+    },
+    {
+     "from": "日辰丑",
+     "type": "合",
+     "note": "日辰丑与辅神子水六合"
+    },
+    {
+     "from": "动爻6戌",
+     "type": "克",
+     "note": "动爻6 戌土克辅神子水"
+    }
+   ],
+   "judgment": {
+    "verdict": "成",
+    "reason": "5爻官鬼申金：季节相、月建生、日辰生、动爻来生；无明显伤损。"
+   }
+  },
+  "timing": {
+   "mostLikely": null,
+   "secondary": null,
+   "note": "用神无待解之结，无明确应期"
+  },
+  "warnings": []
+ },
+ "meihua": {
+  "input": {
+   "method": "numbers",
+   "numbers": [
+    3,
+    8,
+    6
+   ],
+   "rule": "sum",
+   "year": 2026,
+   "month": 10,
+   "day": 18,
+   "hour": 20,
+   "minute": 36,
+   "lateZiSwitch": true
+  },
+  "calculation": {
+   "rule": "sum",
+   "total": 17,
+   "upperNum": 3,
+   "lowerNum": 8,
+   "moving": 5,
+   "upperFormula": "3 ÷ 8 余 3",
+   "lowerFormula": "8 ÷ 8 余 8",
+   "movingFormula": "3+8+6，17 ÷ 6 余 5"
+  },
+  "ganzhi": {
+   "year": "丙午",
+   "month": "戊戌",
+   "day": "乙丑",
+   "hour": "丙戌"
+  },
+  "original": {
+   "number": 35,
+   "name": "火地晋",
+   "lines": [
+    0,
+    0,
+    0,
+    1,
+    0,
+    1
+   ],
+   "upper": {
+    "name": "离",
+    "wuxing": "火",
+    "lines": [
+     1,
+     0,
+     1
+    ]
+   },
+   "lower": {
+    "name": "坤",
+    "wuxing": "土",
+    "lines": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  "mutual": {
+   "number": 39,
+   "name": "水山蹇",
+   "lines": [
+    0,
+    0,
+    1,
+    0,
+    1,
+    0
+   ],
+   "upper": {
+    "name": "坎",
+    "wuxing": "水",
+    "lines": [
+     0,
+     1,
+     0
+    ]
+   },
+   "lower": {
+    "name": "艮",
+    "wuxing": "土",
+    "lines": [
+     0,
+     0,
+     1
+    ]
+   }
+  },
+  "changed": {
+   "number": 12,
+   "name": "天地否",
+   "lines": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1
+   ],
+   "upper": {
+    "name": "乾",
+    "wuxing": "金",
+    "lines": [
+     1,
+     1,
+     1
+    ]
+   },
+   "lower": {
+    "name": "坤",
+    "wuxing": "土",
+    "lines": [
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  "opposite": {
+   "number": 5,
+   "name": "水天需",
+   "lines": [
+    1,
+    1,
+    1,
+    0,
+    1,
+    0
+   ],
+   "upper": {
+    "name": "坎",
+    "wuxing": "水",
+    "lines": [
+     0,
+     1,
+     0
+    ]
+   },
+   "lower": {
+    "name": "乾",
+    "wuxing": "金",
+    "lines": [
+     1,
+     1,
+     1
+    ]
+   }
+  },
+  "reversed": {
+   "number": 36,
+   "name": "地火明夷",
+   "lines": [
+    1,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "upper": {
+    "name": "坤",
+    "wuxing": "土",
+    "lines": [
+     0,
+     0,
+     0
+    ]
+   },
+   "lower": {
+    "name": "离",
+    "wuxing": "火",
+    "lines": [
+     1,
+     0,
+     1
+    ]
+   }
+  },
+  "movingYao": 5,
+  "tiYong": {
+   "tiPosition": "lower",
+   "yongPosition": "upper",
+   "ti": {
+    "name": "坤",
+    "wuxing": "土",
+    "lines": [
+     0,
+     0,
+     0
+    ],
+    "seasonState": "旺"
+   },
+   "yong": {
+    "name": "离",
+    "wuxing": "火",
+    "lines": [
+     1,
+     0,
+     1
+    ]
+   },
+   "relation": "用生体",
+   "monthBranch": "戌"
+  },
+  "texts": {
+   "originalGuaCi": [
+    "晉：康侯用錫馬蕃庶，晝日三接。"
+   ],
+   "movingYaoCi": "六五：悔亡，失得勿恤，往吉无不利。",
+   "changedGuaCi": [
+    "否之匪人，不利君子貞，大往小來。"
+   ]
+  },
+  "warnings": []
+ },
+ "meihua_by": "numbers",
+ "meihua_timing": {
+  "N": 16,
+  "formula": "上卦3＋下卦8＋动爻5＝16",
+  "ti_state": "旺",
+  "fast": true,
+  "count": 16,
+  "unit": "旬",
+  "estimate": "2027-03-27",
+  "label": "2027年3月下旬"
+ }
+}

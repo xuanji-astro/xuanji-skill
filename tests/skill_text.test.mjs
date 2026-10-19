@@ -1,6 +1,6 @@
 // Copyright 2026 杭州强势播传文化影视传媒有限公司
 // SPDX-License-Identifier: Apache-2.0
-// 宿主照 SKILL 和 reference 里的命令原样执行：命令要用 Skill 目录的绝对路径，文件写在用户的工作目录（10-06 Kimi Code 实测把生辰写进了 Skill 安装目录）
+// 宿主照 SKILL 和 reference 里的命令原样执行：命令要用 Skill 目录的绝对路径，文件写在用户的工作目录，避免把生辰写进 Skill 安装目录
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -21,22 +21,22 @@ test('SKILL 和 reference 里给宿主执行的命令都用 <skill目录>/script
   }
 });
 
-// 10-06 用户反馈那批规则（身强身弱 v1.3、学龄、换挡年、周岁）落到写法和模板
+// 相关规则（身强身弱 v1.3、学龄、换挡年、周岁）落到写法和模板
 test('身强身弱：实锤只认用户核过的，待定两种原因都问体感，西盘不进（v1.4）',async()=>{
   const skill=await read('SKILL.md'),jd=await read('reference/解读.md'),bg=await read('reference/报告.md');
   assert.match(skill,/实锤只认核过的/);
   for(const k of ['硬分歧','孤票'])assert.match(skill,new RegExp(k));
   for(const t of [skill,jd,bg])assert.doesNotMatch(t,/尺子有方向|西盘也同向/);
-  // 10-10：核一核换成身强身弱校正（照网站校正页：8 道性格题一条发完＋大事，接口收 calib 自己定案；老的两条说法那套不用）
+  // 核一核换成身强身弱校正（照网站校正页：8 道性格题一条发完＋大事，接口收 calib 自己定案；老的两条说法那套不用）
   assert.match(skill,/\*\*身强身弱校正\*\*/);
   assert.match(skill,/`calib`/);
   assert.match(skill,/一条消息发完/);
   assert.match(skill,/一定在出报告之前/);
-  // 10-13／10-14 命理组：每题第六项「说不准」；几种判法一致的盘不主动问；翻到原判反面要明说
+  // 每题第六项「说不准」；几种判法一致的盘不主动问；翻到原判反面要明说
   assert.match(skill,/A–F 六个选项/);
   assert.match(skill,/verdict\.agree` 是「一致」）的不主动问/);
   assert.match(skill,/`flip` 不为空/);
-  // 10-14 åå§äºº：报告不完整就不给，出不了完整的请用户加创始人；带 --pdf 出 PDF
+  // 报告不完整就不给，出不了完整的请用户加创始人；带 --pdf 出 PDF
   assert.match(skill,/--pdf report\.pdf/);
   assert.match(skill,/宁可不给也不给残缺的/);
   assert.match(skill,/REPORT_INCOMPLETE/);
@@ -57,7 +57,7 @@ test('岁数周岁、22 周岁及以下按学业说、换挡年单说',async()=>
   assert.match(jd,/`method.timing.shift_years`/);
   assert.match(bg,/`span` 照抄 `method.bazi.luck` 那一步的 `label`/);
   assert.match(api,/`method.timing.shift_years\[\]`/);
-  assert.match(await read('scripts/report_rules.json'),/"years\.life\[\]\.span": 28,/);   // 「3 周岁起运 · 丙辰（1997–2007）」22 个字
+  assert.match(await read('scripts/report_rules.json'),/"years\.life\[\]\.span": 40,/);   // 「2001 年交运（那年满 5 周岁） · 丙辰（2001–2011）」35 个字左右
 });
 
 test('模板：大运周岁、强弱只在实锤放行、学业说法、换挡年标记',async()=>{

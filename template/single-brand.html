@@ -176,7 +176,7 @@ footer .motto{font-family:var(--serif);color:var(--accent);font-size:15px;letter
   .wrap{max-width:none;padding:0 0 8mm}
   .fold>summary::after,.basis>summary::after{display:none}
   .cover,.panel,.card,.cx,.luck,.next,.open,.connect,.years,svg,img,table,tr,figure{break-inside:avoid}
-  /* 10-11 她看一份真报告的 PDF：卡片、图、年卡、逐星卡被页底切成两半。比一页矮的整块挪到下一页；
+  /* 避免卡片、图、年卡和逐星卡被 PDF 页底切成两半。比一页矮的整块挪到下一页；
      比一页高的框（完整人生节律、依据）只能跨页，每一页各补一圈边和圆角，不露半截框 */
   .fig,.juan,.calc,.decc,.pcd,.lrow,.win,.warm,.gold,.q,.prog,.closing,.ssf,.soult,.qrw,.pl,.careas,.timenote,.st-t,.yr,.yi,.ji,.hit,li{break-inside:avoid}
   .juan{break-before:page}   /* 卷上、卷下各从新的一页起 */
@@ -185,7 +185,7 @@ footer .motto{font-family:var(--serif);color:var(--accent);font-size:15px;letter
   .cited,.gold,.refs{break-before:avoid}   /* 「上篇引用」、金句、依据角标都跟着上面那段走，不单独落到下一页、空出一整页 */
   .dia,details>summary{break-after:avoid}
   details.fold,details.basis{box-decoration-break:clone;-webkit-box-decoration-break:clone}
-  /* 10-11 她：PDF「有点斜，右边比左边低」。几何是正的，是印出来的样子在骗眼睛：阴影在 PDF 里糊成一圈灰雾；
+  /* 避免阴影在 PDF 里糊成灰雾而造成版面倾斜的视觉错觉；
      封面 155° 斜渐变右下压一块紫；卷首「照见」的渐变字印成一个往右偏的方框。打印时去阴影、渐变改竖直、字改实色 */
   *{box-shadow:none !important}
   .cover{background:linear-gradient(180deg,#fff 0%,#fff6ee 55%,#f3f0fd 100%) !important}   /* 屏幕那几条写在后面，打印要 important 才压得住 */
@@ -452,7 +452,7 @@ strong{color:#9a4f1c;font-weight:600;background:linear-gradient(transparent 62%,
 .card.sch{margin:12px 0}.sch .vsay{margin-top:2px}.sch details.fold{margin:8px 0 0}
 .srow{padding:8px 0;border-bottom:1px dashed var(--line)}.srow:last-child{border-bottom:0}.srow .termrow{margin:6px 0 4px}
 @media(max-width:520px){.vrow{grid-template-columns:1fr auto;gap:4px 8px}.vwhy{grid-column:1/-1}}
-/* 10-02 分层：最响的三件事、其余一句话、折叠、接着问前三 */
+/* 内容分层：最响的三件事、其余一句话、折叠、接着问前三 */
 .focuslead{font-size:13px;letter-spacing:.06em;color:var(--sub);margin:-4px 0 14px}
 .briefs{margin:6px 0}
 .brow{padding:12px 0;border-bottom:1px dashed var(--line)}
@@ -491,17 +491,17 @@ function turnLine(ty) { return ty && ty.turn && !MUTE ? h('div', 'turn', ty.turn
 // 身强身弱的定案要在封面标签之前就备好（以前写在八字盘面那段，封面的「偏强／身强」标签读不到定案，核过的人也显示偏强）
 var VDEC = XB && XB.strength && XB.strength.vote && XB.strength.vote.decided, VANS = XB && XB.check && XB.check.score && XB.check.score.answers;
 var VST = XB && XB.check && XB.check.score && XB.check.score.strength, VASK = (VANS || []).map(function (a) { return { year: a.year, gan_zhi: a.gan_zhi, answer: a.felt === '顺' ? '顺' : a.felt === '逆' ? '糟' : a.pick === '都沾' ? '都沾一点' : a.pick === '记不清' ? '记不清' : '记下了' }; });
-// 三派都对不上（降置信，10-08 定）：不出某一年顺逆的断语——流年卡不挂档、十年轴不标顺逆、为什么转紧那句也不出；大运图照默认那一派画
+// 三派都对不上（降置信）：不出某一年顺逆的断语——流年卡不挂档、十年轴不标顺逆、为什么转紧那句也不出；大运图照默认那一派画
 var MUTE = !!(XB && XB.school && XB.school.by === '默认' && XB.school.check === '降置信');
-// 身强身弱校正（10-10 起，接口 calib）：按 8 道题和用户说的大事定的，不再列「哪年选了哪条」——那几年是接口替用户填的，用户没答过
+// 身强身弱校正（接口 calib）：按 8 道题和用户说的大事定的，不再列「哪年选了哪条」——那几年是接口替用户填的，用户没答过
 var VCAL = XB && XB.calib && XB.calib.result && XB.calib.result.status === '定案' ? XB.calib.result : null;
 var SCK = R.strength_check || (VCAL ? { decided: VCAL.side, calib: VCAL.used || {} } : VDEC ? { decided: VDEC.side, asked: VASK } : VST && VST.status === '挂起' ? { decided: '不可判', asked: VASK } : null);
 var birth = P.birth || {};
 var NOW = Number(String(D.built_at || new Date().toISOString()).slice(0, 4));
-// 学龄（10-06）：22 周岁及以下的年份按学业说，「工作」说成学业、「事业认可」说成考试升学；领域名本身不改
+// 学龄口径：22 周岁及以下的年份按学业说，「工作」说成学业、「事业认可」说成考试升学；领域名本身不改
 var STUDY_WORD = { 工作: '学业', 事业认可: '考试升学' };
 function domWord(d, ctx) { return (ctx === '学业' && STUDY_WORD[d]) || d; }
-// 换挡年（10-06）：交大运那一年和前后一年，八字和星盘同一块都在动（没到同亮），卡上单标
+// 换挡年：交大运那一年和前后一年，八字和星盘同一块都在动（没到同亮），卡上单标
 function shiftText(ty) { return ty && ty.shift && ty.shift.domains && ty.shift.domains.length ? '换挡年 · ' + ty.shift.domains.map(function (d) { return domWord(d, ty.context); }).join('、') + '在动' : null; }
 var app = document.getElementById('app');
 app.textContent = '';
@@ -666,7 +666,7 @@ function wheelPanel() {
   s += line(pol(mc, R0 + 8), pol(mc + 180, R0 + 8), 'stroke="#3b6ea5" stroke-width="1.6"');
   // 天体：相位圈上的真实位置点＋点线＋彩色汉字，挤在一起的往两边推开
   var bodies = W.planets.map(function (p) { return { k: p.n, ch: CHAR[p.n], L: lon(p), rx: p.rx }; })
-    .concat((W.points || []).concat(W.asteroids || []).filter(function (p) { return CHAR[p.n]; }).map(function (p) { return { k: p.n, ch: CHAR[p.n], L: lon(p), rx: p.rx && !/交点/.test(p.n), minor: true }; }))   // 10-11 她：莉莉丝这些点之前都画的，别少
+    .concat((W.points || []).concat(W.asteroids || []).filter(function (p) { return CHAR[p.n]; }).map(function (p) { return { k: p.n, ch: CHAR[p.n], L: lon(p), rx: p.rx && !/交点/.test(p.n), minor: true }; }))   // 进阶点位和小行星也要完整绘制
     .concat([{ k: '升', ch: '升', L: asc }, { k: '中', ch: '中', L: mc }]);
   var lab = bodies.map(function (x) { return { k: x.k, L: x.L, A: x.L }; }).sort(function (p, q) { return p.L - q.L; });
   for (var it = 0; it < 80; it++) {
@@ -695,7 +695,7 @@ function luckChart() {
     s += '<rect x="' + x.toFixed(1) + '" y="' + (base - hh).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="5" fill="' + TIER[c.tier][1] + '"' + (now ? ' stroke="#c9783a" stroke-width="2"' : '') + '/>';
     var cx = (x + w / 2).toFixed(1);
     s += '<text x="' + cx + '" y="' + (base + 18) + '" fill="' + (now ? '#c9783a' : '#3b2e26') + '" font-size="14" text-anchor="middle" font-family="Songti SC,STSong,serif">' + esc(c.ganZhi) + '</text>';
-    s += '<text x="' + cx + '" y="' + (base + 34) + '" fill="#b09c8c" font-size="10.5" text-anchor="middle">' + (c.startAgeFull != null ? esc(c.startAgeFull) + '周岁起' : esc(c.startAge) + '–' + esc(c.endAge) + '岁') + '</text>';   // 岁数统一周岁（10-06）：新版排盘服务给起运周岁，老版只有虚岁区间
+    s += '<text x="' + cx + '" y="' + (base + 34) + '" fill="#b09c8c" font-size="10.5" text-anchor="middle">' + (c.startAgeFull != null ? esc(c.startAgeFull) + '周岁起' : esc(c.startAge) + '–' + esc(c.endAge) + '岁') + '</text>';   // 岁数统一周岁：新版排盘服务给起运周岁，老版只有虚岁区间
     var lw = XB ? XB.luck.filter(function (x) { return x.seq === c.seq; })[0] : null;
     if (lw && lw.title) s += '<text x="' + cx + '" y="' + (base + 52) + '" fill="' + (now ? '#c9783a' : '#8b7565') + '" font-size="11" text-anchor="middle" font-family="Songti SC,STSong,serif">' + esc(lw.title[0]) + '</text>';
     if (now) s += '<text x="' + cx + '" y="' + (base - hh - 9).toFixed(1) + '" fill="#c9783a" font-size="11" text-anchor="middle">现在</text>';
@@ -704,7 +704,7 @@ function luckChart() {
 }
 function legend() { return h('div', 'legend', TIER.map(function (t) { var i = h('i'); i.style.background = t[1]; return h('span', null, [i, t[0]]); }).concat(h('span', null, BZ && BZ.bazi.luck.cycles.some(function (c) { return c.startAgeFull != null; }) ? '岁数按周岁' : '年龄按虚岁'))); }
 function yearStrip() {
-  // 核的几年三派都对不上（降置信）：先按默认那一派给喜用和大运图，流年不出「某年顺／逆」的断语（10-08 命理组定，断事归问事）
+  // 核的几年三派都对不上（降置信）：先按默认那一派给喜用和大运图，流年不出「某年顺／逆」的断语，断事归问事
   var SCx = XB && XB.school; if (SCx && SCx.by === '默认' && SCx.check === '降置信') return null;
   var cur = BZ.bazi.luck.cycles.filter(function (c) { return NOW >= c.startYear && NOW <= c.endYear; })[0];
   if (!cur) return null;
@@ -817,7 +817,7 @@ var GF = R.gifts || {};
 add(app, part('你的天赋与命脉', null, [GF.intro ? h('div', 'body', paras(GF.intro)) : null,
   (GF.items || []).map(function (it) { return [dia(it.title, it.body), refs(it.refs, '天赋')]; }), gold(GF.oneline)]));
 
-// 八个方面：只把这张盘最响的几件事（R.focus）完整展开，其余每块一句结论，点开才看细节（GPT 10-02 审：高手不会十个栏目平均讲）
+// 八个方面：只把这张盘最响的几件事（R.focus）完整展开，其余每块一句结论，点开才看细节，避免各栏目平均用力
 var CHD = R.chapters || {}, CHMAP = {};
 CHAPTERS.forEach(function (c) { CHMAP[c[0]] = c; });
 var FOCUS = (R.focus || []).filter(function (k) { return CHMAP[k] && CHD[k]; });
@@ -953,7 +953,7 @@ function lifeFig() {
   for (var a = 0; a <= maxA; a += 10) { s += '<line x1="' + X(a).toFixed(1) + '" y1="' + (ay - 4) + '" x2="' + X(a).toFixed(1) + '" y2="' + (ay + 4) + '" stroke="#d9a057"/><text x="' + X(a).toFixed(1) + '" y="' + (ay + 16) + '" text-anchor="middle" font-size="10" fill="#b09c8c">' + a + (a === maxA ? (XB.luck[0].age_kind === '周岁' ? '周岁' : '岁') : '') + '</text>'; }
   var cyc = (XT && XT.life_cycles) || [], lanes = [[], [], [], [], [], [], []], ly0 = ay + 30, used = 0;
   cyc.filter(function (c) { return c.name === '木星回归'; }).forEach(function (c) { s += '<circle cx="' + X(c.age + .5).toFixed(1) + '" cy="' + ay + '" r="3" fill="#f2a066"/>'; });
-  var labels = '';   // 字最后统一画：虚线都在字底下，字的底色描边把线盖住（10-11 她看 PDF：线穿过字）
+  var labels = '';   // 字最后统一画：虚线都在字底下，字的底色描边把线盖住，避免 PDF 中线条穿字
   cyc.filter(function (c) { return LIFE_SHOW[c.name]; }).forEach(function (c) {
     var x = X(c.age + .5), w = c.name.length * 11 + 24, end = x + w > Wd - 4, a = end ? x - w : x, b = end ? x : x + w, ln = 0;
     while (ln < lanes.length - 1 && lanes[ln].some(function (r) { return a < r[1] + 6 && b > r[0] - 6; })) ln++;
@@ -1028,14 +1028,14 @@ function extraCard() {
 }
 // 八字盘面
 // 身强身弱：几家算法投票（method.bazi.strength.vote）；默认页只给结论，待定就不说
-// 对话里按体感问出来的结论，高于几家投票；报告没写、接口按「核核你」的回答定了案（10-08），就用接口的定案和问过的年份
+// 对话里按体感问出来的结论，高于几家投票；报告没写、接口已按回答定案，就用接口的定案和问过的年份
 function strengthSide() {
   var st = XB && XB.strength; if (!st) return null;
   if (SCK && (SCK.decided === '强' || SCK.decided === '弱')) return SCK.decided;
   if (SCK && SCK.decided === '不可判') return '待定';
   var v = st.vote && st.vote.verdict; return v ? v.side : null;
 }
-// v1.2（10-06）：强弱的说法只在实锤档（三票同向，或两票同向＋西盘同向）或体感定过时放行；其余有方向的只说偏强偏弱。老版接口没有 firm，照旧
+// v1.2：强弱的说法只在实锤档（三票同向，或两票同向＋西盘同向）或体感定过时放行；其余有方向的只说偏强偏弱。老版接口没有 firm，照旧
 function strengthFirm() {
   if (SCK && (SCK.decided === '强' || SCK.decided === '弱')) return true;
   var v = XB && XB.strength && XB.strength.vote && XB.strength.vote.verdict; return !v || v.firm !== false;
@@ -1057,7 +1057,7 @@ function typeShown() {
 // 喜用：结论和排盘引擎方向相反（体感定的）时，换成另一套喜用
 function usefulShown() {
   var us = XB.useful, st = XB.strength, sd = strengthSide(), fi = st && st.vote && st.vote.favorable_if;
-  if (XB.school && XB.school.applied) return us;   // 按胜出的派上过色（10-08），喜用就是那一派的，不再按身强身弱换套
+  if (XB.school && XB.school.applied) return us;   // 按胜出的派上过色，喜用就是那一派的，不再按身强身弱换套
   var eng = /强|旺/.test(st.level || '') ? '强' : /弱/.test(st.level || '') ? '弱' : null;
   if (fi && (sd === '强' || sd === '弱') && eng && sd !== eng) return { favorable: fi[sd], unfavorable: fi[sd === '强' ? '弱' : '强'], useful: null, avoid: null };
   return us;
@@ -1072,13 +1072,13 @@ function voteBox() {
   var calibWhy = SCK && SCK.calib ? '按你答的 ' + (SCK.calib.traits || 0) + ' 道题' + (SCK.calib.events ? '和说的 ' + SCK.calib.events + ' 件大事' : '') + '定的' : null;
   if (SCK) rows.push(h('div', 'vrow vgut', [h('div', 'vsch', [SCK.calib ? '你的校正' : '你的体感', h('em', null, '定案')]), chip(SCK.decided === '不可判' ? null : SCK.decided, SCK.decided === '不可判' ? '不可判' : '身' + SCK.decided), h('div', 'vwhy', calibWhy || (SCK.asked || []).map(function (a) { return a.year + ' ' + (a.gan_zhi || '') + ' ' + a.answer; }).join('　'))]));
   var d = V.verdict, n = V.votes.filter(function (x) { return x.side; }).length;
-  // 待定的两种原因（v1.4）：硬分歧、孤票，都等体感来定。西盘不进身强身弱（10-07 定），老接口回包里的 west 也不显示
+  // 待定的两种原因（v1.4）：硬分歧、孤票，都等体感来定。西盘不进身强身弱，老接口回包里的 west 也不显示
   var WHY_OPEN = { 硬分歧: '几种判法有的看强、有的看弱', 孤票: '只有一种判法看出了方向，其余的没看出方向' };
   var say = SCK && SCK.calib ? '结论：身' + SCK.decided + '（' + calibWhy + '，你的经历高于几家算法）' : SCK && SCK.decided !== '不可判' ? '结论：身' + SCK.decided + '（按你对这几年的体感定的，体感高于几家算法）' : SCK ? '体感也分不出来，身强身弱先不下结论' : d.side === '待定' ? (d.agree === '时辰不详' ? '时辰不详，身强身弱先不下结论' : (WHY_OPEN[d.kind] || '几种判法说法不同') + '，先不下结论，等你对过去几年的体感来定')
     : '起点：' + (d.side === '中' ? '中和' : '偏' + d.side) + '（' + (d.agree === '一致' ? n + ' 种判法一致' : d.agree === '多数' ? '多数判法' : '有判法看是中和') + (V.votes.some(function (x) { return x.status; }) ? '，新派一票待接入' : '') + '）。用你的经历核过才算定';
   return h('div', 'card vote', [h('div', 'lb', ['身强身弱 · 三种判法', h('span', null, '判法只给起点，你的经历说了算')]), rows, h('div', 'vsay', say), XB.pattern && XB.pattern.is_special ? h('div', 'vnote', '这张盘按特殊格局（' + XB.pattern.name + '）论，喜忌按格局取，不按身强身弱这套') : null]);   // 有一票判到极档只是触发引擎复核；复核没成立（is_special 为假）就照常三票，不提特殊格局
 }
-// 三派看法（多派交叉论证，10-08）：核过以后按对上的那一派说，喜用和大运图都按它；另外两派收起、点开看。
+// 三派看法（多派交叉论证）：核过以后按对上的那一派说，喜用和大运图都按它；另外两派收起、点开看。
 // 没核过、核到一半、或核的几年三派都对不上：接口替用户先定一派（主干扶抑→格局→调候，整派取），标还没核准——
 // 不管怎样都让用户知道自己的喜用。不跟用户讲「几派并列」
 var SCH_NAME = { 扶抑: '扶抑派', 调候: '调候派', 格局: '格局派' };
@@ -1095,13 +1095,13 @@ function schoolBox() {
   var S = XB && XB.schools; if (!S) return null;
   var SC = XB.school || {}, cur = SC.applied ? SC.name : null, dft = cur && SC.by === '默认';
   var rest = ['扶抑', '格局', '调候'].filter(function (n) { return n !== cur && S[n]; });
-  // 字要少（10-08 定）：三派都对不上时不写退缩、撇清的话，只说往后玄玑陪着再核
+  // 字要少：三派都对不上时不写退缩、撇清的话，只说往后玄玑陪着再核
   // 格局派自己取的格名只在这里出：盘面「格局」那栏一直是排盘的格名，两家取法可能不同
   var gm = cur === '格局' && S.格局 && !S.格局.abstain && S.格局.name ? '（取' + S.格局.name + '）' : '';
   var say = !cur ? '核过几年，再定按哪一派说' : dft ? '先按' + SCH_NAME[cur] + gm + '来说' : '这张盘按' + SCH_NAME[cur] + gm + '来说';
   var sub = !cur ? null : dft && SC.check === '降置信' ? '往后的经历，玄玑陪你一起再核' : SCH_ABOUT[cur] + (SC.by === '核核你' ? '。你核过的几年，这一派都对得上'
     : !dft ? '' : SC.check ? '。核完再定' : '。核过几年，再定按哪一派');
-  // 报告不放「核一核」按钮（10-08 定）：核一核在对话里、出报告之前做，报告只写一次；核完喜用大运会变，放按钮等于要重出报告。
+  // 报告不放「核一核」按钮：核一核在对话里、出报告之前做，报告只写一次；核完喜用大运会变，放按钮等于要重出报告。
   // 活页面（小工具、主站）核完当场重算，按钮放在那边
   return h('div', 'card sch', [h('div', 'lb', ['三派看法', h('span', null, '八字门派说法不一，按对得上你经历的那一派')]), h('div', 'vsay', say), sub ? h('div', 'vnote', sub) : null,
     h('details', 'fold', [h('summary', null, cur ? '另外两派怎么看' : '三派各自怎么看'), rest.map(function (n) { return schoolRow(n, S[n]); })])]);
@@ -1163,10 +1163,10 @@ add(bd, [h('h4', null, '出生时间与口径'), dl([
 if ((bs.confidence && bs.confidence.length) || (bs.counter && bs.counter.length) || bs.notes) add(bd, [h('h4', null, '把握和反证'),
   bs.confidence && bs.confidence.length ? h('div', 'conf', bs.confidence.map(function (c) { return [h('span', 'lv', c.level), h('div', null, [h('b', null, c.item + '：'), c.why])]; })) : null,
   bs.counter && bs.counter.length ? h('ul', null, bs.counter.map(function (c) { return h('li', null, c); })) : null, bs.notes ? paras(bs.notes) : null]);
-// 10-11 复验：空的一条（空字符串、四样都没写的对象）会画出一个空圆点，先滤掉；滤完没了就不出这一节
+// 空的一条（空字符串、四样都没写的对象）会画出一个空圆点，先滤掉；滤完没了就不出这一节
 var DIFF = (bs.differences || []).filter(function (d) { return d && (typeof d !== 'object' ? String(d).trim() : d.theme || d.bazi || d.west || d.base || d.note); });
 if (DIFF.length) add(bd, [h('h4', null, '几套体系说法不同的地方'), h('ul', null, DIFF.map(function (d) {
-  if (!d || typeof d !== 'object') return h('li', null, String(d || ''));   // 10-11 Kimi 复验：宿主写成一句话或漏了 theme，页面出「undefined：」
+  if (!d || typeof d !== 'object') return h('li', null, String(d || ''));   // 宿主写成一句话或漏了 theme 时，避免页面出现「undefined：」
   return h('li', null, [d.theme ? h('b', null, d.theme + '：') : null, [['八字', d.bazi], ['星盘', d.west], ['人格', d.base]].filter(function (r) { return r[1]; }).map(function (r) { return r[0] + '说' + r[1]; }).join('；'), d.note ? (d.bazi || d.west || d.base ? '。' : '') + d.note : '']);
 }))]);
 if (W) add(bd, [h('h4', null, '星盘原始数据'), dl([['上升', pos(W.angles.asc)], ['天顶', pos(W.angles.mc)], ['小行星', (W.asteroids || []).map(function (p) { return p.n + ' ' + pos(p) + ' · ' + p.house + ' 宫'; }).join('；')], ['进阶点位', (W.points || []).map(function (p) { return p.n + ' ' + pos(p) + ' · ' + p.house + ' 宫'; }).join('；')]]), h('div', 'mini', (W.aspects || []).map(function (a) { return h('span', null, a); }))]);
@@ -1181,7 +1181,7 @@ function connect() {
   return h('section', 'connect', [h('div', 'ct', '与玄玑建立连接'), h('div', 'qrw', img), h('div', null, h('span', 'pill', '加我时请备注：来源 · 称呼'))]);
 }
 add(app, connect());
-add(app, h('footer', null, [h('div', 'motto', '用命，不算命'), h('div', null, '这份报告讲的是结构倾向，不替你做决定。健康、法律、投资、婚姻去留这类事，请以专业意见和你自己的判断为准。'), h('div', null, '盘面、判词和应期由玄玑接口给出，解读由你的 AI 按玄玑的规矩写成。')]));
+add(app, h('footer', null, [h('div', 'motto', '用命，不算命'), h('div', null, '健康、法律、投资、婚姻去留这类事，请以专业意见和你自己的判断为准。'), h('div', null, '盘面、判词和应期由玄玑接口给出，解读由你的 AI 按玄玑的规矩写成。')]));
 
 // 上篇写完才知道谁引用了谁：把下篇的「上篇引用」补上（下篇先渲染了占位）
 Object.keys(CITED).forEach(function (id) { var el = document.getElementById(id); if (el && !el.querySelector('.cited')) { var c = citedLine(id); if (c) el.appendChild(c); } });

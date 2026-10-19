@@ -14,7 +14,7 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 
 单人需要 date（真实存在的公历 YYYY-MM-DD）、city（中国省市区）、gender（male/female）。time 为 HH:mm、null 或省略。可选 time_source：birth_certificate/family_clear/family_rough/unknown；time_precision：minute/within_15min/within_1h/unknown。钟表时间由服务端处理，不自行换算。
 
-身强身弱校正的回答（2026-10-10 起）：可选 `calib`，写成 `{ "traits": ["D","B",null,…8 个], "events": [{ "year": 2016, "domain": "事业", "event": "跳槽", "good": true }] }`。`traits` 是 `method.bazi.calib.ask.traits` 8 道题各选了哪项（A–F，F 是「说不准」不算分，没答写 null）；`events` 是用户说的大事（方面是感情、事业、钱财、学业、健康、家庭之一，`event` 可不填，填了要是那个方面里列出的；`good` 好事 true、坏事 false），最多 30 件。接口按跟玄玑网站校正页同一套算分，定身强还是身弱，再按这一边出喜用和大运；结果在 `method.bazi.calib.result`。不合法回 `CALIB_INVALID`。
+身强身弱校正的回答：可选 `calib`，写成 `{ "traits": ["D","B",null,…8 个], "events": [{ "year": 2016, "domain": "事业", "event": "跳槽", "good": true }] }`。`traits` 是 `method.bazi.calib.ask.traits` 8 道题各选了哪项（A–F，F 是「说不准」不算分，没答写 null）；`events` 是用户说的大事（方面是感情、事业、钱财、学业、健康、家庭之一，`event` 可不填，填了要是那个方面里列出的；`good` 好事 true、坏事 false），最多 30 件。接口按跟玄玑网站校正页同一套算分，定身强还是身弱，再按这一边出喜用和大运；结果在 `method.bazi.calib.result`。不合法回 `CALIB_INVALID`。
 
 老的核一核回答：可选 `answers`（`calib` 定了就以 `calib` 为准），写成 `[{ "year": 2023, "pick": "弱" }]`，`pick` 只能是 弱／强／都沾／记不清，最多 12 条，同一轮累积着传。接口用它定身强身弱、挑出对得上经历的那一派，喜用和大运流年按那一派算（见 `method.bazi.check`、`method.bazi.school`）。
 
@@ -74,10 +74,10 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | `method.bazi.schools` | 八字三派各自的说法：扶抑派（身强身弱那一边）、调候派（口诀）、格局派（格名、成败），各带喜忌五行和大运顺逆。报告里按 `school` 那一派说，其余两派收起 |
 | `method.bazi.school` | 这张盘的喜用和大运按哪一派：`name`；`by` 是「核核你」（用户的经历对上了）、「指定」或「默认」（还没核过、没核完或三派都对不上时先按扶抑→格局→调候整派取，`unconfirmed` 为真）；`check` 是核到哪一步（加问／降置信） |
 | `method.bazi.check` | 核一核的题：`first_ask`（首轮最多三年，每年两条说法 `readings`，按 `order` 摆）、`extra`（加问备选）；请求带了 `answers` 时多一个 `score`：`status`（定案／加问／降置信）、`next`（下一题）、`answers`（问过的年份和那年顺还是糟）。一张盘总共最多 5 题 |
-| `method.bazi.calib` | 身强身弱校正（2026-10-10 起）：`ask`（`traits` 8 道性格题，每题 A–F 六个选项（F＝说不准），不标偏哪边；`events` 问大事的话和 6 个方面各有哪些事；`rules` 定案门槛）；请求带了 `calib` 时 `result`：`status`（定案／没对上／不适用）、`type`（身强型／身弱型）、`cards`（结果四格，标题加一句话）、`say`（结果下面那句提醒，或没对上时说的话）、`flip`（定到盘面原判的反面时明说的那句，否则 null）。`detail` 是留痕，不对用户报分数 |
+| `method.bazi.calib` | 身强身弱校正：`ask`（`traits` 8 道性格题，每题 A–F 六个选项（F＝说不准），不标偏哪边；`events` 问大事的话和 6 个方面各有哪些事；`rules` 定案门槛）；请求带了 `calib` 时 `result`：`status`（定案／没对上／不适用）、`type`（身强型／身弱型）、`cards`（结果四格，标题加一句话）、`say`（结果下面那句提醒，或没对上时说的话）、`flip`（定到盘面原判的反面时明说的那句，否则 null）。`detail` 是留痕，不对用户报分数 |
 | `method.boundary` | 出生时间的边界：`hour`（真太阳时落在哪个时辰、离前后交界各几分钟、`near`）、`asc`／`mc`（星座、在星座里第几度、`near`）、`cusp_planets`（离宫头不到 1.5° 的星）、`near_any`。说时辰交界、换宫这些只用它 |
 | `method.quotes[]` | 报告里可以引的古人原句候选：`use`（适合放在哪一章）、`text`（原文）、`source`（出处）。只许用这几句 |
-| `method.bazi.luck[]` | 每步大运：起止年份 `start_year`／`end_year`、年龄 `start_age`／`end_age`（`age_kind` 是周岁还是虚岁，新版排盘服务给周岁）、对外写法 `label`（如「3 周岁起运 · 丙辰（1997–2007）」，老版为空）、档位 `tier_name`（上上／上／中／下／下下）、大运判词 `title`（两个四字）和 `line` |
+| `method.bazi.luck[]` | 每步大运：起止年份 `start_year`／`end_year`、年龄 `start_age`／`end_age`（`age_kind` 是周岁还是虚岁，新版排盘服务给周岁）、对外写法 `label`（如「2001 年交运（那年满 5 周岁） · 丙辰（2001–2011）」，老版为空）、交运那年满几周岁 `start_year_age`、档位 `tier_name`（上上／上／中／下／下下）、大运判词 `title`（两个四字）和 `line` |
 | `method.bazi.shensha` | 神煞图谱：`dimensions[]`（维度、分数、判词 `words`）；`featured[]`（稀有神煞、判词 `words`、来历 `origin`） |
 | `method.bazi.fit` | 喜用对应的行业 `jobs`、配偶星五行 `spouse_element` 和依据 `spouse_why` |
 | `method.bazi.lucky` | 幸运色、方位、数字 |
@@ -89,7 +89,9 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | `method.west.power_rank[]` | 七星力量排名（1 最强），用玄玑西盘尺子的单星公式：庙旺落陷 × 落宫 × 相位扶克 × 逆行；每颗星上也有 `power` 和 `power_rank` |
 | `method.timing.years[]` | 每一年：干支、周岁 `age`（那年过完生日）、`context`（22 周岁及以下是「学业」，其余「职场」）、所在大运、顺逆档位 `tier`、八字信号 `bazi`、西盘行运信号 `west`（按领域给分数和原因）、两套都指向的领域 `mirror`、换挡 `shift`（不是换挡年为 null） |
 | `method.timing.shift_years[]` | 换挡年：交大运那一年和前后一年，八字和星盘在同一块人生都有动静、还没到同亮。`year`、`age`、`context`、交的大运 `luck`、`when`（当年／前一年／后一年）、在动的领域 `domains`、`note`。不进 `mirror`，不当验前事 |
-| `method.timing.past_candidates[]` | 过去的候选年份（验前事用）：年份、年龄、领域、是否映照、两边的原因。映照的排在前面 |
+| `method.timing.past_candidates[]` | 两套同一年同一块都亮的过去年份：年份、年龄、领域、两边的原因，按年份从早到晚排。只当那一年的主题参考，验前事的年份由 `age_layer` 和用户说过的事给 |
+| `method.timing.age_layer` | 年纪这一层：按年纪推的常见节点 `nodes`（`from_age`／`to_age`、`from_year`／`to_year`、`label`），单身的结婚窗口 `marry`（`median_years`、`mid_years`、`mid_year_range`；没有集中窗口时 `none`）。只当边界 |
+| `method.timing.love_years[]` | 感情容易动的几年（今年起十年里排前三，`year`、`rank`）。出生时间不精确、极区纬度时整键没有。问感情时间时只当一票 |
 | `method.timing.future[]` | 今年起往后十年的信号（十年年卡用），同样带领域、映照和原因 |
 | `method.timing.months[]` | 近三年的西盘月历：每一次过境的起止月份 `start`／`end`、精准日 `exacts`、谁碰谁（`mover`、`asp`、`point`，或 `kind: 进宫` 加 `house`）、领域 `domain`、性质 `tone`（机会／顺风／压力／突变／迷雾／重塑）、原因 `why`。只列窗口，不打分 |
 | `method.timing.months_bazi[]` | 近三年八字流月：每年里流年已亮灯的领域，各给 2～3 个高发的节气月（干支、起止日期 `from`／`to`、为什么 `why`） |
@@ -127,6 +129,10 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | `you_core`／`ta_core` | 两人各自的单盘要点：日月升、日主、身强弱、出厂底色 |
 
 任何一方时辰不详时，`west` 返回 `{"status":"needs_both_times"}`。
+
+### 两人：缘分总分 `method.pair_score`
+
+跟玄玑网站「关系」页同一套算法：`天花板`、`在手` 两个数，三块来源 `宿缘`、`痴缠`、`情分`，`当前`，一句 `line`。
 
 ## 安全错误
 

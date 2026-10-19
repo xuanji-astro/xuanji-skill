@@ -3,7 +3,7 @@
 // Copyright 2026 杭州强势播传文化影视传媒有限公司
 // SPDX-License-Identifier: Apache-2.0
 // 用法：node build_report.mjs --profile profile.json --report report.json --out report.html [--pdf report.pdf] [--rectify rectify.json]
-// 10-14 起：报告在这里就整份画好写进 HTML（打开不靠脚本），逐项核对完整才出文件，核不过报 REPORT_INCOMPLETE、一个文件都不写；
+// 报告在这里就整份画好写进 HTML（打开不靠脚本），逐项核对完整才出文件，核不过报 REPORT_INCOMPLETE、一个文件都不写；
 // 带 --pdf 时，电脑上有 Chrome／Edge 这类浏览器就再打一份 PDF（PDF_SAVED），没有就只出 HTML（PDF_SKIPPED_…）
 // 定过时辰的（rectify.json 结果是 a 或 b）：表头改成「出生时辰经定时辰定在某时」，不再报离交界几分钟、两种口径的时柱和压宫头的星（交界另一侧那张盘用的是代表时间）
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
@@ -25,10 +25,10 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.11';
+const SKILL_VERSION = '0.1.0-rc.13';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
-const han = (s) => (String(s ?? '').match(/[\u4e00-\u9fff]/g) || []).length;   // 下限只数汉字（10-13）
+const han = (s) => (String(s ?? '').match(/[\u4e00-\u9fff]/g) || []).length;   // 下限只数汉字
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
 
 // 按 a.b.*.c / a[].b 取出所有 [位置, 值]
@@ -51,7 +51,7 @@ function collect(obj, path) {
 export const yearGanZhi = (y) => '甲乙丙丁戊己庚辛壬癸'[(((y - 4) % 10) + 10) % 10] + '子丑寅卯辰巳午未申酉戌亥'[(((y - 4) % 12) + 12) % 12];
 const GZ = '[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]', GZ_NOT_YEAR = '(?![月日时运柱大十步])';
 const REL_YEAR = { 前年: -2, 去年: -1, 今年: 0, 明年: 1, 后年: 2 };
-// 10-07 Kimi 实测：把 2026 写成「今年乙巳」。报告里「某年＋干支」「X年（某年）」「今年＋干支」都核一遍；大运、月份、柱不算
+// 防止相对年份与干支不一致。报告里「某年＋干支」「X年（某年）」「今年＋干支」都核一遍；大运、月份、柱不算
 export function yearGanZhiErrors(text, cur = new Date().getFullYear()) {
   const errs = [], say = (m, y, g) => { if (yearGanZhi(y) !== g) errs.push(`「${m.trim()}」对不上：${y} 年是${yearGanZhi(y)}年。年份的干支照 method.timing.years 里的 gan_zhi 写，不要自己推`); };
   for (const m of text.matchAll(new RegExp(`(?<![\\d–—~～-])((?:19|20)\\d\\d)\\s*年?\\s*(?:是|为|逢|的)?\\s*(?:流年)?\\s*[（(]?\\s*(${GZ})${GZ_NOT_YEAR}`, 'g'))) say(m[0], +m[1], m[2]);
@@ -83,7 +83,7 @@ export function check(rep, prof) {
   const get = (path) => collect(rep, path).map(([, v]) => v);
   for (const [path, lim] of Object.entries(R.limits))
     for (const [where, v] of collect(rep, path)) if (typeof v === 'string' && n(v) > lim) errs.push(`${where} 有 ${n(v)} 字，上限 ${lim} 字`);
-  /* 下限（10-13 åå§äºº：跟她 10-02 那份差不多、多一成到两成，有的 AI 不听话会写少）：每处正文最少多少汉字＋全篇汉字下限 */
+  /* 下限用于避免正文过短：每处正文最少多少汉字＋全篇汉字下限 */
   for (const [path, lo] of Object.entries(R.mins ?? {})) {
     if (path.startsWith('_')) continue;
     for (const [where, v] of collect(rep, path)) if (typeof v === 'string' && v.trim() && han(v) < lo) errs.push(`${where} 只有 ${han(v)} 个汉字，最少 ${lo} 个：照这一处的盘面依据接着写具体的场合、人、事，写足再出`);
@@ -100,7 +100,7 @@ export function check(rep, prof) {
   for (const s of rep.cover?.support ?? []) if (!R.support.includes(s)) errs.push(`cover.support 只能填 ${R.support.join('／')}`);
   if (R.support.some((s) => !(rep.cover?.support ?? []).includes(s))) errs.push('cover.support 要写全三套：星盘、八字、人格（封面这句要三套都撑得住）');
   { const CP = R.cover_seen_plain ?? {}, raw = String(rep.cover?.seen ?? ''), lines = raw.split('\n').map((x) => x.trim()).filter(Boolean);
-    const gan = prof.method?.bazi?.day_master?.gan, pool = CP.pool?.[gan], pl = prof.method?.persona?.base?.cover_line ?? prof.method?.persona?.base?.line;   // 封面第三句＝出厂底色封神那句（10-11 起接口给 cover_line；老接口没有就用 line）
+    const gan = prof.method?.bazi?.day_master?.gan, pool = CP.pool?.[gan], pl = prof.method?.persona?.base?.cover_line ?? prof.method?.persona?.base?.line;   // 封面第三句＝出厂底色封神那句（新接口给 cover_line；老接口没有就用 line）
     const bad = (x, i) => { for (const re of CP.patterns ?? []) { const m = x.match(new RegExp(re)); if (m) errs.push(`cover.seen 第${i}句里有「${m[0]}」：${CP.message}`); } };
     if (CP.lines && raw.trim() && lines.length !== CP.lines) errs.push(`cover.seen 要 ${CP.lines} 句、换行隔开（第一句八字、第二句星盘夸天赋、第三句人格），现在 ${lines.length} 句`);
     if (lines[0] && pool && !pool.includes(lines[0])) errs.push(`cover.seen 第一句要从 report_rules.json 的 cover_seen_plain.pool「${gan}」那一组里原样挑一句：${pool.join('／')}`);
@@ -126,7 +126,7 @@ export function check(rep, prof) {
   const FR = R.focus_rules, focus = rep.focus ?? [];
   for (const k of focus) if (!R.chapters.includes(k)) errs.push(`focus 里的「${k}」不是八个方面之一`);
   if (new Set(focus).size !== focus.length) errs.push('focus 里有重复');
-  /* 10-14 åå§äºº 同盘对比：Codex 报告照聊天写，重点章只挑两个、感情降成一句、八字一条没写——重点章固定 3 个，天赋和重点章的依据三套都要有（按盘挑，不按对话里聊得多的挑） */
+  /* 重点章固定 3 个，天赋和重点章的依据三套都要有（按盘挑，不按对话里聊得多的挑） */
   if (FR.focus_count && (focus.length < FR.focus_count[0] || focus.length > FR.focus_count[1])) errs.push(`focus 要正好 ${FR.focus_count[0]} 个，按盘挑证据最硬的，不按对话里聊得多的挑；现在 ${focus.length} 个`);
   const sysOf = (refs) => (Array.isArray(refs) ? refs : []).map((r) => String(r).split('·')[0]);
   const needSys = hasWest ? R.support : R.support.filter((x) => x !== '星盘');
@@ -138,7 +138,7 @@ export function check(rep, prof) {
   if (focusMiss.length) errs.push(`覆盖：最响的几件事的 refs 合起来要有${needSys.filter((x) => x !== '人格').join('、')}，现在缺${focusMiss.join('、')}`);
   for (const c of R.chapters) {
     const ch = chapters[c] ?? {}, n = (ch.sections ?? []).length;
-    // 每一节只认 title、body：依据 refs 写进小节里页面不显示，成品核对会当缺字拦下（10-14 Kimi 桌面端实测撞过）
+    // 每一节只认 title、body：依据 refs 写进小节里页面不显示，成品核对会当缺字拦下
     (ch.sections ?? []).forEach((s, i) => { const extra = isObj(s) ? Object.keys(s).filter((k) => !['title', 'body'].includes(k)) : []; if (extra.length) errs.push(`chapters.${c}.sections 第${i + 1}节多了 ${extra.join('、')}：每一节只写 title 和 body${extra.includes('refs') ? `；依据 refs 写在整章上（chapters.${c}.refs）` : ''}，写在小节里页面上不显示`); });
     if (focus.includes(c)) { if (n < FR.focus_sections[0] || n > FR.focus_sections[1]) errs.push(`chapters.${c} 是最响的几件事之一，sections 要 ${FR.focus_sections[0]}～${FR.focus_sections[1]} 节，现在 ${n} 节`); }
     else {
@@ -160,7 +160,7 @@ export function check(rep, prof) {
     for (const p of R.audit_planets) for (const f of ['role', 'p1', 'p2', 'p3']) if (!planets[p]?.[f]) errs.push(`audit.planets.${p}.${f} 不能空（下篇逐星审计十颗星都要写）`);
   } else if (rep.audit?.planets || rep.crosscheck?.length) errs.push('没有出生时间，星盘出不了，audit.planets 和 crosscheck 留空');
   (rep.crosscheck ?? []).forEach((c, i) => { const sy = c.systems ?? []; if (sy.length < 2 || sy.some((s) => !R.support.includes(s))) errs.push(`crosscheck 第${i + 1}条 systems 要列出两套以上：八字／星盘／人格（只摆说法一致的；说法不同的写进 basis.differences）`); });
-  // 三镜映照图每块交叠（八字×星盘、八字×人格、星盘×人格、三套都有）最多画两条主题，第三条画不上——成品核对会当缺字拦下，这里先说清楚（10-14 台架 Claude 撞过）
+  // 三镜映照图每块交叠（八字×星盘、八字×人格、星盘×人格、三套都有）最多画两条主题，第三条会超出版面容量——成品核对会当缺字拦下，这里先说清楚
   { const used = {}; (rep.crosscheck ?? []).forEach((c, i) => { const sy = c.systems ?? [], has = (k) => sy.includes(k); const slot = has('八字') && has('星盘') && has('人格') ? '三套都有' : has('八字') && has('星盘') ? '八字×星盘' : has('八字') && has('人格') ? '八字×人格' : has('星盘') && has('人格') ? '星盘×人格' : null; if (!slot) return; used[slot] = (used[slot] || 0) + 1; if (used[slot] > 2) errs.push(`crosscheck 第${i + 1}条：「${slot}」这块交叠图里已经放了两条，第三条画不上——换一块交叠（看它真正是哪几套都这么说），或者删掉这条`); }); }
   for (const [where, v] of [...collect(rep, 'skeleton.refs'), ...collect(rep, 'gifts.items[].refs'), ...collect(rep, 'chapters.*.refs')])
     for (const r of v ?? []) if (!/^(星盘|八字|人格)·.+/.test(String(r))) errs.push(`${where} 里的「${r}」要写成「星盘·金星」「八字·日支」「人格·Te」这种格式`);
@@ -203,7 +203,7 @@ function privateProfile(prof) {
   p.birth={time_known:!!birth.time,sex:birth.sex,time_source:birth.time_source,time_precision:birth.time_precision};
   if(p.bazi?.input)p.bazi.input={time_known:!!birth.time};
   if(p.bazi?.version)delete p.bazi.version.config;
-  // 身强身弱校正（10-10）：报告只要结论（身X型、四格、件数），题和留痕明细不进报告——报告链接能转发
+  // 身强身弱校正：报告只要结论（身X型、四格、件数），题和留痕明细不进报告——报告链接能转发
   const cb=p.method?.bazi?.calib;
   if(cb)p.method.bazi.calib=cb.result?{result:Object.fromEntries(Object.entries(cb.result).filter(([k])=>k!=='detail'))}:null;
   return p;
@@ -244,13 +244,13 @@ export async function main(args) {
     const categories=new Set(issues.map(x=>x.startsWith('覆盖：')?'SYSTEM_COVERAGE':x.startsWith('软话：')?'HEDGE_WORDS':x.startsWith('focus 要正好')?'FOCUS_COUNT':x.includes('的干支照')?'YEAR_GANZHI':x.includes('misses')||x.includes('没对上')?'DENIED_YEAR':x.includes('上限')?'LENGTH_LIMIT':x.includes('这块交叠')?'CROSSCHECK_SLOT':x.includes('条')?'ITEM_COUNT':x.includes('不能空')?'REQUIRED_FIELD':x.includes('默认页')?'DEFAULT_WORD':x.includes('古人')?'QUOTE_SOURCE':x.includes('连续写满十年')?'YEAR_SEQUENCE':'FIELD_OR_STRUCTURE'));
     console.error('REPORT_RULES_HINT '+[...categories].join(','));throw Error('REPORT_RULES_FAILED');
   }
-  // 整份画好、逐项核对：缺一章、缺一张图、有一段字没上页面，都不出文件（10-14 åå§äºº：不完整就不要给）
+  // 整份画好、逐项核对：缺一章、缺一张图、有一段字没上页面，都不出文件
   const {html,app,data}=prerender(build(prof,rep,undefined,rect));
   const gaps=verifyReport(app,data);
   if(gaps.length){console.error('REPORT_INCOMPLETE_HINT '+gaps.slice(0,8).join('; '));throw Error('REPORT_INCOMPLETE');}   // 只报类别和字段路径（report.json 的键名、星名），不报正文
   await writePrivateText(flags['--out'],html);
   console.log('REPORT_SAVED');
-  if(flags['--pdf']){let r;try{r=await printPDF(html,flags['--pdf']);}catch{r='FAILED';}console.log(r==='SAVED'?'PDF_SAVED':'PDF_SKIPPED_'+r);}
+  if(flags['--pdf']){let r;try{r=await printPDF(html,flags['--pdf']);}catch(e){r='FAILED';const w=reasonOf(e);if(w)console.error('WINDOWS_REASON '+w);}console.log(r==='SAVED'?'PDF_SAVED':'PDF_SKIPPED_'+r);}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(realpathSync(process.argv[1])).href)main(process.argv.slice(2)).catch(e=>{
  const allowed=['PROFILE_INVALID','REPORT_INVALID','REPORT_RULES_FAILED','TEMPLATE_INVALID','REPORT_CONFIG_INVALID','PRIVATE_FILE_INVALID','RECTIFY_INVALID','RECTIFY_PROFILE_MISMATCH','OUTPUT_EXISTS'];

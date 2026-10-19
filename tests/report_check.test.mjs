@@ -49,9 +49,9 @@ test('check_report CLI: 只打有／没有和类别，不打生辰内容；私�
   await writePrivateText(ok,'<p>2019 年钱上有过一次大的进出</p>');await writePrivateText(bad,'<p>生于 1991-03-12，西湖区</p>');
   const cli=fileURLToPath(new URL('../scripts/check_report.mjs',import.meta.url));
   const a=spawnSync(process.execPath,[cli,'--request',req,'--report',ok],{encoding:'utf8'});
-  assert.equal(a.status,0);assert.equal(a.stdout.trim(),'BIRTH_DATA_ABSENT');
+  assert.equal(a.status,0);assert.equal(a.stdout+a.stderr,'');
   const b=spawnSync(process.execPath,[cli,'--request',req,'--report',bad],{encoding:'utf8'});
-  assert.equal(b.status,1);assert.equal(b.stdout.trim(),'BIRTH_DATA_FOUND date,place');
+  assert.equal(b.status,1);assert.equal(b.stderr.trim(),'BIRTH_DATA_FOUND date,place');
   assert.ok(!(b.stdout+b.stderr).includes('1991')&&!(b.stdout+b.stderr).includes('西湖'));
   const c=spawnSync(process.execPath,[cli,'--request',req],{encoding:'utf8'});
   assert.equal(c.status,2);assert.equal(c.stderr.trim(),'CHECK_CONFIG_INVALID');

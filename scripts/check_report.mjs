@@ -46,7 +46,7 @@ export async function main(args) {
   const request = await readPrivateJSON(req, 65536);
   const hit = new Set();
   for (const r of reps) for (const k of found(await readPrivateText(r, 2097152), request)) hit.add(k);
-  console.log(hit.size ? 'BIRTH_DATA_FOUND ' + [...hit].join(',') : 'BIRTH_DATA_ABSENT');
+  if (hit.size) console.error('BIRTH_DATA_FOUND ' + [...hit].join(','));
   if (hit.size) process.exitCode = 1;
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) main(process.argv.slice(2)).catch((e) => {

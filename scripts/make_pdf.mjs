@@ -1,11 +1,11 @@
-// 报告 PDF（10-14）：用户电脑上有 Chrome／Edge／Chromium／Brave，就在后台把画好的报告打印成 PDF，跟 HTML 一起交。
+// 报告 PDF：用户电脑上有 Chrome／Edge／Chromium／Brave，就在后台把画好的报告打印成 PDF，跟 HTML 一起交。
 // 没有浏览器、打出来缺中文字体、页数不对，都不交 PDF（HTML 本身是完整的，用户用浏览器打开也能自己存）。
 // 打印用的那份副本和浏览器的临时配置放在系统临时目录里只有本人能进的文件夹，打完就删；不联网（报告页的 CSP 不许任何外部请求）。
 // Copyright 2026 杭州强势播传文化影视传媒有限公司
 // SPDX-License-Identifier: Apache-2.0
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, posix as P, win32 as W } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -13,7 +13,7 @@ import { realpathSync } from 'node:fs';
 import { readPrivateText, writePrivateBytes, reasonOf } from './private_files.mjs';
 
 export function browserCandidates(env = process.env, platform = process.platform) {
-  const c = [], join = platform === 'win32' ? W.join : P.join;   // 按目标系统拼路径：在 Windows 上跑 Linux 分支的测试也该拼出 /usr/bin/chromium（10-15 Windows 实测挂过）
+  const c = [], join = platform === 'win32' ? W.join : P.join;   // 按目标系统拼路径：在 Windows 上跑 Linux 分支的测试也该拼出 /usr/bin/chromium
   if (platform === 'win32') {
     for (const base of [env['ProgramFiles(x86)'], env.ProgramFiles, env.LOCALAPPDATA].filter(Boolean)) {
       c.push(join(base, 'Microsoft', 'Edge', 'Application', 'msedge.exe'), join(base, 'Google', 'Chrome', 'Application', 'chrome.exe'), join(base, 'BraveSoftware', 'Brave-Browser', 'Application', 'brave.exe'));
@@ -53,7 +53,7 @@ function run(exe, args, timeout) {
 }
 
 // html＝已经画好的静态报告。返回 'SAVED' | 'NO_BROWSER' | 'FONT' | 'FAILED'；只有 SAVED 才在 outPath 新建文件
-export async function printPDF(html, outPath, { browser = findBrowser(), timeout = 120000, minPages } = {}) {
+export async function printPDF(html, outPath, { browser = findBrowser(), timeout = 120000, minPages, runBrowser = run, readOutput = (p) => readFile(p) } = {}) {
   if (!browser) return 'NO_BROWSER';
   const work = await mkdtemp(join(tmpdir(), 'xuanji-pdf-'));
   try {
@@ -64,17 +64,22 @@ export async function printPDF(html, outPath, { browser = findBrowser(), timeout
     const args = ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--disable-extensions', '--disable-sync',
       '--disable-background-networking', '--disable-component-update', '--no-pdf-header-footer', '--user-data-dir=' + join(work, 'profile'), '--print-to-pdf=' + pdf];
     if (process.platform === 'linux' && process.getuid && process.getuid() === 0) args.push('--no-sandbox');   // 云端容器常以 root 跑，Chromium 不加这个起不来
-    if (!(await run(browser, [...args, pathToFileURL(page).href], timeout))) return 'FAILED';
-    let buf; try { buf = await readFile(pdf); } catch { return 'FAILED'; }
-    const bad = checkPDF(buf, minPages ? { minPages } : undefined);
-    if (bad) return bad;
+    let buf, bad;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt) await unlink(pdf).catch(() => {});
+      if (!(await runBrowser(browser, [...args, pathToFileURL(page).href], timeout))) return 'FAILED';
+      try { buf = await readOutput(pdf, attempt); } catch { return 'FAILED'; }
+      bad = checkPDF(buf, minPages ? { minPages } : undefined);
+      if (!bad) break;
+      if (bad !== 'FAILED' || attempt === 1) return bad;
+    }
     await writePrivateBytes(outPath, buf);
     return 'SAVED';
   } finally { await rm(work, { recursive: true, force: true }).catch(() => {}); }
 }
 
 // 单独补出 PDF：node make_pdf.mjs --html report.html --out report.pdf
-// 给在沙箱里跑命令的宿主用（Codex 的沙箱会把浏览器掐掉，build_report 那一步只能出 HTML）：请用户批准这一条在沙箱外跑
+// 给在沙箱里跑命令的宿主用（沙箱可能限制浏览器进程，build_report 那一步只能出 HTML）：请用户批准这一条在沙箱外跑
 export async function main(args) {
   const f = {};
   for (let i = 0; i < args.length; i += 2) { const k = args[i], v = args[i + 1]; if (!['--html', '--out'].includes(k) || !v || v.startsWith('--') || f[k]) throw Error('PDF_CONFIG_INVALID'); f[k] = v; }

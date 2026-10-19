@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Windows 实测（rc.10.1／10.2）挂过的几处，在任何系统上都能测的那部分：PowerShell 等多久、冷启动的进度记录不算出错、失败原因能带出来、按目标系统拼浏览器路径。
+// 在任何系统上都能测试 Windows 相关行为：PowerShell 等多久、冷启动的进度记录不算出错、失败原因能带出来、按目标系统拼浏览器路径。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { psTimeout, realStderr, reasonOf } from '../scripts/private_files.mjs';
@@ -43,4 +43,9 @@ test('Windows 上核私有文件，PDF 那么大的也要核得了：check 跟 c
   const js = await readFile(new URL('../scripts/private_files.mjs', import.meta.url), 'utf8');
   assert.match(js, /windows\('check',path,'',MAX_BYTES\)/);
   assert.match(js, /const MAX_BYTES=32\*1024\*1024;/);
+  assert.match(ps, /SetAccessRuleProtection\(\$true,\$false\)/,'关闭继承');
+  assert.match(ps, /SetOwner\(\$sid\)/,'所有者改为当前用户');
+  assert.match(ps, /rules\.Count -ne 1/,'只留一条当前用户规则');
+  assert.match(ps, /icacls\.exe \$File \/verify/,'最后用 icacls 自查');
+  assert.match(ps, /if\(\$created\)\{try\{\[IO\.File\]::Delete\(\$full\)\}/,'写完后自查失败就删掉本次新建的 PDF，不留不合格文件');
 });

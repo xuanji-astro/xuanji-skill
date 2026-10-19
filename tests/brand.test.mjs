@@ -9,9 +9,10 @@ import {fileURLToPath} from 'node:url';
 import {createPrivateJSON} from '../scripts/create_private_json.mjs';
 import {build,check} from '../scripts/build_report.mjs';
 import {prerender,verifyReport,serialize} from '../scripts/prerender.mjs';
-import {checkPDF,browserCandidates,findBrowser} from '../scripts/make_pdf.mjs';
+import {checkPDF,browserCandidates,findBrowser,printPDF} from '../scripts/make_pdf.mjs';
 import {readFileSync,existsSync} from 'node:fs';
-import {readPrivateJSON,assertPrivateFile} from '../scripts/private_files.mjs';
+import {readPrivateJSON,assertPrivateFile,writePrivateText} from '../scripts/private_files.mjs';
+import {combine,PARTS} from '../scripts/report_parts.mjs';
 function fixtures(){
  const year=new Date().getFullYear();const section={title:'结构观察',body:'合成测试文字，不代表真人或未来承诺。'};
  const calendar=Array.from({length:3},(_,i)=>({span:String(year+i),title:'合成观察',body:'保留自主判断。',first_half:'观察',second_half:'复核',do:'记录',avoid:'冲动',basis:'合成依据',areas:[{area:'事业',text:'合成'},{area:'学业',text:'合成'}]}));
@@ -23,7 +24,7 @@ function fixtures(){
  fill(rep);
  return {prof,rep};
 }
-/* 10-14 报告生成时整份画好、核对完整才出文件：简化的假盘画出来本来就缺东西，出文件的测试改用接口算的一份完整编造盘（1993-08-17 杭州，虚构），合成稿照它补齐 */
+/* 报告生成时整份画好、核对完整才出文件：简化的假盘画出来本来就缺东西，出文件的测试改用接口算的一份完整编造盘（1993-08-17 杭州，虚构），合成稿照它补齐 */
 function fullFixtures(){
  const prof=JSON.parse(readFileSync(new URL('./fixtures/profile_sample.json',import.meta.url),'utf8'));const {rep}=fixtures();
  const lines=rep.cover.seen.split('\n');lines[0]=JSON.parse(readFileSync(new URL('../scripts/report_rules.json',import.meta.url),'utf8')).cover_seen_plain.pool[prof.bazi.bazi.pillars.day.gan][0];lines[2]=prof.method.persona.base.cover_line;rep.cover.seen=lines.join('\n');
@@ -34,7 +35,7 @@ function fullFixtures(){
  rep.audit.planets=Object.fromEntries(['太阳','月亮','水星','金星','火星','木星','土星','天王','海王','冥王'].map(n=>[n,{role:'合成角色',p1:zh(120),p2:zh(120),p3:zh(120)}]));
  return {prof,rep};
 }
-/* 10-13 报告加了字数下限：合成样本按下限写足（只为过格式检查，文字不代表真人） */
+/* 报告有字数下限：合成样本按下限写足（只为过格式检查，文字不代表真人） */
 function zh(k){const u='合成测试正文只为检查格式不代表真人也不代表未来';let s='';while(s.length<k)s+=u;return s.slice(0,k)+'。';}
 function fill(rep){
  const set=(o,k,len)=>{if(o&&typeof o[k]==='string')o[k]=zh(len);};
@@ -47,7 +48,7 @@ function fill(rep){
 }
 test('denied and unconfirmed candidates cannot enter confirmed report hits',()=>{const {prof,rep}=fixtures();for(const feedback of ['不准',null,undefined]){const r=structuredClone(rep);r.hits=[{statement:'合成候选',feedback,basis:'合成依据'}];assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}for(const feedback of ['准','部分准']){const r=structuredClone(rep);r.hits=[{statement:'合成候选',feedback,basis:'合成依据'}];assert.deepEqual(check(r,prof),[]);}});
 test('brand rules accept valid report and reject length, forbidden words and missing counts',()=>{const {prof,rep}=fixtures();assert.deepEqual(check(rep,prof),[]);for(const alter of [r=>r.cover.seen='字'.repeat(61),r=>r.cover.seen='准确率',r=>r.gifts.items=[]]){const r=structuredClone(rep);alter(r);assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}});
-test('报告按盘写全：重点章固定 3 个、天赋和重点章依据三套都要有、留后路的词限量、问卷答案不进报告（10-14 Codex 报告照聊天写）',()=>{const {prof,rep}=fixtures();assert.deepEqual(check(rep,prof),[]);const cases=[[r=>r.focus=['career','love'],/focus 要正好 3/],[r=>r.gifts.items.forEach(x=>x.refs=['人格·Te']),/覆盖：天赋.*缺八字/],[r=>{for(const k of r.focus)r.chapters[k].refs=['人格·Ni'];},/覆盖：最响的几件事.*缺八字/],[r=>r.closing+='你更倾向探索，也值得验证，按象征读法看还要验证。',/软话：/],[r=>r.closing+='你在问卷里选了这一项。',/问卷/]];for(const [alter,re] of cases){const r=structuredClone(rep);alter(r);assert(check(r,prof).some(e=>re.test(e)),String(re));}const w=structuredClone(prof);w.western={data:{}};const r=structuredClone(rep);assert(check(r,w).some(e=>/覆盖：天赋.*缺星盘/.test(e)));});
+test('报告按盘写全：重点章固定 3 个、天赋和重点章依据三套都要有、留后路的词限量、问卷答案不进报告',()=>{const {prof,rep}=fixtures();assert.deepEqual(check(rep,prof),[]);const cases=[[r=>r.focus=['career','love'],/focus 要正好 3/],[r=>r.gifts.items.forEach(x=>x.refs=['人格·Te']),/覆盖：天赋.*缺八字/],[r=>{for(const k of r.focus)r.chapters[k].refs=['人格·Ni'];},/覆盖：最响的几件事.*缺八字/],[r=>r.closing+='你更倾向探索，也值得验证，按象征读法看还要验证。',/软话：/],[r=>r.closing+='你在问卷里选了这一项。',/问卷/]];for(const [alter,re] of cases){const r=structuredClone(rep);alter(r);assert(check(r,prof).some(e=>re.test(e)),String(re));}const w=structuredClone(prof);w.western={data:{}};const r=structuredClone(rep);assert(check(r,w).some(e=>/覆盖：天赋.*缺星盘/.test(e)));});
 test('brand HTML omits raw birth and save while retaining offline CSP and safe JSON',()=>{const {prof,rep}=fixtures();rep.cover.evidence='</script><svg onload=alert(1)>';const html=build(prof,rep);for(const raw of ['1996-05-20','10:30','合成地点','claim_url','saveBox'])assert(!html.includes(raw));assert(html.includes("connect-src 'none'"));assert(!html.includes('</script><svg'));assert(html.includes('\\u003c/svg')||html.includes('\\u003c/script'));assert(!html.includes('d.innerHTML'));assert(html.includes('el.removeAttribute'));});
 test('POSIX private JSON rejects permissive files without changing them and rejects symlinks',{skip:process.platform==='win32'},async()=>{const d=await mkdtemp(join(tmpdir(),'xj-private-'));const p=join(d,'input.json');await writeFile(p,'{}',{mode:0o644});await assert.rejects(readPrivateJSON(p),/PRIVATE_FILE_INVALID/);assert.equal((await stat(p)).mode&0o777,0o644);await symlink(p,join(d,'link.json'));await assert.rejects(readPrivateJSON(join(d,'link.json')),/PRIVATE_FILE_INVALID/);});
 test('SVG esc encodes attacker text; script parses and numeric text is escaped',async()=>{const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');const fn=t.match(/function esc\(s\) \{[^\n]+\}/)[0];const escaped=vm.runInNewContext(fn+';esc',{})('<svg onload="evil">&');assert.equal(escaped,'&lt;svg onload=&quot;evil&quot;&gt;&amp;');new vm.Script(t.match(/<script>\n([\s\S]*)<\/script>/)[1]);for(const x of ['esc(c.ganZhi)','esc(c.startAge)','esc(c.endAge)','esc(c.age)','esc(t)','esc(c.title[0])'])assert(t.includes(x));});
@@ -63,13 +64,13 @@ test('persona feedback accepts exact server sentence and rejects wrong or unconf
  for(const bad of [null,{},[{target:'base',statement:'其他句',feedback:'不准'}],[{target:'base',statement:prof.method.persona.base.line,feedback:'准'}],[{target:'base',statement:prof.method.persona.base.line,feedback:'未核对'}]]){const r=structuredClone(rep);r.persona_feedback=bad;assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}
  const r=structuredClone(rep);const entry={target:'base',statement:prof.method.persona.base.line,feedback:'不准'};r.persona_feedback=[entry,entry];assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);
 });
-// 10-11 Codex 实测：报告「接下来可以问」写了「出生时间有误会改变职业判断吗」，这是内部的问题，用户不会问
+// 「接下来可以问」不得包含出生时间、算法或依据等内部问题
 test('next_questions 不出内部的问题（出生时间、时柱、宫头、算法、依据）',()=>{
  const {prof,rep}=fixtures();
  for(const q of ['出生时间有误会改变职业判断吗？','时柱换了会怎样？','依据是什么？']){const r=structuredClone(rep);r.next_questions=[q,...rep.next_questions.slice(1)];const e=check(r,prof);assert(e.some(x=>x.startsWith('next_questions[1] 里不要用')&&x.includes('内部的事')),q);}
  const r=structuredClone(rep);r.next_questions=['我明年换工作合适吗？',...rep.next_questions.slice(1)];assert.deepEqual(check(r,prof),[]);
 });
-// 10-07 Kimi 实测两处：把 2026 写成「今年乙巳」；用户否认的 2022 年往事在正文里写成发生过
+// 相对年份的干支必须一致；用户否认的往事不得在正文里写成发生过
 test('year gan-zhi must match the year (今年 counts as the build year); luck, month and range spans are not years',()=>{
  const {prof,rep}=fixtures(),y=new Date().getFullYear(),gz=(n)=>'甲乙丙丁戊己庚辛壬癸'[(n-4)%10]+'子丑寅卯辰巳午未申酉戌亥'[(n-4)%12],wrong=gz(y-1);
  for(const bad of [`今年${wrong}，风向偏紧`,`${y} 年${wrong}`,`${wrong}年（${y}）`]){const r=structuredClone(rep);r.cover.evidence=bad;assert.ok(check(r,prof).some(e=>e.includes('的干支照')),bad);assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}
@@ -84,7 +85,7 @@ test('misses is required; denied years stay out of the report body but may be no
  r.hits=[{statement:`${y} 年工作换了方向`,feedback:'准',basis:'合成依据'}];r.chapters.career.brief=`${y} 年换了方向`;assert.deepEqual(check(r,prof),[]);
  for(const bad of [{},[{year:String(y)}],[{year:y+4}],[{year:y,area:'感情',note:'x'}]]){const b=structuredClone(rep);b.misses=bad;assert.ok(check(b,prof).length,JSON.stringify(bad));}
 });
-// 10-10 封面映照要三套写全，顺序固定星盘 × 八字 × 人格
+// 封面映照要三套写全，顺序固定星盘 × 八字 × 人格
 test('cover support must list 星盘, 八字 and 人格; template shows them in that fixed order',async()=>{
  const {prof,rep}=fixtures();
  for(const sup of [undefined,[],['星盘','八字'],['八字','人格']]){const r=structuredClone(rep);r.cover.support=sup;assert.throws(()=>build(prof,r),/REPORT_RULES_FAILED/);}
@@ -97,7 +98,7 @@ test('cover: line 1 from the day-stem pool verbatim, line 2 gifts 14-28 and posi
  assert.deepEqual(errs(`宝剑锋从磨砺出。\n${L2}\n合成判词：把最乱的局交给你。`),[]);
  assert.match(errs(`一盏灯照得很远。\n${L2}\n合成判词：把最乱的局交给你。`).join(),/第一句要从 report_rules\.json 的 cover_seen_plain\.pool「庚」/);
  assert.match(errs(`宝剑锋从磨砺出。\n${L2}\n你是让人愿意跟上的人。`).join(),/第三句照抄出厂底色封神那句/);
- // 10-11：接口给了 cover_line（封神那句）就只认它，抽中的戳痛那句 line 不能上封面
+ // 接口给了 cover_line（封神那句）就只认它，抽中的戳痛那句 line 不能上封面
  P.method.persona.base.cover_line='合成封神句：你一来，局就稳了。';
  assert.deepEqual(errs(`宝剑锋从磨砺出。\n${L2}\n合成封神句：你一来，局就稳了。`),[]);
  assert.match(errs(`宝剑锋从磨砺出。\n${L2}\n合成判词：把最乱的局交给你。`).join(),/封神那句.*合成封神句/);
@@ -107,22 +108,22 @@ test('cover: line 1 from the day-stem pool verbatim, line 2 gifts 14-28 and posi
  assert.match(errs(`宝剑锋从磨砺出。\n${L2}`).join(),/要 3 句/);
  assert.match(errs(`宝剑锋从磨砺出。\n聚人、定调、开路，事到她手里就有了章法。\n合成判词：把最乱的局交给你。`).join(),/第2句里有「她」/);   // 封面对他说「你」，不写成第三人称
 });
-test('身强身弱校正（10-10）：报告只带结论（身X型、四格、件数），题和留痕明细不进报告',()=>{const {prof,rep}=fixtures();const p=structuredClone(prof);p.method.bazi=p.method.bazi||{};p.method.bazi.calib={ask:{traits:[{no:1,q:'平时做事的节奏更像？',options:[]}],events:{q:'过去这些年',domains:[]}},result:{status:'定案',side:'强',type:'身强型',cards:[{title:'能量核心',text:'底气足。'}],say:'提醒',used:{traits:8,events:1},detail:{tally:{强:8,弱:0},answers:[{year:2023,pick:'强'}],events:[{year:2016,event:'离婚合成'}]}}};const html=build(p,rep);for(const raw of ['平时做事的节奏更像','离婚合成','"tally"','"detail"'])assert(!html.includes(raw),raw);assert(html.includes('身强型'));});
-test('星盘图和卷下点位卡：接口给的进阶点位、小行星都有字和说法，不能再被筛掉（10-11 她：莉莉丝这些之前都画的）',async()=>{const {readFile}=await import('node:fs/promises');const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
+test('身强身弱校正：报告只带结论（身X型、四格、件数），题和留痕明细不进报告',()=>{const {prof,rep}=fixtures();const p=structuredClone(prof);p.method.bazi=p.method.bazi||{};p.method.bazi.calib={ask:{traits:[{no:1,q:'平时做事的节奏更像？',options:[]}],events:{q:'过去这些年',domains:[]}},result:{status:'定案',side:'强',type:'身强型',cards:[{title:'能量核心',text:'底气足。'}],say:'提醒',used:{traits:8,events:1},detail:{tally:{强:8,弱:0},answers:[{year:2023,pick:'强'}],events:[{year:2016,event:'离婚合成'}]}}};const html=build(p,rep);for(const raw of ['平时做事的节奏更像','离婚合成','"tally"','"detail"'])assert(!html.includes(raw),raw);assert(html.includes('身强型'));});
+test('星盘图和卷下点位卡：接口给的进阶点位、小行星都有字和说法，不能被筛掉',async()=>{const {readFile}=await import('node:fs/promises');const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
  const charLine=t.match(/var CHAR = \{[^\n]+\}/)[0], mean=t.match(/var EXTRA_MEAN = \{[^\n]+\}/)[0];
  for(const n of ['北交点','南交点','莉莉丝','福点','宿命点','东方点','谷神','智神','婚神','灶神']){assert(charLine.includes(n+':'),n+' 星盘图上要有字');assert(mean.includes(n+':'),n+' 点位卡要有说法');}
  assert(t.includes("(W.points || []).concat(W.asteroids || []).filter(function (p) { return CHAR[p.n]; })"),'星盘图要把 points 和 asteroids 都画上');
  assert(!/W\.points[^\n]{0,80}p\.n === '北交点' \|\| p\.n === '福点'/.test(t),'不能再只挑北交点和福点');
 });
-test('依据里「几套体系说法不同」：宿主写成一句话或漏了 theme，也不出 undefined（10-11 Kimi 复验）',async()=>{const {readFile}=await import('node:fs/promises');const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
+test('依据里「几套体系说法不同」：宿主写成一句话或漏了 theme，也不出 undefined',async()=>{const {readFile}=await import('node:fs/promises');const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
  assert(t.includes("if (!d || typeof d !== 'object') return h('li', null, String(d || ''));"));assert(t.includes("d.theme ? h('b', null, d.theme + '：') : null"));
 });
-test('依据里空的一条不出空圆点；三镜映照写全喜用（10-11 Kimi 复验 PDF 第 41 页）',async()=>{const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
+test('依据里空的一条不出空圆点；三镜映照写全喜用',async()=>{const t=await readFile(new URL('../template/single-brand.html',import.meta.url),'utf8');
  const m=t.match(/var DIFF = \(bs\.differences \|\| \[\]\)\.filter\((function[^\n]+?)\);\n/);assert(m,'DIFF 过滤还在');const keep=vm.runInNewContext('('+m[1]+')');
  assert.deepEqual(['','  ',null,{},{theme:''},'一句话',{bazi:'喜火'}].filter(keep),['一句话',{bazi:'喜火'}]);assert(t.includes('if (DIFF.length) add(bd'));assert(!t.includes('favorable.slice(0, 2)'));
 });
-test('正文不写「接口」：「接口给的原话」这类后台话会被拦（10-11 命理组 Kimi Code 实测漏出）',()=>{const {prof,rep}=fixtures();const r=structuredClone(rep);r.chapters.career.gold='接口给的原话是机会不少。';assert(check(r,prof).some(e=>e.includes('「接口」')));});
-test('字数下限（10-13）：某处写少了、全篇不够都不出文件；时辰不详全篇按 10000',()=>{
+test('正文不写「接口」：「接口给的原话」这类后台话会被拦',()=>{const {prof,rep}=fixtures();const r=structuredClone(rep);r.chapters.career.gold='接口给的原话是机会不少。';assert(check(r,prof).some(e=>e.includes('「接口」')));});
+test('字数下限：某处写少了、全篇不够都不出文件；时辰不详全篇按 10000',()=>{
  const {prof,rep}=fixtures();assert.deepEqual(check(rep,prof),[]);
  const a=structuredClone(rep);a.chapters.love.sections[0].body='合成太短的一节。';
  assert(check(a,prof).some(e=>/chapters\.love\.sections\[1\]\.body 只有 \d+ 个汉字，最少 200 个/.test(e)));
@@ -132,7 +133,7 @@ test('字数下限（10-13）：某处写少了、全篇不够都不出文件；
  assert(check(rep,w).some(e=>/最少 15000 个/.test(e)));
 });
 
-// —— 10-14 åå§äºº：报告不完整就不给。生成时整份画好写进 HTML（打开不靠脚本），逐项核对，核不过不出文件；有浏览器再打 PDF ——
+// 报告不完整就不给。生成时整份画好写进 HTML（打开不靠脚本），逐项核对，核不过不出文件；有浏览器再打 PDF
 test('整份画好：成品不带画报告的大脚本和数据，打开不靠脚本；完整样例逐项核对通过；手机、电脑两种图都留着按屏宽显示',()=>{
  const {prof,rep}=fullFixtures();assert.deepEqual(check(rep,prof),[]);
  const {html,app,data}=prerender(build(prof,rep));
@@ -178,18 +179,19 @@ test('命令行：核不过一个文件都不写（REPORT_INCOMPLETE）；带 --
  assert.equal(spawnSync(process.execPath,[script,'--profile',p,'--report',r,'--out',o,'--pdf',o],{encoding:'utf8'}).stderr,'REPORT_CONFIG_INVALID\n','PDF 不能跟 HTML 同名');
  const x=spawnSync(process.execPath,[script,'--profile',p,'--report',r,'--out',o,'--pdf',f],{encoding:'utf8',timeout:180000});assert.equal(x.status,0,x.stderr);
  await assertPrivateFile(o);
- // 有浏览器就该出 PDF；在 Codex 这类沙箱里跑测试，浏览器会被掐掉，报 PDF_SKIPPED_FAILED 也算对（10-14 在 Codex 沙箱里实测过）
+ // 有浏览器就该出 PDF；在限制浏览器进程的沙箱里跑测试，报 PDF_SKIPPED_FAILED 也算对
  if(x.stdout==='REPORT_SAVED\nPDF_SAVED\n'){await assertPrivateFile(f);assert.equal(readFileSync(f).subarray(0,5).toString(),'%PDF-');}
  else assert.match(x.stdout,findBrowser()?/^REPORT_SAVED\nPDF_SKIPPED_FAILED\n$/:/^REPORT_SAVED\nPDF_SKIPPED_\w+\n$/);
+ if(!existsSync(f))await writePrivateText(f,'synthetic existing output');
  assert.equal(spawnSync(process.execPath,[script,'--profile',p,'--report',r,'--out',join(d,'r2.html'),'--pdf',f],{encoding:'utf8'}).stderr,'OUTPUT_EXISTS\n');
 });
-test('三镜映照每块交叠最多两条：同一块写第三条在规则这一步就拦，告诉宿主换哪块（10-14 台架 Claude 撞过成品核对）',()=>{
+test('三镜映照每块交叠最多两条：同一块写第三条在规则这一步就拦，告诉宿主换哪块',()=>{
  const {prof,rep}=fullFixtures();rep.crosscheck=[1,2,3].map(()=>({theme:'做事有主见',systems:['八字','星盘'],note:zh(60)}));
  const errs=check(rep,prof);assert(errs.some(e=>e.startsWith('crosscheck 第3条：「八字×星盘」这块交叠')),errs.join('\n'));assert(!errs.some(e=>e.startsWith('crosscheck 第2条：「')));
  rep.crosscheck[2].systems=['星盘','人格'];assert.deepEqual(check(rep,prof),[]);
  const r=prerender(build(prof,rep));assert.deepEqual(verifyReport(r.app,r.data),[]);
 });
-test('成品核对不拦模板本来就不显示的：重点章的 brief（10-14 台架 Codex 撞过）；依据里把握写错字段在规则这一步就拦',()=>{
+test('成品核对不拦模板本来就不显示的重点章 brief；依据里把握写错字段在规则这一步就拦',()=>{
  const {prof,rep}=fullFixtures();for(const k of rep.focus)rep.chapters[k].brief='重点章也写了一句话简介，模板不显示';
  const r=prerender(build(prof,rep));assert.deepEqual(verifyReport(r.app,r.data),[]);
  const r2=structuredClone(rep);r2.basis={...(r2.basis||{}),confidence:[{level:'高',area:'事业',why:'合成'}],counter:[{x:1}]};
@@ -204,7 +206,29 @@ test('单独补出 PDF（沙箱里出不了时，请用户批准在沙箱外跑�
  if(x.stdout==='PDF_SAVED\n'){await assertPrivateFile(join(d,'b.pdf'));assert.equal(spawnSync(process.execPath,[script,'--html',ok,'--out',join(d,'b.pdf')],{encoding:'utf8'}).stderr,'OUTPUT_EXISTS\n');}
  else assert.match(x.stdout,findBrowser()?/^PDF_SKIPPED_FAILED\n$/:/^PDF_SKIPPED_\w+\n$/);   // 沙箱里浏览器被掐掉也算对
 });
-test('小节里只写 title、body：依据写进小节在规则这一步就拦，说写到整章上（10-14 Kimi 桌面端实测撞过成品核对）',()=>{
+test('PDF 内容无效自动重试一次：第二次有效就保存，两次无效就停止',async()=>{
+ const d=await mkdtemp(join(tmpdir(),'xj-pdf-retry-')),out=join(d,'report.pdf');let runs=0,reads=0;
+ const pages=Array.from({length:5},()=>'<</Type /Page>>').join('\n');
+ const good=Buffer.from('%PDF-1.4\n'+pages+'\n/BaseFont /AAAAAA+PingFangSC-Regular\n'+'x'.repeat(30000));
+ const options={browser:'/synthetic/browser',runBrowser:async()=>{runs++;return true;},readOutput:async()=>++reads===1?Buffer.from('Invalid PDF output'):good};
+ assert.equal(await printPDF('<details>合成</details>',out,options),'SAVED');assert.equal(runs,2);await assertPrivateFile(out);
+ runs=0;reads=0;assert.equal(await printPDF('<p>合成</p>',join(d,'bad.pdf'),{...options,readOutput:async()=>{reads++;return Buffer.from('Invalid PDF output');}}),'FAILED');assert.equal(runs,2);assert.equal(existsSync(join(d,'bad.pdf')),false);
+});
+test('十二段合格报告能私有合并成原样 report.json，再走原有 build',async()=>{
+ const {prof,rep}=fullFixtures(),root=await mkdtemp(join(tmpdir(),'xj-parts-ok-')),dir=join(root,'parts');await (await import('node:fs/promises')).mkdir(dir);
+ const profile=join(root,'profile.json'),out=join(root,'report.json');await createPrivateJSON(profile,prof);
+ for(const [name,keys,chapter] of PARTS){const value=chapter?{chapters:{[chapter]:rep.chapters[chapter]}}:Object.fromEntries(keys.filter(k=>Object.hasOwn(rep,k)).map(k=>[k,rep[k]]));await createPrivateJSON(join(dir,name),value);}
+ assert.equal(await combine(profile,dir,out),true);await assertPrivateFile(out);assert.deepEqual(await readPrivateJSON(out,1048576),rep);assert.doesNotThrow(()=>build(prof,rep));
+});
+test('小节里只写 title、body：依据写进小节在规则这一步就拦，说写到整章上',()=>{
  const {prof,rep}=fullFixtures();rep.chapters.career.sections[0]={...rep.chapters.career.sections[0],refs:['八字·日支']};
  const errs=check(rep,prof);assert(errs.some(e=>e.startsWith('chapters.career.sections 第1节多了 refs')&&e.includes('chapters.career.refs')),errs.join('\n'));
+});
+test('PDF 用默认读文件（不注入 readOutput）也能读回浏览器写出的 PDF：rc.12 验收时 Mac 上真读文件多传了参数、每次都判失败',async()=>{
+ const d=await mkdtemp(join(tmpdir(),'xj-pdf-realread-')),out=join(d,'report.pdf');
+ const pages=Array.from({length:5},()=>'<</Type /Page>>').join('\n');
+ const good=Buffer.from('%PDF-1.4\n'+pages+'\n/BaseFont /AAAAAA+PingFangSC-Regular\n'+'x'.repeat(30000));
+ const {writeFile:wf}=await import('node:fs/promises');
+ const runBrowser=async(exe,args)=>{const a=args.find((x)=>x.startsWith('--print-to-pdf='));await wf(a.slice('--print-to-pdf='.length),good);return true;};
+ assert.equal(await printPDF('<details>合成</details>',out,{browser:'/synthetic/browser',runBrowser}),'SAVED');await assertPrivateFile(out);
 });

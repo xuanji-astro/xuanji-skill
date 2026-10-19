@@ -8,7 +8,7 @@ const MAX=2*1024*1024;
 const posix=()=>['darwin','linux'].includes(process.platform);
 function owned(st){if(!st.isFile()||st.nlink!==1||st.uid!==process.getuid()||(st.mode&0o777)!==0o600)throw Error();}
 // Built-in Windows PowerShell 5.1. No shell, policy bypass, argv payload or ACL repair.
-// Windows 实测（rc.10.1／10.2，10-15）：PowerShell 冷启动要 60 秒左右，原来只等 15 秒就判失败，文件其实随后落了盘；
+// PowerShell 冷启动可能需要约 60 秒；过早判定超时会发生文件随后才落盘的情况；
 // 冷启动还会往标准错误写一段「#< CLIXML」进度记录（Preparing modules for first use），不算出错。等待默认 120 秒，XUANJI_POWERSHELL_TIMEOUT_MS 可改。
 // 失败原因放在 cause 里（POWERSHELL_TIMEOUT／POWERSHELL_EXIT_n／POWERSHELL_STDERR），命令行多打一行 WINDOWS_REASON，不带文件内容。
 export const psTimeout=()=>{const n=Number(process.env.XUANJI_POWERSHELL_TIMEOUT_MS);return Number.isInteger(n)&&n>=1000&&n<=600000?n:120000;};
@@ -54,7 +54,7 @@ export async function readPrivateText(path,maxBytes=8192){
     const text=await f.readFile('utf8');if(Buffer.byteLength(text)>maxBytes)throw Error();return text;
   }catch(e){throw Error('PRIVATE_FILE_INVALID',{cause:e});}finally{await f?.close();}
 }
-// 二进制（报告 PDF，10-14）：跟 writePrivateText 一样只新建、只给本人读写，上限 32MB；Windows 走同一个 PowerShell 助手的 create-b64
+// 二进制（报告 PDF）：跟 writePrivateText 一样只新建、只给本人读写，上限 32MB；Windows 走同一个 PowerShell 助手的 create-b64
 const MAX_BYTES=32*1024*1024;
 export async function writePrivateBytes(path,buf){
   if(!Buffer.isBuffer(buf)||buf.length>MAX_BYTES)throw Error('INPUT_TOO_LARGE');

@@ -30,16 +30,46 @@ function birth(v) {
   if (!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==v.date) fail('INPUT_INVALID');
   if (typeof v.city!=='string'||!v.city.trim()||v.city.length>100||!['male','female'].includes(v.gender)) fail('INPUT_INVALID');
   if (v.time!=null&&(typeof v.time!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(v.time))) fail('INPUT_INVALID');
-  if(v.time!=null&&v.time_source===undefined) fail('TIME_SOURCE_MISSING');   // 10-13 åå§äºº 实测：Kimi Code 没标「出生证」，出生证的时辰被定时辰翻掉了；给了时间就必须说来源
+  if(v.time!=null&&v.time_source===undefined) fail('TIME_SOURCE_MISSING');   // 缺少时间来源会让出生证时辰被后续校正覆盖；给了时间就必须说来源
   if(v.time_source!==undefined&&!['birth_certificate','family_clear','family_rough','unknown'].includes(v.time_source)) fail('INPUT_INVALID');
   if(v.time_precision!==undefined&&!['minute','within_15min','within_1h','unknown'].includes(v.time_precision)) fail('INPUT_INVALID');
 }
+export const KINDS=['health','profile','pair','year','xuanji'];
+// 年度报告（rc.13）：生辰＋哪一年；可选 tz（日子按用户所在时区出）、现在住的地方（中国城市 now_city，国外 now_place {lat,lon}）
+function yearInput(v,{needYear=true}={}){
+  const {year,tz,now_city,now_place,...b}=v;birth(b);
+  if(needYear&&(!Number.isInteger(year)||year<1950||year>2100)) fail('INPUT_INVALID');
+  if(!needYear&&year!==undefined&&(!Number.isInteger(year)||year<1950||year>2100)) fail('INPUT_INVALID');
+  if(tz!==undefined&&(typeof tz!=='string'||tz.length>64||!/^[A-Za-z0-9_+\-\/]+$/.test(tz))) fail('INPUT_INVALID');
+  if(now_city!==undefined&&now_place!==undefined) fail('INPUT_INVALID');
+  if(now_city!==undefined&&(typeof now_city!=='string'||!now_city.trim()||now_city.length>100)) fail('INPUT_INVALID');
+  if(now_place!==undefined&&(!object(now_place)||Object.keys(now_place).some(k=>k!=='lat'&&k!=='lon')||typeof now_place.lat!=='number'||typeof now_place.lon!=='number'||Math.abs(now_place.lat)>66||Math.abs(now_place.lon)>180)) fail('INPUT_INVALID');
+}
+// 「玄玑怎么看」（rc.13）：只回结论。yishi 只发问的是哪一类事、问的时间、在哪；不发问题原话
+const YISHI_TYPES=['career','relationship','contact','money','litigation','travel_near','travel_far','travel_abroad','recovery'];
+const THEMES=['year','事业认可','钱','感情','家庭','工作','迁移远方','自我'];
+function xuanjiInput(v){
+  if(v.kind==='yishi'){
+    if(Object.keys(v).some(k=>!['kind','question_type','asked_at','city','lat','lon'].includes(k))) fail('INPUT_INVALID');
+    if(!YISHI_TYPES.includes(v.question_type)) fail('INPUT_INVALID');
+    if(typeof v.asked_at!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/.test(v.asked_at)) fail('INPUT_INVALID');
+    const hasCity=v.city!==undefined,hasLL=v.lat!==undefined||v.lon!==undefined;
+    if(hasCity===hasLL) fail('INPUT_INVALID');
+    if(hasCity&&(typeof v.city!=='string'||!v.city.trim()||v.city.length>100)) fail('INPUT_INVALID');
+    if(hasLL&&(typeof v.lat!=='number'||typeof v.lon!=='number'||Math.abs(v.lat)>90||Math.abs(v.lon)>180)) fail('INPUT_INVALID');
+    return;
+  }
+  if(v.kind==='year'){const {kind,...r}=v;yearInput(r);return;}
+  if(v.kind==='fenshu'){const {kind,theme,...r}=v;if(!THEMES.includes(theme)) fail('INPUT_INVALID');yearInput(r,{needYear:theme==='year'});return;}
+  fail('INPUT_INVALID');
+}
 export function validate(kind, input) {
-  if(!['health','profile','pair'].includes(kind)) fail('ENDPOINT_NOT_ALLOWED');
+  if(!KINDS.includes(kind)) fail('ENDPOINT_NOT_ALLOWED');
+  if(kind==='year'||kind==='xuanji'){if(!object(input)) fail('INPUT_INVALID');kind==='year'?yearInput(input):xuanjiInput(input);if(Buffer.byteLength(JSON.stringify(input),'utf8')>8192) fail('INPUT_TOO_LARGE');return;}
   if(kind==='health'){if(input!==undefined) fail('INPUT_INVALID');return;}
   if(kind==='profile'){
     // 「核一核」的回答（接口 answers）：[{year,pick}]，pick 只能是 弱／强／都沾／记不清，最多 12 条；其余照生辰字段严格查
-    // 身强身弱校正（10-10 起，接口 calib）：traits 8 个（A–F 或 null，F＝说不准），events 最多 30 件 {year, domain?, event?, good}；跟接口同一套检查
+    // 身强身弱校正（接口 calib）：traits 8 个（A–F 或 null，F＝说不准），events 最多 30 件 {year, domain?, event?, good}；跟接口同一套检查
     const {answers,calib,...b}=object(input)?input:{};
     if(!object(input)) fail('INPUT_INVALID');
     birth(b);
@@ -86,6 +116,8 @@ export async function callAPI(kind,input,{fetchImpl=globalThis.fetch,timeoutMs=9
       safeData(data);
       if(kind==='health') {if(data.ok!==true||typeof data.ready!=='boolean')fail('RESPONSE_INVALID');}
       else if(kind==='profile') {if(data.schema!=='xuanji.handoff/0.1'||!object(data.method))fail('RESPONSE_INVALID');}
+      else if(kind==='year') {if(data.schema!=='xuanji.year/0.1'||!object(data.bazi))fail('RESPONSE_INVALID');}
+      else if(kind==='xuanji') {if(data.schema!=='xuanji.view/0.1'||!['yishi','year','fenshu'].includes(data.kind))fail('RESPONSE_INVALID');}
       else if(data.schema!=='xuanji.pair/0.1'||!object(data.scope))fail('RESPONSE_INVALID');
       return data;
     })();
@@ -96,7 +128,7 @@ export async function callAPI(kind,input,{fetchImpl=globalThis.fetch,timeoutMs=9
 export async function main(args) {
   const [kind,...flags]=args;let inputPath,outputPath,timeoutMs=90000;
   for(let i=0;i<flags.length;i+=2){const key=flags[i],value=flags[i+1];if(!value||value.startsWith('--'))fail('CONFIG_INVALID');if(key==='--input'&&!inputPath)inputPath=value;else if(key==='--output'&&!outputPath)outputPath=value;else if(key==='--timeout-ms')timeoutMs=Number(value);else fail('CONFIG_INVALID');}
-  if(!['health','profile','pair'].includes(kind))fail('ENDPOINT_NOT_ALLOWED');
+  if(!KINDS.includes(kind))fail('ENDPOINT_NOT_ALLOWED');
   if(kind!=='health'&&(!inputPath||!outputPath))fail('MISSING_PARAMETER');
   if(kind==='health'&&inputPath)fail('INPUT_INVALID');
   let input;
