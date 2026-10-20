@@ -1,6 +1,6 @@
 ---
 name: xuanji
-description: 调用执天玄玑 API 获取八字、星盘、人格结构或两人关系的计算结果，并据返回依据回答用户问题。用户要求玄玑排盘、出厂底色、重生人格、人格 Buff 或合盘时使用；也出三份报告：一事一卜（一件事成不成、哪天见分晓）、年度（某一年怎么走）、分术（一件事几套盘分开说）；不用于医学、法律、投资或人员选拔决策。
+description: 调用执天玄玑 API 获取八字、星盘、人格结构或两人关系的计算结果，并据返回依据回答用户问题。用户要求玄玑排盘、出厂底色、重生人格、人格 Buff 或合盘时使用；也出三份报告：一事一卜（一件事成不成、哪天见分晓）、年度（某一年怎么走）、分术（一件事几套盘分开说）；还排印占（印度占星）盘，出排盘报告和一份可以贴给别的 AI 的数据包；不用于医学、法律、投资或人员选拔决策。
 ---
 
 # 执天玄玑 / Xuanji Skill V1
@@ -58,7 +58,7 @@ description: 调用执天玄玑 API 获取八字、星盘、人格结构或两�
 
 ## 数据与范围
 
-V1 不要求玄玑注册，不接人物档案库，不提供云端存档、认领或共创群口令。只调用 `https://api.xuanji-astro.com` 的健康、单人、合盘、年度和「玄玑怎么看」这几个接口，禁止调用保存、登录或管理接口。
+V1 不要求玄玑注册，不接人物档案库，不提供云端存档、认领或共创群口令。只调用 `https://api.xuanji-astro.com` 的健康、单人、合盘、年度、「玄玑怎么看」和印占这几个接口，禁止调用保存、登录或管理接口。
 
 调用前说明：出生信息将发给执天玄玑 API 用于本次计算；此 V1 不写入玄玑长期人物档案。当前 AI 客户端的对话、工具输出及本地文件仍可能保留信息，其规则由客户端提供方决定。取得用户对本次传输的明确同意再调用：说明这一轮只说明、不调用，等用户下一句明确回答同意。说明就照下面这段说，不另加解释：
 
@@ -68,11 +68,11 @@ V1 不要求玄玑注册，不接人物档案库，不提供云端存档、认�
 
 除此之外，用户在请求里给了生辰、要求排盘，都不算同意，不能说「提供了信息就视为同意」。两人合盘须确认用户有权提供对方信息，不复述对方完整生辰。
 
-年度报告、分术报告发的是同一份生辰（年度再加要看的那一年），同一次对话里已经同意过排盘的不用再问；要按他现在住的地方看，照 [年度报告](reference/年度.md) 先问一句他愿不愿意，不愿意就不发。一事一卜起卦在这台电脑上算、不联网、不用生辰；只有「玄玑怎么看」那一步把这件事属于哪一类、他问的时间和城市发给执天玄玑，不发问题原话，发之前照 [一事一卜](reference/一事一卜.md) 那句问他，他不同意就不发。
+年度报告、分术报告发的是同一份生辰（年度再加要看的那一年），同一次对话里已经同意过排盘的不用再问；要按他现在住的地方看，照 [年度报告](reference/年度.md) 先问一句他愿不愿意，不愿意就不发。印占发的也是同一份生辰，同意过排盘的不用再问，没同意过照上面那段先问。一事一卜起卦在这台电脑上算、不联网、不用生辰；只有「玄玑怎么看」那一步把这件事属于哪一类、他问的时间和城市发给执天玄玑，不发问题原话，发之前照 [一事一卜](reference/一事一卜.md) 那句问他，他不同意就不发。
 
 ## 操作
 
-**文件放在哪**：用户的文件（`request.json`、`profile.json`、定时辰那几份、`report.json`、`report.html`、`report.pdf`；三份报告的 `yishi_request.json`、`yishi_cast.json`、`year_request.json`、`year.json`、`xuanji_request.json`、`xuanji_*.json`、`*_report.json`、`hits.json` 和出的 HTML、PDF）只建在用户启动你时所在的工作目录，也就是用户这次授权的目录。不要 `cd` 进本 Skill 的安装目录，也不要往 Skill 目录里写任何文件：Skill 装在全局目录时，写进去就等于把生辰留在所有项目共用的地方。脚本一律用 Skill 目录的绝对路径调用、在当前工作目录执行，例如 `node <skill目录>/scripts/client.mjs profile --input request.json --output profile.json`。`<skill目录>` 就是本文件所在的目录。
+**文件放在哪**：用户的文件（`request.json`、`profile.json`、定时辰那几份、`report.json`、`report.html`、`report.pdf`；三份报告的 `yishi_request.json`、`yishi_cast.json`、`year_request.json`、`year.json`、`xuanji_request.json`、`xuanji_*.json`、`*_report.json`、`hits.json` 和出的 HTML、PDF；印占的 `vedic_request.json`、`vedic.json`、`印占排盘.html`、`印占排盘.pdf`、`印占数据包.txt`、`印占排盘.zip`）只建在用户启动你时所在的工作目录，也就是用户这次授权的目录。不要 `cd` 进本 Skill 的安装目录，也不要往 Skill 目录里写任何文件：Skill 装在全局目录时，写进去就等于把生辰留在所有项目共用的地方。脚本一律用 Skill 目录的绝对路径调用、在当前工作目录执行，例如 `node <skill目录>/scripts/client.mjs profile --input request.json --output profile.json`。`<skill目录>` 就是本文件所在的目录。
 
 1. 一次收齐公历日期、出生城市、性别；时间可未知。日期用 YYYY-MM-DD，时间用 HH:mm 或 null，性别用 male/female。不要自行转换真太阳时。可选时间来源与精度见 [接口](docs/api.md)。
 2. 只在用户授权的本次工作目录创建请求 JSON。把 JSON 通过工具的标准输入传给 `node <skill目录>/scripts/create_private_json.mjs request.json`，不要把 JSON 拼进命令行参数，也不要先创建普通文件再 chmod。脚本独占创建新文件，macOS/Linux检查600、本人所有权和常规文件；Windows实现采用内置PowerShell 5.1在创建时设置仅当前用户的受保护NTFS ACL，并在写内容前后和读取时核对，不把mode位当ACL。已有文件、符号链接或权限异常报错，不改其他文件。report.json用同一流程。当前实测范围见README；Windows待实际验收，权限失败不能放行或关闭安全检查。标准输入和工具对话仍可能由宿主保留。
@@ -92,7 +92,8 @@ V1 不要求玄玑注册，不接人物档案库，不提供云端存档、认�
    - PDF 内容不对时脚本会自动重打一次；还不行，或者 Windows 上 PDF 的权限自查没过（会另打 `WINDOWS_REASON`），就不交 PDF，只交完整的 HTML，照上面「只交 HTML」那条说；不绕过检查，也不把没生成的 PDF 说成已经生成。
    出了文件用 `node <skill目录>/scripts/check_report.mjs --request request.json --report report.html` 自查有没有生辰，不在命令里写生辰。检查通过时它什么都不打印，查出问题才列类别并非 0 退出；没有输出不是没跑。hits只放用户在对话里答「准」「部分准」的验前事，没核对就留空、不伪造确认；报告文字仍由用户自己的AI宿主生成。report.json按第2步私有创建，不使用shell heredoc或重定向承载生辰。输入与输出均用第2步的平台权限检查，不改其他文件权限，不覆盖；模板默认不显示或嵌入原始出生日期、时间、地点，仍含敏感衍生盘面，不能称匿名。报告离线不联网。合盘只作对话回答，不生成合盘HTML或其他报告文件，读法见 [合盘](reference/合盘.md)；除了出不了完整报告、一事一卜讲完这两种情况，对话里不主动引导加创始人（三份报告最后的创始人卡片是报告自带的）。
 7. **三份报告**（一事一卜、年度、分术）：什么时候出、怎么拿数据、怎么写，各看 [一事一卜](reference/一事一卜.md)、[年度报告](reference/年度.md)、[分术报告](reference/分术.md)。报告数据（`yishi_report.json`、`year_report.json`、`fenshu_report.json`）照第 2 步私有创建，再用 `node <skill目录>/scripts/build_doc.mjs --kind yishi|year|fenshu …` 出文件（每份要带哪些文件，那一份的说明里写着）。它先查报告数据，查不过打 `REPORT_RULES_FAILED`，另一行 `REPORT_RULES_HINT` 列出类别和字段路径（比如 `LENGTH_LIMIT:four.八字.text`、`VIEW_MISMATCH:glance.key_month_label`），照说明把那几处改对再跑；过了才整页画好、逐段核对，再新建 HTML 和 PDF。出来的提示码跟第 6 步一样处理：`REPORT_SAVED`／`PDF_SAVED` 两份都交，`PDF_SKIPPED_…` 只交 HTML（沙箱里另跑 `make_pdf.mjs` 那一条照第 6 步），`OUTPUT_EXISTS` 换个文件名，改过还是 `REPORT_INCOMPLETE` 或 `REPORT_RULES_FAILED` 就什么都不给、照第 6 步请他加创始人微信。年度、分术出了文件，照第 6 步用 `check_report.mjs --request request.json --report 出的那份.html` 自查有没有生辰；一事一卜不用生辰，不用查。
-8. 本地文件可能含隐私（定时辰时还有 `events.json`、`answers.json`、`ask.json`、`rectify.json`，里面是用户说的大事：哪年、什么事、好坏；身强身弱校正的回答写在 `request.json` 的 `calib` 里；一事一卜的问题和外应在 `yishi_request.json`；他对过的事在 `hits.json`），告诉用户保存位置；不主动上传，不承诺自动删除。用户不需要本地保存时，可用支持临时数据的宿主工具，不在公开仓写任何实际结果。
+8. **印占排盘**：用户要看印度占星的盘，照 [印占](reference/印占.md) 拿 `vedic.json`，再用 `node <skill目录>/scripts/build_vedic.mjs --vedic vedic.json --out 印占排盘.html --pdf 印占排盘.pdf --pack 印占数据包.txt --zip 印占排盘.zip` 出报告和压缩包；报告只有盘和数据，解读在对话里照那份说明讲。提示码照那份说明处理；`REPORT_INCOMPLETE`、`VEDIC_INVALID` 什么都不给、照第 6 步请他加创始人微信。
+9. 本地文件可能含隐私（定时辰时还有 `events.json`、`answers.json`、`ask.json`、`rectify.json`，里面是用户说的大事：哪年、什么事、好坏；身强身弱校正的回答写在 `request.json` 的 `calib` 里；一事一卜的问题和外应在 `yishi_request.json`；他对过的事在 `hits.json`；印占的整盘在 `vedic.json`，数据包 `印占数据包.txt` 是可以贴给别的 AI 的盘面摘要），告诉用户保存位置；不主动上传，不承诺自动删除。用户不需要本地保存时，可用支持临时数据的宿主工具，不在公开仓写任何实际结果。
 
 ## 怎么回答（读法见 [解读](reference/解读.md)）
 
@@ -208,7 +209,7 @@ V1 不要求玄玑注册，不接人物档案库，不提供云端存档、认�
 
 ### 用户问「你还能做什么」
 
-照这个 Skill 真能做的说，用他会问的话各举一句：性格和天赋、今年明年怎么走、事业要不要换、感情和正缘、钱；拿过去几年核一核准不准；身强身弱校正；出生时间卡在时辰交界时把时辰定下来；两个人合盘（恋人、家人、朋友、同事、合伙）；出一份 HTML 报告；一件事成不成起一卦（一事一卜）；某一年按月怎么走（年度报告）；一件事几套盘分开说（分术报告）。用户说不要报告，就不再提报告。最后带一句：手机上也能看，去执天玄玑网站（xuanji-astro.com）排盘，在生辰页右上角的分享里点「复制给AI」，贴给手机上的 AI 就能接着聊。
+照这个 Skill 真能做的说，用他会问的话各举一句：性格和天赋、今年明年怎么走、事业要不要换、感情和正缘、钱；拿过去几年核一核准不准；身强身弱校正；出生时间卡在时辰交界时把时辰定下来；两个人合盘（恋人、家人、朋友、同事、合伙）；出一份 HTML 报告；一件事成不成起一卦（一事一卜）；某一年按月怎么走（年度报告）；一件事几套盘分开说（分术报告）；看印度占星的盘（印占排盘报告，附一份可以贴给别的 AI 的数据包）。用户说不要报告，就不再提报告。最后带一句：手机上也能看，去执天玄玑网站（xuanji-astro.com）排盘，在生辰页右上角的分享里点「复制给AI」，贴给手机上的 AI 就能接着聊。
 
 用户想让朋友、家人也看看，而对方没装这个 Skill，也这么告诉他：去执天玄玑网站排盘，点「复制给AI」。网站只在这两种时候提，别的回答里不加。
 

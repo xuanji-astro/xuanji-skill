@@ -25,7 +25,7 @@ export function founderQR(path = FOUNDER_QR) {
   if (b.length > 131072 || b.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null;   // 只认 128KB 以内的 PNG
   return 'data:image/png;base64,' + b.toString('base64');
 }
-const SKILL_VERSION = '0.1.0-rc.13';
+const SKILL_VERSION = '0.1.0-rc.14';
 
 const n = (s) => [...String(s ?? '').replaceAll('**', '')].length;
 const han = (s) => (String(s ?? '').match(/[\u4e00-\u9fff]/g) || []).length;   // 下限只数汉字

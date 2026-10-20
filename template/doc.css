@@ -528,3 +528,5 @@ ul.sig li::before{content:"";position:absolute;left:4px;top:10px;width:8px;heigh
 
 .pdf{cursor:pointer;background:none;font-family:inherit}
 @media print{.pdf{display:none}.card{break-inside:auto}.cover,.founder,.asks,.remember,.toc,.mx,svg,.steps2 li,.pt,.grip>div,.good,.it2,.agree .row,.diff .four,.tl li,.door .item,.ev,.cv-three .it,.stairs,.loop{break-inside:avoid}.part,.lab,.sub2,.mhead,.kw,.diff .q{break-after:avoid}}
+/* 打印分页（rc.14，放在上面那段后面才压得住 .card 可跨页）：大卡照旧可跨页、小块不拆；标题下面至少留出一截正文的位置，不让标题孤零零落在页底（break-after:avoid 在 Chrome 打印里管不住，改用「撑高再拉回」）；中等大小的卡整张不拆（五个方面那种长卡不在里面，整张挪会空出半页）；最后一块和页脚不分开 */
+@media print{.part{break-inside:avoid;padding-bottom:300px;margin-bottom:-294px}.card>.lab:first-child{break-inside:avoid;padding-bottom:110px;margin-bottom:-100px}.card>.mhead:first-child,.card>.dhead:first-child,.card>.thead:first-child{break-inside:avoid;padding-bottom:110px;margin-bottom:-102px}.card>.mhd:first-child{break-inside:avoid;padding-bottom:110px;margin-bottom:-104px}.sysc>.shead:first-child{break-inside:avoid;padding-bottom:110px;margin-bottom:-100px}.mon,.thr,.cross,.past,.xjc,.card:has(>.glance){break-inside:avoid}.endkeep{break-inside:avoid}}

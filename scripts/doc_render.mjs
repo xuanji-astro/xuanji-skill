@@ -28,7 +28,10 @@ const asks=(qs)=>`<div class="asks"><div class="dtop">${CHAT_O}接下来可以�
 const founder=(qr,bullets,note)=>qr?`<div class="founder"><img src="${qr}" alt="创始人微信"><div><div class="t">想看得更细</div><ul>${bullets.map(b=>`<li>${esc(b)}</li>`).join('')}</ul><span class="wx">微信 liin1223<em>· 备注「${esc(note)}」</em></span></div></div>`:'';
 const FOOT='<div class="foot">解读仅供参考，不承诺特定结果，不替代法律、投资、医疗等专业意见。</div>';
 export function page(title,brand,body){
-  return `<!doctype html>\n<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n<title>${esc(title)}</title>\n<style>\n${CSS()}\n</style></head><body><div class="wrap">\n<div class="top"><div class="brand"><i></i>${esc(brand)}<i></i></div><button class="pdf" onclick="window.print()">存为 PDF</button></div>\n${body}\n${FOOT}\n</div></body></html>\n`;
+  // 页脚跟最后一块（创始人卡，没有就是「接下来可以问我」）包在一起，打印时不让页脚一个人落到新的一页
+  const cut=Math.max(body.lastIndexOf('<div class="founder">'),body.lastIndexOf('<div class="asks">'));
+  if(cut>=0){body=`${body.slice(0,cut)}<div class="endkeep">${body.slice(cut)}\n${FOOT}</div>`;}
+  return `<!doctype html>\n<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n<title>${esc(title)}</title>\n<style>\n${CSS()}\n</style></head><body><div class="wrap">\n<div class="top"><div class="brand"><i></i>${esc(brand)}<i></i></div><button class="pdf" onclick="window.print()">存为 PDF</button></div>\n${body}\n${body.includes('class="endkeep"')?'':FOOT}\n</div></body></html>\n`;
 }
 const steps2=(steps)=>`<ol class="steps2">${arr(steps).map((s,i)=>`<li class="${s.key?'key':''}"><div class="no">${i+1}</div><div>${s.key?'<span class="keytag">关键一步</span>':''}<div class="h">${esc(s.title)}${s.tag?`<span class="ef ${{帮你:'plus',要防:'warn',时间:'time',定位:'dir',方向:'dir'}[s.tag]||'dir'}">${esc(s.tag)}</span>`:''}</div>${s.what?`<div class="w">${tx(s.what)}</div>`:''}${s.why?`<div class="why">${tx(s.why)}</div>`:''}</div></li>`).join('')}</ol>`;
 

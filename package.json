@@ -1,9 +1,9 @@
 {
   "name": "xuanji-skill",
-  "version": "0.1.0-rc.13",
+  "version": "0.1.0-rc.14",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
   "engines": {"node": ">=18.19.1"},
-  "scripts": {"test": "node --test tests/client.test.mjs tests/brand.test.mjs tests/private_creation.test.mjs tests/cross_platform.test.mjs tests/rectify.test.mjs tests/report_check.test.mjs tests/report_workflow.test.mjs tests/skill_text.test.mjs tests/windows_helper.test.mjs tests/yishi.test.mjs tests/doc.test.mjs"}
+  "scripts": {"test": "node --test tests/client.test.mjs tests/brand.test.mjs tests/private_creation.test.mjs tests/cross_platform.test.mjs tests/rectify.test.mjs tests/report_check.test.mjs tests/report_workflow.test.mjs tests/skill_text.test.mjs tests/windows_helper.test.mjs tests/yishi.test.mjs tests/doc.test.mjs tests/vedic.test.mjs"}
 }

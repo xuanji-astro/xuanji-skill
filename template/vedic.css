@@ -1,0 +1,243 @@
+/* 执天玄玑 · 印占排盘报告样式（rc.14，照网站印占排盘页 10-19 版）。SPDX-License-Identifier: Apache-2.0 */
+:root{--ink:#1f2a4a;--sub:#6b7391;--faint:#9aa0b8;--gold:#a8843f;--sapph:#2f5fa8;--ok:#2f7a6a;--warn:#a8701f;--card:rgba(255,255,255,.74);--serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","SimSun",serif}
+html{background:#f4f1ec;overscroll-behavior-y:none}
+body{margin:0;min-height:100svh;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;color:var(--ink);-webkit-text-size-adjust:100%;background:linear-gradient(180deg,#f6f3ee 0%,#f1f0f2 45%,#eceff5 100%)}
+.pg{max-width:520px;margin:0 auto;padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 36px);overflow-x:clip}
+.sh b.lt{font-weight:700;font-size:17px}
+.id b.lt{font-size:18px;margin:6px 0 4px}
+td.k.lt{font-size:13px;font-weight:700}
+.who{text-align:center;font-size:12.5px;color:var(--sub);margin:-4px 0 12px}
+.sec{padding:0 14px;margin-top:22px}
+.sec:first-of-type{margin-top:4px}
+.sh{display:flex;align-items:baseline;gap:8px;margin:0 2px 10px}
+.sh b{font-family:var(--serif);font-weight:700;font-size:18px;letter-spacing:.04em}
+.sh span{font-size:12.5px;color:var(--sub)}
+.card{background:var(--card);border-radius:16px;box-shadow:0 6px 18px rgba(31,42,74,.06),inset 0 0 0 1px rgba(168,132,63,.16)}
+/* 三个「我是谁」 */
+.ids{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.id{padding:11px 10px 10px;text-align:center}
+.id i{display:block;font-style:normal;font-size:11.5px;color:var(--sub);letter-spacing:.04em}
+.id b{display:block;font-family:var(--serif);font-weight:700;font-size:21px;margin:5px 0 3px;letter-spacing:.04em}
+.id em{display:block;font-style:normal;font-size:11px;color:var(--faint);line-height:1.45}
+.params{margin-top:8px;padding:9px 12px;font-size:12px;color:var(--sub);line-height:1.75;display:flex;gap:10px;align-items:flex-start}
+.params p{margin:0;flex:1}
+.params b{color:var(--ink);font-weight:600}
+.params span{white-space:nowrap}
+/* 主盘 */
+.main{width:min(372px,100%);margin:0 auto}
+.legend{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--sub);margin:6px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+/* 状态标签 */
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.tag.ok{color:var(--ok);background:rgba(47,122,106,.09)}
+.tag.no{color:var(--warn);background:rgba(168,112,31,.1)}
+.tag svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+/* 九分盘 */
+.d9{padding:12px 12px 14px}
+.d9 .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.d9 .top em{font-style:normal;font-size:12px;color:var(--sub)}
+.d9 .chart{width:min(300px,86%);margin:10px auto 6px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.7;margin:0}
+.note b{color:var(--ink);font-weight:600}
+/* 分盘小卡 */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini{padding:10px 8px 10px}
+.mini .t{display:flex;align-items:baseline;gap:5px;padding:0 4px}
+.mini .t b{font-family:var(--serif);font-weight:700;font-size:15.5px}
+.mini .t span{font-size:11.5px;color:var(--faint)}
+.mini .chart{width:100%;margin:4px 0 4px}
+.mini .tag{margin:0 4px}
+.mini p{margin:5px 4px 0;font-size:11.5px;color:var(--sub);line-height:1.55}
+/* 九曜表 */
+.tb{padding:4px 0;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-weight:500;color:var(--faint);font-size:11px;text-align:left;padding:8px 4px 6px}
+td{padding:8px 4px;border-top:1px solid rgba(31,42,74,.06);white-space:nowrap}
+th:first-child,td:first-child{padding-left:12px}
+th:last-child,td:last-child{padding-right:12px}
+td.k{font-family:var(--serif);font-weight:700;font-size:13.5px}
+td .s{font-size:11px;font-weight:600}
+.s.ex{color:#b07a12}.s.own{color:#1f7a6a}.s.deb{color:#b23a3a}.s.r{color:var(--sapph)}.s.vg{color:#7a5cb0}
+/* 大运 */
+.ds{padding:6px 12px 12px}
+.md{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;font-size:13px;color:var(--sub);border-top:1px solid rgba(31,42,74,.06)}
+.md:first-child{border-top:0}
+.md b{font-family:var(--serif);font-weight:700;font-size:14px;color:var(--ink)}
+.md.on{color:var(--ink)}
+.md.on b{color:#9a7636}
+.md .now{font-size:11px;color:#fff;background:linear-gradient(95deg,#b8924a,#9a7636);border-radius:999px;padding:1px 7px;margin-left:6px;font-weight:600}
+.ads{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:2px 0 8px}
+.ad{padding:6px 4px;border-radius:10px;background:rgba(168,132,63,.07);text-align:center;font-size:12px;color:var(--sub)}
+.ad b{display:block;font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)}
+.ad.on{background:linear-gradient(135deg,#bf9a52,#9a7636);color:rgba(255,255,255,.88);box-shadow:0 4px 12px rgba(154,118,54,.25)}
+.ad.on b{color:#fff}
+.ds .note{margin-top:6px}
+/* 出生那天 */
+.pc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:10px 4px}
+.pc div{text-align:center;padding:0 2px;border-left:1px solid rgba(31,42,74,.06)}
+.pc div:first-child{border-left:0}
+.pc i{display:block;font-style:normal;font-size:10.5px;color:var(--sub)}
+.pc b{display:block;font-family:var(--serif);font-weight:700;font-size:14px;margin:4px 0 2px;letter-spacing:.02em;white-space:nowrap}
+.pc b.l{font-family:-apple-system,"Helvetica Neue",sans-serif;font-size:12.5px;font-weight:600;letter-spacing:0}
+.pc.pro b.l{font-size:11.5px;white-space:normal;line-height:1.25;word-break:break-word;min-height:2.5em;display:flex;align-items:center;justify-content:center}
+.pc em{display:block;font-style:normal;font-size:10px;color:var(--faint);line-height:1.35}
+/* 九曜细节 */
+.tb2{margin-top:8px}
+.s.fr{color:#1f7a6a}.s.ne{color:var(--faint)}.s.en{color:#b23a3a}.s.cb{color:#c0562a}.s.mt{color:#7a5cb0}.s.role{color:#9a7636}
+/* 第三级运 */
+.pds{margin:0 0 8px;padding:6px 10px 4px;border-radius:12px;background:rgba(168,132,63,.06)}
+.pds .h{font-size:11.5px;color:var(--sub);margin:2px 0 4px}
+.pd{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);padding:4px 0;border-top:1px dashed rgba(31,42,74,.08)}
+.pd:first-of-type{border-top:0}
+.pd b{font-weight:600;color:var(--ink)}
+.pd.on{color:#9a7636}.pd.on b{color:#9a7636}
+/* 八分力 */
+.av{padding:12px 12px 14px}
+.av .chart{width:min(300px,86%);margin:0 auto 8px}
+/* 七年半·火星煞 */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two .card{padding:11px 12px 12px}
+.two h4{margin:0 0 6px;font-family:var(--serif);font-weight:700;font-size:14.5px}
+.two p{margin:0;font-size:12px;color:var(--sub);line-height:1.7}
+.two p b{color:var(--ink);font-weight:600}
+.two .y{color:#b23a3a}.two .n{color:var(--ok)}
+/* 专业数据：八分力细表 */
+.pro .sub{font-family:var(--serif);font-weight:700;font-size:14px;margin:4px 4px 6px}
+.bavw{overflow-x:auto;margin:0 0 12px;background:rgba(255,255,255,.6);border-radius:12px;box-shadow:inset 0 0 0 1px rgba(168,132,63,.12)}
+.bavw table{font-size:11px;min-width:100%}
+.bavw th,.bavw td{text-align:center;padding:6px 2px}
+.bavw td:first-child,.bavw th:first-child{text-align:left;padding-left:10px}
+.bavw tr.sum td{font-weight:700;color:var(--ink)}
+/* 专业数据 */
+.pro summary{list-style:none;display:flex;align-items:center;gap:8px;padding:13px 14px;cursor:pointer}
+.pro summary::-webkit-details-marker{display:none}
+.pro summary b{font-family:var(--serif);font-weight:700;font-size:16px}
+.pro summary span{font-size:12px;color:var(--sub)}
+.pro summary svg{margin-left:auto;width:16px;height:16px;fill:none;stroke:var(--sub);stroke-width:2;transition:transform .2s}
+.pro[open] summary svg{transform:rotate(180deg)}
+.pro .in{padding:0 10px 12px}
+.pro .warn{font-size:12px;color:var(--warn);background:rgba(168,112,31,.07);border-radius:10px;padding:8px 10px;line-height:1.65;margin:0 2px 10px}
+.pro .mini{background:rgba(255,255,255,.6);border-radius:14px;box-shadow:inset 0 0 0 1px rgba(168,132,63,.12)}
+/* 10-19 主盘第二排切换 */
+/* 六力 */
+.sb{padding:4px 12px 6px}
+.sbr{border-top:1px solid rgba(31,42,74,.06)}
+.sbr:first-child{border-top:0}
+.sbr summary{list-style:none;display:grid;grid-template-columns:44px 1fr 56px;align-items:center;gap:10px;padding:9px 0;cursor:pointer}
+.sbr summary::-webkit-details-marker{display:none}
+.k2{font-family:var(--serif);font-weight:700;font-size:13.5px}
+.bar{position:relative;display:block;height:8px;border-radius:999px;background:rgba(31,42,74,.07)}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#d8bd86,#a8843f)}
+.bar i.lo{background:linear-gradient(90deg,#ecc0a8,#d97757)}
+.sbr .bar u{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;background:var(--ink);border-radius:1px}
+.sbr .v{text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.sbr .v em{display:block;font-style:normal;font-size:10.5px;color:var(--faint);font-weight:500}
+.sbr .parts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:0 0 10px 54px}
+.sbr .parts div{padding:5px 4px;border-radius:9px;background:rgba(168,132,63,.07);text-align:center}
+.sbr .parts i{display:block;font-style:normal;font-size:10.5px;color:var(--sub)}
+.sbr .parts b{display:block;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.sbr .parts p{grid-column:1/-1;margin:2px 0 0;font-size:11px;color:var(--faint)}
+/* 吉凶果报 */
+.ik{margin-top:8px;padding:10px 12px 8px}
+.sub2{display:flex;align-items:baseline;gap:8px;margin:0 0 4px}
+.sub2 b{font-family:var(--serif);font-weight:700;font-size:14px}
+.sub2 span{font-size:11.5px;color:var(--sub)}
+.ikr{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;padding:6px 0;border-top:1px solid rgba(31,42,74,.06)}
+.sub2+.ikr{border-top:0}
+.ikr .pair{display:grid;grid-template-columns:1fr 84px;gap:4px 8px;align-items:center}
+.ikr .bar{height:6px}
+.ikr .bar.g i{background:linear-gradient(90deg,#9ccbbd,#2f7a6a)}
+.ikr .bar.r i{background:linear-gradient(90deg,#ecc0a8,#b23a3a)}
+.ikr em{font-style:normal;font-size:11px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* 宫位力 */
+.bb{padding:4px 12px 6px}
+.bbr{display:grid;grid-template-columns:18px 52px 44px 1fr 40px;align-items:center;gap:8px;padding:7px 0;border-top:1px solid rgba(31,42,74,.06);font-size:12px;color:var(--sub)}
+.bbr:first-child{border-top:0}
+.bbr .rk{font-size:11px;color:var(--faint);text-align:center;font-variant-numeric:tabular-nums}
+.bbr b{font-family:var(--serif);font-weight:700;font-size:13px;color:var(--ink)}
+.bbr .bar{height:7px}
+.bbr .bar i{background:linear-gradient(90deg,#a9bfe0,#2f5fa8)}
+.bbr.top .bar i{background:linear-gradient(90deg,#d8bd86,#a8843f)}
+.bbr.top .rk{color:#9a7636;font-weight:700}
+.bbr .v{text-align:right;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+/* 相位 */
+.asp{padding:4px 12px 8px}
+.apr{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid rgba(31,42,74,.06)}
+.apr:first-child{border-top:0}
+.apr .k2{line-height:24px}
+.apr .tg{display:flex;flex-wrap:wrap;gap:6px}
+.ch{display:inline-flex;align-items:baseline;gap:4px;padding:3px 9px;border-radius:999px;background:rgba(47,95,168,.07);font-size:12px;color:var(--ink);white-space:nowrap}
+.ch em{font-style:normal;font-size:10.5px;color:var(--sapph);font-variant-numeric:tabular-nums}
+.asp .note{border-top:1px solid rgba(31,42,74,.06);padding-top:7px}
+/* 第四级运 */
+.sks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:2px 0 6px}
+.sks .h{grid-column:1/-1;font-size:11px;color:var(--faint);margin:2px 0 0}
+.sk{padding:4px 2px;border-radius:8px;background:rgba(255,255,255,.75);text-align:center;font-size:10.5px;color:var(--sub);font-variant-numeric:tabular-nums}
+.sk b{display:block;font-size:11.5px;font-weight:600;color:var(--ink)}
+.sk.on{background:linear-gradient(135deg,#bf9a52,#9a7636);color:rgba(255,255,255,.88)}
+.sk.on b{color:#fff}
+/* 罗计夹·宫主互换 */
+.ks{margin-top:10px;padding:11px 12px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ks h4{margin:0 0 6px;font-family:var(--serif);font-weight:700;font-size:14.5px}
+.ks p{margin:0;font-size:12px;color:var(--sub);line-height:1.7}
+.ks p b{color:var(--ink);font-weight:600}
+.ks .y{color:#b23a3a}.ks .n{color:var(--ok)}
+.ks>div+div{border-left:1px solid rgba(31,42,74,.06);padding-left:10px}
+/* 专业数据：新表 */
+.mtx td,.mtx th{text-align:center}
+.mtx td:first-child,.mtx th:first-child{text-align:left}
+.avk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 12px}
+.avk div{padding:7px 2px;border-radius:10px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 1px rgba(168,132,63,.12);text-align:center}
+.avk i{display:block;font-style:normal;font-size:10.5px;color:var(--sub)}
+.avk b{display:block;font-size:12px;font-weight:600;margin-top:3px;letter-spacing:-.01em;overflow-wrap:anywhere}
+.avk em{display:block;font-style:normal;font-size:10px;color:var(--faint);margin-top:1px}
+/* 打印版（10-18）：浏览器「打印 → 存为 PDF」整页出；按钮、切换不印，专业数据展开 */
+@media print{
+  @page{size:A4;margin:10mm 9mm}
+  html,body{background:#fff!important}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pg{max-width:none;padding:0}
+      .sec{margin-top:16px}
+  .sh{break-after:avoid}
+  .card,.mini,.main,.ids,.two,.md,.ads,.pds,.bavw{break-inside:avoid}
+  .sb,.bb,.asp,.ds,.pro{break-inside:auto}
+  .sbr,.ikr,.bbr,.apr,.ks,.avk,.sks{break-inside:avoid}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .bavw{overflow:visible}
+}
+
+/* 报告自己的：封面、分卷标题、数据包、创始人、页脚 */
+.cv{text-align:center;padding:26px 14px 6px}
+.cv .br{display:flex;align-items:center;justify-content:center;gap:12px;color:var(--gold);font-family:var(--serif);letter-spacing:.42em;font-size:12.5px}
+.cv .br i{display:block;width:26px;height:1px;background:rgba(168,132,63,.45)}
+.cv h1{font-family:var(--serif);font-weight:700;font-size:30px;letter-spacing:.12em;margin:10px 0 4px;color:var(--ink)}
+.cv p{margin:0;font-size:12.5px;color:var(--sub)}
+.vt{display:flex;align-items:baseline;gap:8px;margin:30px 16px 4px;padding-bottom:6px;border-bottom:1px solid rgba(168,132,63,.25)}
+.vt b{font-family:var(--serif);font-size:20px;letter-spacing:.06em}
+.vt span{font-size:12px;color:var(--gold);letter-spacing:.2em}
+.sh i{font-style:normal;font-size:11.5px;color:var(--gold);letter-spacing:.04em;margin-left:auto}
+.pk{padding:12px 12px 10px}
+.pk pre{margin:0;white-space:pre-wrap;word-break:break-word;font:12px/1.75 -apple-system,"PingFang SC",sans-serif;color:var(--ink)}
+.pk .tip{font-size:12px;color:var(--sub);margin:0 0 8px;line-height:1.7}
+.fd{display:flex;gap:14px;align-items:center;padding:14px}
+.fd img{width:96px;height:96px;border-radius:10px}
+.fd .t{font-family:var(--serif);font-weight:700;font-size:15px;margin-bottom:4px}
+.fd ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--sub);line-height:1.8}
+.fd .wx{display:block;margin-top:4px;font-size:12.5px;color:var(--gold);font-weight:600}
+.fd .wx em{font-style:normal;color:var(--sub);font-weight:400}
+.ft{text-align:center;font-size:11px;color:var(--faint);margin:18px 16px 0;line-height:1.7}
+.yzs{display:block;width:100%;height:auto}
+.main .yzs{width:min(372px,100%);margin:0 auto}
+.mini .yzs{margin:4px 0}
+@media print{.vt,.sh{break-after:avoid}.pk,.fd{break-inside:avoid}}
+/* 静态报告的六力行：上面一条力气条，下面六样 */
+.sbr .sbs{display:grid;grid-template-columns:44px 1fr 56px;align-items:center;gap:10px;padding:9px 0}
+.sbr .parts{padding-bottom:10px}
+/* 标题太长时：梵文名掉到下一行，不把中文挤断 */
+.sh{flex-wrap:wrap;row-gap:2px}.sh b,.sh i{white-space:nowrap}
+.mini .t{flex-wrap:wrap;row-gap:0}.mini .t b,.mini .t span{white-space:nowrap}
+/* 打印：盘缩小一点、四张一排，少留白 */
+@media print{.main .yzs{width:330px}.d9 .chart,.av .chart{width:250px}.grid.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.cv{padding-top:8px}}
+@media print{.sbr .parts{grid-template-columns:repeat(6,minmax(0,1fr))}.tb,.ik,.ds,.asp,.bb,.sb,.pro{break-inside:auto}tr,.sbr,.ikr,.bbr,.apr,.md,.pd{break-inside:avoid}}
+@media print{.pds{break-inside:auto}.pro .sub{break-after:avoid}.pro .warn{break-after:avoid}}
