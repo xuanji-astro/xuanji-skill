@@ -14,10 +14,15 @@ test('样稿那一卦：六爻天雷无妄变泽雷随，梅花火地晋用生�
   assert.equal(c.asked.local,'2026-10-18 20:36');
 });
 
-test('梅花应期：3＋8＋5＝16，体旺取近，一季内按旬，落在明年 3 月下旬', () => {
-  const t=cast(R).meihua_timing;
-  assert.equal(t.N,16); assert.equal(t.fast,true); assert.equal(t.count,16); assert.equal(t.unit,'旬');
-  assert.equal(t.label,'2027年3月下旬');
+test('rc.14.1 免费版只出盘：用神成败、六爻应期、梅花应期都不在结果里，盘面照全', () => {
+  const c=cast(R),j=JSON.stringify(c);
+  assert.equal(c.schema,'xuanji.yishi_cast/0.2');
+  assert.equal(c.meihua_timing,undefined);
+  assert.equal(c.liuyao.timing,undefined); assert.equal(c.liuyao.timingSummary,undefined);
+  assert.equal(c.liuyao.yongshen.judgment,undefined);
+  for(const k of ['"timing"','"timingSummary"','"timingCandidates"','"judgment"','"mostLikely"','"timingReal"','"verdict"'])assert.ok(!j.includes(k),k);
+  assert.ok(c.liuyao.yongshen.primary.liuQin); assert.equal(c.liuyao.yaos.length,6);   // 用神、六爻照给
+  assert.ok(c.meihua.texts.movingYaoCi); assert.ok(c.meihua.tiYong.ti.seasonState);    // 卦辞、体用照给
 });
 
 test('外应必须先收：没有外应字段不起卦；说没有就写 none，照常起', () => {

@@ -106,10 +106,10 @@ test('年度：生辰＋年份，可选时区和现在住的地方；不认的�
   assert.throws(()=>validate('year',{...B,year:2027,name:'张三'}),/INPUT_INVALID/);
   assert.throws(()=>validate('year',{...B,year:2027,tz:'Asia/Shanghai?x=1'}),/INPUT_INVALID/);
 });
-test('玄玑怎么看：一事一卜只发事的类别、时间、地点，不发问题原话；年度、分术照年度的规矩', async () => {
+test('玄玑怎么看：rc.14.1 起一事一卜不再问（怎么填都拦）；年度、分术照年度的规矩', async () => {
   const {validate}=await import('../scripts/client.mjs');
-  assert.doesNotThrow(()=>validate('xuanji',{kind:'yishi',question_type:'career',asked_at:'2026-10-18T20:36+08:00',city:'上海'}));
-  assert.doesNotThrow(()=>validate('xuanji',{kind:'yishi',question_type:'money',asked_at:'2026-10-18T05:36-07:00',lat:33.7,lon:-117.8}));
+  assert.throws(()=>validate('xuanji',{kind:'yishi',question_type:'career',asked_at:'2026-10-18T20:36+08:00',city:'上海'}),/INPUT_INVALID/);
+  assert.throws(()=>validate('xuanji',{kind:'yishi',question_type:'money',asked_at:'2026-10-18T05:36-07:00',lat:33.7,lon:-117.8}),/INPUT_INVALID/);
   assert.throws(()=>validate('xuanji',{kind:'yishi',question_type:'career',asked_at:'2026-10-18T20:36+08:00',city:'上海',question:'能拿到offer吗'}),/INPUT_INVALID/);
   assert.throws(()=>validate('xuanji',{kind:'yishi',question_type:'career',asked_at:'2026-10-18T20:36+08:00',city:'上海',number:79}),/INPUT_INVALID/);
   assert.throws(()=>validate('xuanji',{kind:'yishi',question_type:'career',asked_at:'2026-10-18 20:36',city:'上海'}),/INPUT_INVALID/);
@@ -126,6 +126,7 @@ test('年度、玄玑怎么看的回包要认得出是自己那一种，不认�
   const y=await callAPI('year',{...B,year:2027},{fetchImpl:ok({schema:'xuanji.year/0.1',bazi:{months:[]}})});
   assert.equal(y.schema,'xuanji.year/0.1');
   await assert.rejects(callAPI('year',{...B,year:2027},{fetchImpl:ok({schema:'xuanji.handoff/0.1',method:{}})}),/RESPONSE_INVALID/);
-  const v=await callAPI('xuanji',{kind:'yishi',question_type:'career',asked_at:'2026-10-18T20:36+08:00',city:'上海'},{fetchImpl:ok({schema:'xuanji.view/0.1',kind:'yishi',verdict:'成'})});
+  const v=await callAPI('xuanji',{kind:'fenshu',theme:'钱',...B},{fetchImpl:ok({schema:'xuanji.view/0.1',kind:'fenshu',verdict:'成'})});
   assert.equal(v.verdict,'成');
+  await assert.rejects(callAPI('xuanji',{kind:'fenshu',theme:'钱',...B},{fetchImpl:ok({schema:'xuanji.view/0.1',kind:'yishi',verdict:'成'})}),/RESPONSE_INVALID/);
 });

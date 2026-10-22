@@ -93,9 +93,9 @@ test('命令行：私有输入才读；出 HTML 只新建、只给本人读写�
   assert(existsSync(out));await isPrivate(out);
   const again=spawnSync(process.execPath,[cli,...args],{encoding:'utf8'});
   assert.equal(again.status,1);assert.match(again.stderr,/OUTPUT_EXISTS/);
-  // 一事一卜不收 --profile；年度少了 --year 也不行
-  const bad=spawnSync(process.execPath,[cli,'--kind','yishi','--cast',p.report,'--profile',p.profile,'--report',p.report,'--out',join(root,'y.html')],{encoding:'utf8'});
-  assert.match(bad.stderr,/REPORT_CONFIG_INVALID/);
+  // rc.14.1：一事一卜不出报告，参数齐不齐都只回 YISHI_NO_REPORT、不建文件；年度少了 --year 也不行
+  const bad=spawnSync(process.execPath,[cli,'--kind','yishi','--cast',p.report,'--report',p.report,'--out',join(root,'y.html')],{encoding:'utf8'});
+  assert.equal(bad.status,1);assert.match(bad.stderr,/YISHI_NO_REPORT/);assert(!existsSync(join(root,'y.html')));
   const bad2=spawnSync(process.execPath,[cli,'--kind','year','--profile',p.profile,'--view',p.view,'--report',p.report,'--out',join(root,'z.html')],{encoding:'utf8'});
   assert.match(bad2.stderr,/REPORT_CONFIG_INVALID/);
   // 查不过：提示只给类别和字段路径，不带正文

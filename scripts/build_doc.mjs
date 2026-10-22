@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-// 三份报告出文件：一事一卜、年度、分术
+// 两份报告出文件：年度、分术（rc.14.1 起一事一卜只在对话里讲，不出报告；传 --kind yishi 报 YISHI_NO_REPORT）
 // Copyright 2026 杭州强势播传文化影视传媒有限公司
 // SPDX-License-Identifier: Apache-2.0
 // 用法：
-//   node build_doc.mjs --kind yishi  --cast yishi_cast.json --view xuanji_view.json --report yishi_report.json --out yishi.html [--pdf yishi.pdf]
 //   node build_doc.mjs --kind year   --profile profile.json --year year.json --view xuanji_year.json --report year_report.json --out year.html [--pdf year.pdf]
 //   node build_doc.mjs --kind fenshu --profile profile.json --view xuanji_fenshu.json --report fenshu_report.json [--year year.json] [--hits hits.json] --out fenshu.html [--pdf fenshu.pdf]
 // 先查报告数据（必填、条数、长度、不能写的词、跟玄玑怎么看对不对得上），查不过报 REPORT_RULES_FAILED，提示只给类别和字段路径、不带正文；
@@ -188,6 +187,7 @@ export async function main(args) {
   const flags = {};
   for (let i = 0; i < args.length; i += 2) { const k = args[i], v = args[i + 1]; if (!FLAGS.includes(k) || !v || v.startsWith('--') || flags[k]) throw Error('REPORT_CONFIG_INVALID'); flags[k] = v; }
   const kind = flags['--kind'];
+  if (kind === 'yishi') throw Error('YISHI_NO_REPORT');   // 一事一卜的报告由创始人出，Skill 里不出
   if (!KINDS.includes(kind) || NEEDS[kind].some((k) => !flags[k])) throw Error('REPORT_CONFIG_INVALID');
   if (Object.keys(flags).some((k) => !['--kind', '--report', '--out', '--pdf', ...ALLOWED[kind]].includes(k))) throw Error('REPORT_CONFIG_INVALID');
   if (!/\.html?$/i.test(flags['--out']) || (flags['--pdf'] && (resolve(flags['--pdf']) === resolve(flags['--out']) || !/\.pdf$/i.test(flags['--pdf'])))) throw Error('REPORT_CONFIG_INVALID');
@@ -206,6 +206,6 @@ export async function main(args) {
   if (flags['--pdf']) { let r; try { r = await printPDF(html, flags['--pdf']); } catch (e) { r = 'FAILED'; const w = reasonOf(e); if (w) console.error('WINDOWS_REASON ' + w); } console.log(r === 'SAVED' ? 'PDF_SAVED' : 'PDF_SKIPPED_' + r); }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) main(process.argv.slice(2)).catch((e) => {
-  const allowed = ['REPORT_INVALID', 'REPORT_RULES_FAILED', 'REPORT_INCOMPLETE', 'REPORT_CONFIG_INVALID', 'PRIVATE_FILE_INVALID', 'OUTPUT_EXISTS'];
+  const allowed = ['YISHI_NO_REPORT', 'REPORT_INVALID', 'REPORT_RULES_FAILED', 'REPORT_INCOMPLETE', 'REPORT_CONFIG_INVALID', 'PRIVATE_FILE_INVALID', 'OUTPUT_EXISTS'];
   console.error(allowed.includes(e.message) ? e.message : 'REPORT_FAILED'); const w = reasonOf(e); if (w) console.error('WINDOWS_REASON ' + w); process.exitCode = 1;
 });

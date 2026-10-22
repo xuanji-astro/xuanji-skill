@@ -45,20 +45,10 @@ function yearInput(v,{needYear=true}={}){
   if(now_city!==undefined&&(typeof now_city!=='string'||!now_city.trim()||now_city.length>100)) fail('INPUT_INVALID');
   if(now_place!==undefined&&(!object(now_place)||Object.keys(now_place).some(k=>k!=='lat'&&k!=='lon')||typeof now_place.lat!=='number'||typeof now_place.lon!=='number'||Math.abs(now_place.lat)>66||Math.abs(now_place.lon)>180)) fail('INPUT_INVALID');
 }
-// 「玄玑怎么看」（rc.13）：只回结论。yishi 只发问的是哪一类事、问的时间、在哪；不发问题原话
-const YISHI_TYPES=['career','relationship','contact','money','litigation','travel_near','travel_far','travel_abroad','recovery'];
+// 「玄玑怎么看」（rc.13）：只回结论。rc.14.1 起只给年度、分术用，一事一卜不再调
 const THEMES=['year','事业认可','钱','感情','家庭','工作','迁移远方','自我'];
 function xuanjiInput(v){
-  if(v.kind==='yishi'){
-    if(Object.keys(v).some(k=>!['kind','question_type','asked_at','city','lat','lon'].includes(k))) fail('INPUT_INVALID');
-    if(!YISHI_TYPES.includes(v.question_type)) fail('INPUT_INVALID');
-    if(typeof v.asked_at!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/.test(v.asked_at)) fail('INPUT_INVALID');
-    const hasCity=v.city!==undefined,hasLL=v.lat!==undefined||v.lon!==undefined;
-    if(hasCity===hasLL) fail('INPUT_INVALID');
-    if(hasCity&&(typeof v.city!=='string'||!v.city.trim()||v.city.length>100)) fail('INPUT_INVALID');
-    if(hasLL&&(typeof v.lat!=='number'||typeof v.lon!=='number'||Math.abs(v.lat)>90||Math.abs(v.lon)>180)) fail('INPUT_INVALID');
-    return;
-  }
+  if(v.kind==='yishi') fail('INPUT_INVALID');   // rc.14.1：一件事成不成不在 Skill 里问玄玑，由创始人断
   if(v.kind==='year'){const {kind,...r}=v;yearInput(r);return;}
   if(v.kind==='fenshu'){const {kind,theme,...r}=v;if(!THEMES.includes(theme)) fail('INPUT_INVALID');yearInput(r,{needYear:theme==='year'});return;}
   fail('INPUT_INVALID');
@@ -118,7 +108,7 @@ export async function callAPI(kind,input,{fetchImpl=globalThis.fetch,timeoutMs=9
       if(kind==='health') {if(data.ok!==true||typeof data.ready!=='boolean')fail('RESPONSE_INVALID');}
       else if(kind==='profile') {if(data.schema!=='xuanji.handoff/0.1'||!object(data.method))fail('RESPONSE_INVALID');}
       else if(kind==='year') {if(data.schema!=='xuanji.year/0.1'||!object(data.bazi))fail('RESPONSE_INVALID');}
-      else if(kind==='xuanji') {if(data.schema!=='xuanji.view/0.1'||!['yishi','year','fenshu'].includes(data.kind))fail('RESPONSE_INVALID');}
+      else if(kind==='xuanji') {if(data.schema!=='xuanji.view/0.1'||!['year','fenshu'].includes(data.kind))fail('RESPONSE_INVALID');}
       else if(kind==='vedic') {if(data.schema!=='xuanji.vedic/0.1'||!['ok','time_unknown'].includes(data.status)||(data.status==='ok'&&!object(data.chart)))fail('RESPONSE_INVALID');}
       else if(data.schema!=='xuanji.pair/0.1'||!object(data.scope))fail('RESPONSE_INVALID');
       return data;

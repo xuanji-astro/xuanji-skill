@@ -2,6 +2,7 @@
 // Copyright 2026 杭州强势播传文化影视传媒有限公司
 // SPDX-License-Identifier: Apache-2.0
 // 一事一卜起卦：六爻按提问那一刻起，梅花按他报的数起（没报数按时间起）；只在本地算，不联网、不发给接口。
+// rc.14.1 起只出盘：用神的成败判断、应期、梅花应期都不进结果（成不成、哪天见分晓由创始人断）。
 // 外应必须先收（没有就写 none），再起卦：先看卦再问外应，容易倒着编。
 // 用法：node <skill目录>/scripts/yishi.mjs cast --input yishi_request.json --output yishi_cast.json
 import {createRequire} from 'node:module';
@@ -47,18 +48,13 @@ export function localOf(iso){
   return v;
 }
 const pad=(n)=>String(n).padStart(2,'0');
-const part=(d)=>(d<=10?'上旬':d<=20?'中旬':'下旬');
-
-// 梅花应期（公版原书路数）：本卦上卦数＋下卦数＋动爻数＝N；体卦旺相取 N，休囚死加倍；单位跟他问的时限走（七日内按日、一季内按旬、一年以上按月）
-export function meihuaTiming(chart,span,local){
-  const c=chart.calculation,N=c.upperNum+c.lowerNum+c.moving;
-  const st=chart.tiYong&&chart.tiYong.ti&&chart.tiYong.ti.seasonState,fast=st==='旺'||st==='相';
-  const count=fast?N:N*2,unit=span==='七日内'?'日':span==='一季内'?'旬':'月';
-  const base=new Date(Date.UTC(local.year,local.month-1,local.day));
-  const d=unit==='月'?new Date(Date.UTC(local.year,local.month-1+count,Math.min(local.day,28))):new Date(base.getTime()+(unit==='旬'?10:1)*count*864e5);
-  const y=d.getUTCFullYear(),mo=d.getUTCMonth()+1,dd=d.getUTCDate();
-  return {N,formula:`上卦${c.upperNum}＋下卦${c.lowerNum}＋动爻${c.moving}＝${N}`,ti_state:st||null,fast,count,unit,
-    estimate:`${y}-${pad(mo)}-${pad(dd)}`,label:unit==='月'?`${y}年${mo}月`:`${y}年${mo}月${part(dd)}`};
+// rc.14.1：免费版只给盘，不给结论和日子。程序结果里先拿掉，宿主手里没有，就说不出来
+const NOT_FREE=new Set(['timing','timingSummary','timingCandidates','judgment']);
+export function panOnly(o){
+  if(Array.isArray(o))return o.map(panOnly);
+  if(!object(o))return o;
+  const r={};for(const [k,v] of Object.entries(o))if(!NOT_FREE.has(k))r[k]=panOnly(v);
+  return r;
 }
 
 export function cast(r){
@@ -67,10 +63,10 @@ export function cast(r){
   const liuyao=Liuyao.castByTime({...local,...extra});
   const meihua=r.numbers?Meihua.castByNumbers({numbers:r.numbers.slice(),...local}):Meihua.castByTime({...local});
   return {
-    schema:'xuanji.yishi_cast/0.1',
+    schema:'xuanji.yishi_cast/0.2',
     asked:{local:`${local.year}-${pad(local.month)}-${pad(local.day)} ${pad(local.hour)}:${pad(local.minute)}`,at:r.asked_at},
     question:r.question,question_type:r.question_type,span:r.span,asker:extra.asker,waiying:r.waiying,
-    liuyao,meihua,meihua_by:r.numbers?'numbers':'time',meihua_timing:meihuaTiming(meihua,r.span,local),
+    liuyao:panOnly(liuyao),meihua:panOnly(meihua),meihua_by:r.numbers?'numbers':'time',
   };
 }
 

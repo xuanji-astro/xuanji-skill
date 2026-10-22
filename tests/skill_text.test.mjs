@@ -80,3 +80,14 @@ test('三派看法卡：替用户先定的写「先按」、报告不放按钮�
   assert.match(t,/SCx\.check === '降置信'\) return null/);
   assert.doesNotMatch(t,/只当参考/);
 });
+
+test('rc.14.1：一事一卜只起卦、讲盘、说中现在；成不成、日子、怎么做由创始人断；不出报告、不问玄玑',async()=>{
+  const skill=await read('SKILL.md'),ref=await read('reference/一事一卜.md'),readme=await read('README.md');
+  for(const t of [skill,ref])assert(!t.includes('build_doc.mjs --kind yishi'));   // 不再给出出一事一卜报告的命令
+  assert(!skill.includes('yishi_report.json'));assert(!skill.includes('yishi|'));assert(skill.includes('--kind year|fenshu'));
+  assert(!ref.includes('client.mjs xuanji'));assert(!ref.includes('"kind": "yishi"'));   // 一事一卜不再调玄玑怎么看
+  assert(!ref.includes('liuyao.timing'));assert(!ref.includes('meihua_timing'));
+  assert(ref.includes('## 一句话说中他的现在'));assert(ref.includes('## 不说的'));assert(ref.includes('由创始人亲自断'));
+  assert(skill.includes('这三样不在 Skill 里说'));
+  assert(!readme.includes('report-yishi.png'));
+});
