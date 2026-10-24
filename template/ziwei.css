@@ -1,0 +1,106 @@
+/* 执天玄玑 · 紫微排盘报告（rc.15）：盘面照吉真紫微三合盘——
+   每宫主星红、吉星紫、煞星蓝、杂曜黑，亮度、流年小限、三套神、长生、干支一律实色黑字；四化色块角标（禄绿 权紫 科蓝 忌红）；
+   自化＝方框下箭头、对宫化入＝斜箭头，颜色跟四化；命宫淡紫、三方四正淡粉；四周方位。SPDX-License-Identifier: Apache-2.0 */
+:root{--lu:#2E9E3F;--quan:#7C5CD6;--ke:#3D74C8;--ji:#D2453A;--zw-m:#C7473B;--zw-j:#7A5AD6;--zw-x:#3F72C6;--zw-ink:#141820}
+.cv.sm{padding:16px 14px 0}.cv.sm h1{font-size:26px;margin:6px 0 2px}
+/* 6×6：外圈一行一列写方位，里面 4×4 十二宫，中间 2×2 信息卡 */
+.zw{display:grid;grid-template-columns:14px repeat(4,minmax(0,1fr)) 14px;grid-template-rows:14px repeat(4,minmax(180px,auto)) 14px;gap:2px;color:var(--zw-ink)}
+.dir{font-size:10px;color:#4a4f5c;letter-spacing:.08em;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.dir.v{writing-mode:vertical-rl;letter-spacing:.2em}
+.zc{position:relative;display:flex;flex-direction:column;padding:4px 3px 3px;border-radius:6px;background:#fff;box-shadow:inset 0 0 0 1px #d9d4cc;min-width:0;overflow:hidden}
+.zc.ming{background:#ECE8F8}
+.zc.sf{background:#FAEDEB}
+.zc.cur{box-shadow:inset 0 0 0 2px #b0894a}
+.zc .yr{position:absolute;right:3px;top:3px;font-size:9px;line-height:1;padding:2px 3px;border-radius:4px;color:#fff;background:#b0894a}
+.ss{display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px 1px}
+.st{display:inline-flex;flex-direction:column;align-items:center;min-width:12px}
+.st b{font-weight:700;line-height:1.05;text-align:center}
+.st.m b{font-size:14px;color:var(--zw-m)}
+.st.j b{font-size:13px;color:var(--zw-j)}
+.st.x b{font-size:13px;color:var(--zw-x)}
+.st.a b{font-size:12px;color:var(--zw-ink);font-weight:600}
+.st i{font-style:normal;font-size:10px;color:var(--zw-ink);margin-top:2px;line-height:1.1}
+.st u{text-decoration:none;font-size:10px;line-height:1;color:#fff;border-radius:3px;padding:2px 2px 1px;margin-top:2px}
+.h-禄 u,u.h-禄,.hz .h-禄{background:var(--lu)} .h-权 u,u.h-权,.hz .h-权{background:var(--quan)} .h-科 u,u.h-科,.hz .h-科{background:var(--ke)} .h-忌 u,u.h-忌,.hz .h-忌{background:var(--ji)}
+.fx{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.fh{font-size:11px;font-weight:800;line-height:1}
+.fh.zh,.ic.zh{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border:1.5px solid currentColor;border-radius:2px}
+.fh.h-禄{color:var(--lu)} .fh.h-权{color:var(--quan)} .fh.h-科{color:var(--ke)} .fh.h-忌{color:var(--ji)}
+.ag{margin-top:auto;padding-top:4px;display:flex;flex-direction:column;font-size:9px;line-height:1.4;color:var(--zw-ink);white-space:nowrap;overflow:hidden}
+.bt{display:flex;align-items:flex-end;gap:2px;margin-top:2px}
+.bt .zl{display:flex;flex-direction:column;font-size:10px;line-height:1.3;color:var(--zw-ink);white-space:nowrap;min-width:0}
+.bt .zl b{font-weight:500;margin-left:4px}
+.bt .pn{flex:1;text-align:right;font-weight:800;font-size:14px;color:var(--zw-m);letter-spacing:.02em;white-space:nowrap}
+.bt .zr{display:flex;flex-direction:column;align-items:center}
+.bt .zr i{font-style:normal;font-size:10px;color:var(--zw-ink);line-height:1.2}
+.bt .zr b{font-weight:800;font-size:14.5px;line-height:1.08;color:var(--zw-ink)}
+.bt .zr .sg{font-style:normal;font-size:10px;line-height:1.15;color:var(--zw-m);border:1px solid var(--zw-m);border-radius:3px;padding:2px 1px;margin-bottom:3px}
+/* 中间信息卡，照吉真：真太阳时、北京时间、农历时间、节气四柱（五行上色）、八字大运、命主身主子斗流斗、自化化入图例、四化颜色 */
+.zm{grid-row:3/5;grid-column:3/5;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:5px;padding:8px 10px;border-radius:6px;background:#fff;box-shadow:inset 0 0 0 1px #d9d4cc;color:var(--zw-ink)}
+.zm .ttl{text-align:center;font-family:var(--serif);font-size:19px;letter-spacing:.06em;margin-bottom:2px}
+.zm .ln{display:flex;align-items:baseline;gap:8px;font-size:12px;line-height:1.35}
+.zm .ln i{flex:none;font-style:normal;color:#4a4f5c;width:52px}
+.zm .ln b{font-weight:700}
+.zm .ln.nm{justify-content:center}.zm .ln.nm b{font-size:13.5px}
+.zm .zpc{flex:1;display:flex;justify-content:space-between}
+.zm .zpc span{display:flex;flex-direction:column;align-items:center}
+.zm .zpc em{font-style:normal;font-weight:800;font-size:15px;line-height:1.15}
+.wx-mu{color:#2E8B3A}.wx-huo{color:#D2453A}.wx-tu{color:#9A7A1E}.wx-jin{color:#E08A2A}.wx-shui{color:#3D74C8}
+.lk{display:flex;justify-content:space-between;gap:2px;padding:0 2px}
+.lk span{display:flex;flex-direction:column;align-items:center}
+.lk b{font-size:12px;line-height:1.2;font-weight:500;color:var(--zw-ink)}
+.lk i{font-style:normal;font-size:9px;color:var(--zw-ink);white-space:nowrap}
+.kv2{display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;font-size:12px}
+.kv2 span{display:flex;align-items:center;gap:8px}
+.kv2 i{font-style:normal;color:#4a4f5c}
+.kv2 b{font-weight:800}
+.ic{font-weight:800;font-size:12px;color:var(--zw-ink)}
+.hc{display:flex;gap:12px}
+.hc em{font-style:normal;font-weight:700;font-size:13px}
+.c-禄{color:var(--lu)}.c-权{color:var(--quan)}.c-科{color:var(--ke)}.c-忌{color:var(--ji)}
+.zm .ln.sm{font-size:11px}
+.hz{display:flex;flex-wrap:wrap;gap:3px 7px;color:var(--zw-ink)}
+.hz span{display:inline-flex;align-items:center;gap:2px;font-weight:600}
+.hz span u{text-decoration:none;font-size:9.5px;color:#fff;border-radius:3px;padding:1px 3px}
+.zleg{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 12px;font-size:11px;color:var(--zw-ink);margin:8px 0 0}
+.zleg span{display:inline-flex;align-items:center;gap:4px}
+.zleg u{text-decoration:none;font-size:10px;color:#fff;border-radius:3px;padding:1px 3px}
+.zleg i{display:inline-block;width:12px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px #d9d4cc}
+.zleg i.ming{background:#ECE8F8} .zleg i.sf{background:#FAEDEB} .zleg i.cur{background:#fff;box-shadow:inset 0 0 0 2px #b0894a}
+/* 盘下三条：大限、流年、流月 */
+.strip{padding:4px 8px}
+.strip .row{display:flex;gap:6px;align-items:stretch;padding:7px 0;border-top:1px solid #ebe7e0}
+.strip .row:first-child{border-top:0}
+.strip .lab{flex:none;width:34px;font-size:14px;font-weight:800;color:var(--zw-ink);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;line-height:1.3}
+.strip .lab i{font-style:normal;font-size:10px;font-weight:500;color:#4a4f5c}
+.chs{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:4px}
+.zch{display:flex;flex-direction:column;align-items:center;padding:4px 2px;border-radius:7px;background:#f6f4f0}
+.zch i{font-style:normal;font-size:10.5px;color:var(--zw-ink);white-space:nowrap}
+.zch b{font-size:13.5px;color:var(--zw-ink);font-weight:700}
+.zch em{font-style:normal;font-size:10.5px;color:#4a4f5c;white-space:nowrap}
+.zch.zon{background:#f4ecd6;box-shadow:inset 0 0 0 1.5px #b0894a}
+td u{text-decoration:none;font-size:10px;color:#fff;border-radius:3px;padding:1px 3px;margin-left:2px}
+tr.znow td{background:rgba(244,236,214,.7)}
+tr.za td{border-top:0;padding-top:0;color:#4a4f5c;font-size:11px}
+td.w{white-space:normal}
+/* 打印：A4 一页放下封面＋整张盘；盘、四化表、每一行都不拆到两页 */
+@media print{.zw{grid-template-rows:14px repeat(4,minmax(192px,auto)) 14px}.st.m b{font-size:16px}.st.j b,.st.x b{font-size:14.5px}.st.a b{font-size:13px}.st i{font-size:11px}.ag{font-size:10px}.bt .zl{font-size:11px}.bt .pn{font-size:15.5px}.bt .zr b{font-size:16px}.zm .ln{font-size:13px}.zm .zpc em{font-size:17px}.lk b{font-size:13px}}
+.zw,.nb,.strip,.fd,.ids{break-inside:avoid;page-break-inside:avoid}
+tr{break-inside:avoid;page-break-inside:avoid}
+/* 照吉真，盘上面一行标题、不放封面；大限、流年、流月三条紧贴盘下，一条一行、竖线隔开 */
+.ztop{display:flex;align-items:baseline;justify-content:center;gap:10px;padding:14px 14px 6px}
+.ztop b{font-family:var(--serif);font-size:22px;letter-spacing:.08em;color:var(--zw-ink)}
+.ztop span{font-size:11px;color:#4a4f5c}
+.zsec{margin-top:4px}
+.zst{margin-top:6px;border-top:1px solid #d9d4cc}
+.zr2{display:flex;align-items:stretch;border-bottom:1px solid #d9d4cc}
+.zlab{flex:none;width:34px;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:14px;font-weight:800;color:var(--zw-ink);line-height:1.2}
+.zlab i{font-style:normal;font-size:9px;font-weight:500;color:#4a4f5c}
+.zcs{flex:1;display:grid;min-width:0}
+.zc2{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 1px;border-left:1px solid #ebe7e0;min-width:0;text-align:center}
+.zc2 i{font-style:normal;font-size:10px;color:var(--zw-ink);white-space:nowrap}
+.zc2 b{font-size:12px;font-weight:600;color:var(--zw-ink);white-space:nowrap;line-height:1.3}
+.zc2 em{font-style:normal;font-size:9px;color:#4a4f5c;white-space:nowrap}
+.zc2.zon{background:#f4ecd6;box-shadow:inset 0 0 0 1.5px #b0894a}
+@media print{.zw{grid-template-rows:14px repeat(4,minmax(176px,auto)) 14px}.zc2 i{font-size:11px}.zc2 b{font-size:13.5px}.zc2 em{font-size:10px}.ztop{padding-top:0}}
+.zsec{break-inside:avoid;page-break-inside:avoid}

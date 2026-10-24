@@ -1,0 +1,1379 @@
+{
+ "schema": "xuanji.ziwei/0.1",
+ "version": {
+  "schema": "xuanji.handoff/0.1",
+  "ziwei": "iztro@2.6.1+effb3fa51231"
+ },
+ "time_source": "family_clear",
+ "status": "ok",
+ "chart": {
+  "today": "2026-10-21",
+  "time": {
+   "clock": "1990-08-17 09:40",
+   "true_solar": "1990-08-17 08:42",
+   "basis": "paipan",
+   "shichen": "辰时",
+   "time_range": "07:00~09:00",
+   "day_rollover": false,
+   "minutes_to_boundary": 18,
+   "near_boundary": false
+  },
+  "lunar": {
+   "text": "一九九〇年六月廿七",
+   "ganzhi_text": "庚午年六月廿七 辰时",
+   "year_stem": "庚",
+   "leap": false,
+   "leap_rule": "闰月前半月算本月，十六起算下月"
+  },
+  "pillars": [
+   "庚午",
+   "甲申",
+   "甲寅",
+   "戊辰"
+  ],
+  "gender": "女",
+  "yinyang": "阳女",
+  "five_elements": "土五局",
+  "soul": "文曲",
+  "body": "火星",
+  "ming": "卯",
+  "shen": "亥",
+  "doujun": "亥",
+  "palaces": [
+   {
+    "name": "兄弟",
+    "stem": "戊",
+    "branch": "寅",
+    "is_body": false,
+    "major": [
+     {
+      "name": "贪狼",
+      "brightness": "平",
+      "mutagen": null
+     }
+    ],
+    "minor": [],
+    "adjective": [
+     {
+      "name": "天厨",
+      "brightness": null
+     },
+     {
+      "name": "蜚廉",
+      "brightness": null
+     },
+     {
+      "name": "天刑",
+      "brightness": "庙"
+     }
+    ],
+    "changsheng": "病",
+    "boshi": "飞廉",
+    "jiangqian": "指背",
+    "suiqian": "白虎",
+    "decadal": {
+     "start": 15,
+     "end": 24,
+     "stem": "戊",
+     "branch": "寅"
+    },
+    "xiaoxian": [
+     3,
+     15,
+     27,
+     39,
+     51,
+     63,
+     75,
+     87,
+     99,
+     111
+    ],
+    "liunian": [
+     9,
+     21,
+     33,
+     45,
+     57,
+     69,
+     81,
+     93,
+     105,
+     117
+    ],
+    "self_hua": [
+     "禄"
+    ],
+    "opp_in": []
+   },
+   {
+    "name": "命宫",
+    "stem": "己",
+    "branch": "卯",
+    "is_body": false,
+    "major": [
+     {
+      "name": "天机",
+      "brightness": "旺",
+      "mutagen": null
+     },
+     {
+      "name": "巨门",
+      "brightness": "庙",
+      "mutagen": null
+     }
+    ],
+    "minor": [
+     {
+      "name": "地劫",
+      "brightness": "平",
+      "mutagen": null
+     }
+    ],
+    "adjective": [
+     {
+      "name": "天喜",
+      "brightness": "旺"
+     },
+     {
+      "name": "咸池",
+      "brightness": "平"
+     },
+     {
+      "name": "八座",
+      "brightness": "平"
+     },
+     {
+      "name": "天月",
+      "brightness": null
+     },
+     {
+      "name": "天德",
+      "brightness": "平"
+     }
+    ],
+    "changsheng": "衰",
+    "boshi": "奏书",
+    "jiangqian": "咸池",
+    "suiqian": "天德",
+    "decadal": {
+     "start": 5,
+     "end": 14,
+     "stem": "己",
+     "branch": "卯"
+    },
+    "xiaoxian": [
+     2,
+     14,
+     26,
+     38,
+     50,
+     62,
+     74,
+     86,
+     98,
+     110
+    ],
+    "liunian": [
+     10,
+     22,
+     34,
+     46,
+     58,
+     70,
+     82,
+     94,
+     106,
+     118
+    ],
+    "self_hua": [],
+    "opp_in": [
+     "禄"
+    ]
+   },
+   {
+    "name": "父母",
+    "stem": "庚",
+    "branch": "辰",
+    "is_body": false,
+    "major": [
+     {
+      "name": "紫微",
+      "brightness": "得",
+      "mutagen": null
+     },
+     {
+      "name": "天相",
+      "brightness": "得",
+      "mutagen": null
+     }
+    ],
+    "minor": [],
+    "adjective": [
+     {
+      "name": "凤阁",
+      "brightness": "陷"
+     },
+     {
+      "name": "寡宿",
+      "brightness": "陷"
+     },
+     {
+      "name": "阴煞",
+      "brightness": null
+     },
+     {
+      "name": "年解",
+      "brightness": "庙"
+     }
+    ],
+    "changsheng": "帝旺",
+    "boshi": "将军",
+    "jiangqian": "月煞",
+    "suiqian": "吊客",
+    "decadal": {
+     "start": 115,
+     "end": 124,
+     "stem": "庚",
+     "branch": "辰"
+    },
+    "xiaoxian": [
+     1,
+     13,
+     25,
+     37,
+     49,
+     61,
+     73,
+     85,
+     97,
+     109
+    ],
+    "liunian": [
+     11,
+     23,
+     35,
+     47,
+     59,
+     71,
+     83,
+     95,
+     107,
+     119
+    ],
+    "self_hua": [],
+    "opp_in": []
+   },
+   {
+    "name": "福德",
+    "stem": "辛",
+    "branch": "巳",
+    "is_body": false,
+    "major": [
+     {
+      "name": "天梁",
+      "brightness": "陷",
+      "mutagen": null
+     }
+    ],
+    "minor": [
+     {
+      "name": "右弼",
+      "brightness": "平",
+      "mutagen": null
+     },
+     {
+      "name": "火星",
+      "brightness": "得",
+      "mutagen": null
+     }
+    ],
+    "adjective": [
+     {
+      "name": "天寿",
+      "brightness": "平"
+     },
+     {
+      "name": "破碎",
+      "brightness": "陷"
+     }
+    ],
+    "changsheng": "临官",
+    "boshi": "小耗",
+    "jiangqian": "亡神",
+    "suiqian": "病符",
+    "decadal": {
+     "start": 105,
+     "end": 114,
+     "stem": "辛",
+     "branch": "巳"
+    },
+    "xiaoxian": [
+     12,
+     24,
+     36,
+     48,
+     60,
+     72,
+     84,
+     96,
+     108,
+     120
+    ],
+    "liunian": [
+     12,
+     24,
+     36,
+     48,
+     60,
+     72,
+     84,
+     96,
+     108,
+     120
+    ],
+    "self_hua": [],
+    "opp_in": []
+   },
+   {
+    "name": "田宅",
+    "stem": "壬",
+    "branch": "午",
+    "is_body": false,
+    "major": [
+     {
+      "name": "七杀",
+      "brightness": "旺",
+      "mutagen": null
+     }
+    ],
+    "minor": [
+     {
+      "name": "文昌",
+      "brightness": "陷",
+      "mutagen": null
+     }
+    ],
+    "adjective": [
+     {
+      "name": "天姚",
+      "brightness": "平"
+     },
+     {
+      "name": "封诰",
+      "brightness": null
+     },
+     {
+      "name": "天福",
+      "brightness": "平"
+     },
+     {
+      "name": "截空",
+      "brightness": "庙"
+     }
+    ],
+    "changsheng": "冠带",
+    "boshi": "青龙",
+    "jiangqian": "将星",
+    "suiqian": "岁建",
+    "decadal": {
+     "start": 95,
+     "end": 104,
+     "stem": "壬",
+     "branch": "午"
+    },
+    "xiaoxian": [
+     11,
+     23,
+     35,
+     47,
+     59,
+     71,
+     83,
+     95,
+     107,
+     119
+    ],
+    "liunian": [
+     1,
+     13,
+     25,
+     37,
+     49,
+     61,
+     73,
+     85,
+     97,
+     109
+    ],
+    "self_hua": [],
+    "opp_in": []
+   },
+   {
+    "name": "官禄",
+    "stem": "癸",
+    "branch": "未",
+    "is_body": false,
+    "major": [],
+    "minor": [
+     {
+      "name": "天钺",
+      "brightness": "旺",
+      "mutagen": null
+     },
+     {
+      "name": "地空",
+      "brightness": "平",
+      "mutagen": null
+     },
+     {
+      "name": "铃星",
+      "brightness": "利",
+      "mutagen": null
+     },
+     {
+      "name": "陀罗",
+      "brightness": "庙",
+      "mutagen": null
+     }
+    ],
+    "adjective": [
+     {
+      "name": "恩光",
+      "brightness": "旺"
+     },
+     {
+      "name": "天空",
+      "brightness": "陷"
+     },
+     {
+      "name": "副截",
+      "brightness": "庙"
+     }
+    ],
+    "changsheng": "沐浴",
+    "boshi": "力士",
+    "jiangqian": "攀鞍",
+    "suiqian": "晦气",
+    "decadal": {
+     "start": 85,
+     "end": 94,
+     "stem": "癸",
+     "branch": "未"
+    },
+    "xiaoxian": [
+     10,
+     22,
+     34,
+     46,
+     58,
+     70,
+     82,
+     94,
+     106,
+     118
+    ],
+    "liunian": [
+     2,
+     14,
+     26,
+     38,
+     50,
+     62,
+     74,
+     86,
+     98,
+     110
+    ],
+    "self_hua": [],
+    "opp_in": []
+   },
+   {
+    "name": "交友",
+    "stem": "甲",
+    "branch": "申",
+    "is_body": false,
+    "major": [
+     {
+      "name": "廉贞",
+      "brightness": "庙",
+      "mutagen": null
+     }
+    ],
+    "minor": [
+     {
+      "name": "文曲",
+      "brightness": "得",
+      "mutagen": null
+     },
+     {
+      "name": "禄存",
+      "brightness": "庙",
+      "mutagen": null
+     },
+     {
+      "name": "天马",
+      "brightness": "旺",
+      "mutagen": null
+     }
+    ],
+    "adjective": [
+     {
+      "name": "天巫",
+      "brightness": null
+     },
+     {
+      "name": "孤辰",
+      "brightness": "平"
+     },
+     {
+      "name": "天伤",
+      "brightness": "平"
+     }
+    ],
+    "changsheng": "长生",
+    "boshi": "博士",
+    "jiangqian": "岁驿",
+    "suiqian": "丧门",
+    "decadal": {
+     "start": 75,
+     "end": 84,
+     "stem": "甲",
+     "branch": "申"
+    },
+    "xiaoxian": [
+     9,
+     21,
+     33,
+     45,
+     57,
+     69,
+     81,
+     93,
+     105,
+     117
+    ],
+    "liunian": [
+     3,
+     15,
+     27,
+     39,
+     51,
+     63,
+     75,
+     87,
+     99,
+     111
+    ],
+    "self_hua": [
+     "禄"
+    ],
+    "opp_in": []
+   },
+   {
+    "name": "迁移",
+    "stem": "乙",
+    "branch": "酉",
+    "is_body": false,
+    "major": [],
+    "minor": [
+     {
+      "name": "左辅",
+      "brightness": "陷",
+      "mutagen": null
+     },
+     {
+      "name": "擎羊",
+      "brightness": "陷",
+      "mutagen": null
+     }
+    ],
+    "adjective": [
+     {
+      "name": "红鸾",
+      "brightness": "旺"
+     },
+     {
+      "name": "天贵",
+      "brightness": "庙"
+     },
+     {
+      "name": "天才",
+      "brightness": "旺"
+     }
+    ],
+    "changsheng": "养",
+    "boshi": "官符",
+    "jiangqian": "息神",
+    "suiqian": "贯索",
+    "decadal": {
+     "start": 65,
+     "end": 74,
+     "stem": "乙",
+     "branch": "酉"
+    },
+    "xiaoxian": [
+     8,
+     20,
+     32,
+     44,
+     56,
+     68,
+     80,
+     92,
+     104,
+     116
+    ],
+    "liunian": [
+     4,
+     16,
+     28,
+     40,
+     52,
+     64,
+     76,
+     88,
+     100,
+     112
+    ],
+    "self_hua": [],
+    "opp_in": []
+   },
+   {
+    "name": "疾厄",
+    "stem": "丙",
+    "branch": "戌",
+    "is_body": false,
+    "major": [
+     {
+      "name": "破军",
+      "brightness": "旺",
+      "mutagen": null
+     }
+    ],
+    "minor": [],
+    "adjective": [
+     {
+      "name": "龙池",
+      "brightness": "陷"
+     },
+     {
+      "name": "台辅",
+      "brightness": null
+     },
+     {
+      "name": "华盖",
+      "brightness": "平"
+     },
+     {
+      "name": "天使",
+      "brightness": "陷"
+     },
+     {
+      "name": "旬空",
+      "brightness": "陷"
+     }
+    ],
+    "changsheng": "胎",
+    "boshi": "伏兵",
+    "jiangqian": "华盖",
+    "suiqian": "官符",
+    "decadal": {
+     "start": 55,
+     "end": 64,
+     "stem": "丙",
+     "branch": "戌"
+    },
+    "xiaoxian": [
+     7,
+     19,
+     31,
+     43,
+     55,
+     67,
+     79,
+     91,
+     103,
+     115
+    ],
+    "liunian": [
+     5,
+     17,
+     29,
+     41,
+     53,
+     65,
+     77,
+     89,
+     101,
+     113
+    ],
+    "self_hua": [],
+    "opp_in": []
+   },
+   {
+    "name": "财帛",
+    "stem": "丁",
+    "branch": "亥",
+    "is_body": true,
+    "major": [
+     {
+      "name": "天同",
+      "brightness": "庙",
+      "mutagen": "忌"
+     }
+    ],
+    "minor": [],
+    "adjective": [
+     {
+      "name": "三台",
+      "brightness": "平"
+     },
+     {
+      "name": "天官",
+      "brightness": "旺"
+     },
+     {
+      "name": "月德",
+      "brightness": null
+     },
+     {
+      "name": "劫煞",
+      "brightness": null
+     },
+     {
+      "name": "副旬",
+      "brightness": "平"
+     }
+    ],
+    "changsheng": "绝",
+    "boshi": "大耗",
+    "jiangqian": "劫煞",
+    "suiqian": "小耗",
+    "decadal": {
+     "start": 45,
+     "end": 54,
+     "stem": "丁",
+     "branch": "亥"
+    },
+    "xiaoxian": [
+     6,
+     18,
+     30,
+     42,
+     54,
+     66,
+     78,
+     90,
+     102,
+     114
+    ],
+    "liunian": [
+     6,
+     18,
+     30,
+     42,
+     54,
+     66,
+     78,
+     90,
+     102,
+     114
+    ],
+    "self_hua": [
+     "权"
+    ],
+    "opp_in": []
+   },
+   {
+    "name": "子女",
+    "stem": "戊",
+    "branch": "子",
+    "is_body": false,
+    "major": [
+     {
+      "name": "武曲",
+      "brightness": "旺",
+      "mutagen": "权"
+     },
+     {
+      "name": "天府",
+      "brightness": "庙",
+      "mutagen": null
+     }
+    ],
+    "minor": [],
+    "adjective": [
+     {
+      "name": "解神",
+      "brightness": "庙"
+     },
+     {
+      "name": "天哭",
+      "brightness": "平"
+     },
+     {
+      "name": "天虚",
+      "brightness": "陷"
+     }
+    ],
+    "changsheng": "墓",
+    "boshi": "病符",
+    "jiangqian": "灾煞",
+    "suiqian": "岁破",
+    "decadal": {
+     "start": 35,
+     "end": 44,
+     "stem": "戊",
+     "branch": "子"
+    },
+    "xiaoxian": [
+     5,
+     17,
+     29,
+     41,
+     53,
+     65,
+     77,
+     89,
+     101,
+     113
+    ],
+    "liunian": [
+     7,
+     19,
+     31,
+     43,
+     55,
+     67,
+     79,
+     91,
+     103,
+     115
+    ],
+    "self_hua": [],
+    "opp_in": [
+     "忌"
+    ]
+   },
+   {
+    "name": "夫妻",
+    "stem": "己",
+    "branch": "丑",
+    "is_body": false,
+    "major": [
+     {
+      "name": "太阳",
+      "brightness": "不",
+      "mutagen": "禄"
+     },
+     {
+      "name": "太阴",
+      "brightness": "庙",
+      "mutagen": "科"
+     }
+    ],
+    "minor": [
+     {
+      "name": "天魁",
+      "brightness": "旺",
+      "mutagen": null
+     }
+    ],
+    "adjective": [
+     {
+      "name": "龙德",
+      "brightness": null
+     },
+     {
+      "name": "大耗",
+      "brightness": "平"
+     }
+    ],
+    "changsheng": "死",
+    "boshi": "喜神",
+    "jiangqian": "天煞",
+    "suiqian": "龙德",
+    "decadal": {
+     "start": 25,
+     "end": 34,
+     "stem": "己",
+     "branch": "丑"
+    },
+    "xiaoxian": [
+     4,
+     16,
+     28,
+     40,
+     52,
+     64,
+     76,
+     88,
+     100,
+     112
+    ],
+    "liunian": [
+     8,
+     20,
+     32,
+     44,
+     56,
+     68,
+     80,
+     92,
+     104,
+     116
+    ],
+    "self_hua": [],
+    "opp_in": [
+     "科"
+    ]
+   }
+  ],
+  "sihua": [
+   {
+    "hua": "禄",
+    "star": "太阳",
+    "palace": "夫妻",
+    "branch": "丑"
+   },
+   {
+    "hua": "权",
+    "star": "武曲",
+    "palace": "子女",
+    "branch": "子"
+   },
+   {
+    "hua": "科",
+    "star": "太阴",
+    "palace": "夫妻",
+    "branch": "丑"
+   },
+   {
+    "hua": "忌",
+    "star": "天同",
+    "palace": "财帛",
+    "branch": "亥"
+   }
+  ],
+  "tongxian": [
+   {
+    "age": 1,
+    "palace": "命宫"
+   },
+   {
+    "age": 2,
+    "palace": "财帛"
+   },
+   {
+    "age": 3,
+    "palace": "疾厄"
+   },
+   {
+    "age": 4,
+    "palace": "夫妻"
+   }
+  ],
+  "bazi_luck": [
+   {
+    "ganzhi": "癸未",
+    "start_age": 4,
+    "start_year": 1993
+   },
+   {
+    "ganzhi": "壬午",
+    "start_age": 14,
+    "start_year": 2003
+   },
+   {
+    "ganzhi": "辛巳",
+    "start_age": 24,
+    "start_year": 2013
+   },
+   {
+    "ganzhi": "庚辰",
+    "start_age": 34,
+    "start_year": 2023
+   },
+   {
+    "ganzhi": "己卯",
+    "start_age": 44,
+    "start_year": 2033
+   },
+   {
+    "ganzhi": "戊寅",
+    "start_age": 54,
+    "start_year": 2043
+   },
+   {
+    "ganzhi": "丁丑",
+    "start_age": 64,
+    "start_year": 2053
+   },
+   {
+    "ganzhi": "丙子",
+    "start_age": 74,
+    "start_year": 2063
+   }
+  ],
+  "now": {
+   "nominal_age": 37,
+   "lunar_today": {
+    "year": 2026,
+    "month": "九月",
+    "day": 12,
+    "text": "丙午年九月十二"
+   },
+   "decadal": {
+    "palace": "子女",
+    "branch": "子",
+    "start": 35,
+    "end": 44,
+    "stem": "戊",
+    "mutagen": [
+     "贪狼",
+     "太阴",
+     "右弼",
+     "天机"
+    ]
+   },
+   "years": [
+    {
+     "year": 2026,
+     "stem": "丙",
+     "branch": "午",
+     "palace": "田宅",
+     "mutagen": [
+      "天同",
+      "天机",
+      "文昌",
+      "廉贞"
+     ],
+     "doujun": "巳",
+     "months": [
+      {
+       "month": "正月",
+       "branch": "巳",
+       "palace": "福德",
+       "when": "past"
+      },
+      {
+       "month": "二月",
+       "branch": "午",
+       "palace": "田宅",
+       "when": "past"
+      },
+      {
+       "month": "三月",
+       "branch": "未",
+       "palace": "官禄",
+       "when": "past"
+      },
+      {
+       "month": "四月",
+       "branch": "申",
+       "palace": "交友",
+       "when": "past"
+      },
+      {
+       "month": "五月",
+       "branch": "酉",
+       "palace": "迁移",
+       "when": "past"
+      },
+      {
+       "month": "六月",
+       "branch": "戌",
+       "palace": "疾厄",
+       "when": "past"
+      },
+      {
+       "month": "七月",
+       "branch": "亥",
+       "palace": "财帛",
+       "when": "past"
+      },
+      {
+       "month": "八月",
+       "branch": "子",
+       "palace": "子女",
+       "when": "past"
+      },
+      {
+       "month": "九月",
+       "branch": "丑",
+       "palace": "夫妻",
+       "when": "now"
+      },
+      {
+       "month": "十月",
+       "branch": "寅",
+       "palace": "兄弟",
+       "when": "later"
+      },
+      {
+       "month": "冬月",
+       "branch": "卯",
+       "palace": "命宫",
+       "when": "later"
+      },
+      {
+       "month": "腊月",
+       "branch": "辰",
+       "palace": "父母",
+       "when": "later"
+      }
+     ]
+    },
+    {
+     "year": 2027,
+     "stem": "丁",
+     "branch": "未",
+     "palace": "官禄",
+     "mutagen": [
+      "太阴",
+      "天同",
+      "天机",
+      "巨门"
+     ],
+     "doujun": "午",
+     "months": [
+      {
+       "month": "正月",
+       "branch": "午",
+       "palace": "田宅",
+       "when": "later"
+      },
+      {
+       "month": "二月",
+       "branch": "未",
+       "palace": "官禄",
+       "when": "later"
+      },
+      {
+       "month": "三月",
+       "branch": "申",
+       "palace": "交友",
+       "when": "later"
+      },
+      {
+       "month": "四月",
+       "branch": "酉",
+       "palace": "迁移",
+       "when": "later"
+      },
+      {
+       "month": "五月",
+       "branch": "戌",
+       "palace": "疾厄",
+       "when": "later"
+      },
+      {
+       "month": "六月",
+       "branch": "亥",
+       "palace": "财帛",
+       "when": "later"
+      },
+      {
+       "month": "七月",
+       "branch": "子",
+       "palace": "子女",
+       "when": "later"
+      },
+      {
+       "month": "八月",
+       "branch": "丑",
+       "palace": "夫妻",
+       "when": "later"
+      },
+      {
+       "month": "九月",
+       "branch": "寅",
+       "palace": "兄弟",
+       "when": "later"
+      },
+      {
+       "month": "十月",
+       "branch": "卯",
+       "palace": "命宫",
+       "when": "later"
+      },
+      {
+       "month": "冬月",
+       "branch": "辰",
+       "palace": "父母",
+       "when": "later"
+      },
+      {
+       "month": "腊月",
+       "branch": "巳",
+       "palace": "福德",
+       "when": "later"
+      }
+     ]
+    },
+    {
+     "year": 2028,
+     "stem": "戊",
+     "branch": "申",
+     "palace": "交友",
+     "mutagen": [
+      "贪狼",
+      "太阴",
+      "右弼",
+      "天机"
+     ],
+     "doujun": "未",
+     "months": [
+      {
+       "month": "正月",
+       "branch": "未",
+       "palace": "官禄",
+       "when": "later"
+      },
+      {
+       "month": "二月",
+       "branch": "申",
+       "palace": "交友",
+       "when": "later"
+      },
+      {
+       "month": "三月",
+       "branch": "酉",
+       "palace": "迁移",
+       "when": "later"
+      },
+      {
+       "month": "四月",
+       "branch": "戌",
+       "palace": "疾厄",
+       "when": "later"
+      },
+      {
+       "month": "五月",
+       "branch": "亥",
+       "palace": "财帛",
+       "when": "later"
+      },
+      {
+       "month": "闰五月(上)",
+       "branch": "亥",
+       "palace": "财帛",
+       "when": "later"
+      },
+      {
+       "month": "闰五月(下)",
+       "branch": "子",
+       "palace": "子女",
+       "when": "later"
+      },
+      {
+       "month": "六月",
+       "branch": "子",
+       "palace": "子女",
+       "when": "later"
+      },
+      {
+       "month": "七月",
+       "branch": "丑",
+       "palace": "夫妻",
+       "when": "later"
+      },
+      {
+       "month": "八月",
+       "branch": "寅",
+       "palace": "兄弟",
+       "when": "later"
+      },
+      {
+       "month": "九月",
+       "branch": "卯",
+       "palace": "命宫",
+       "when": "later"
+      },
+      {
+       "month": "十月",
+       "branch": "辰",
+       "palace": "父母",
+       "when": "later"
+      },
+      {
+       "month": "冬月",
+       "branch": "巳",
+       "palace": "福德",
+       "when": "later"
+      },
+      {
+       "month": "腊月",
+       "branch": "午",
+       "palace": "田宅",
+       "when": "later"
+      }
+     ]
+    }
+   ],
+   "decade_years": [
+    {
+     "year": 2024,
+     "age": 35,
+     "stem": "甲",
+     "branch": "辰"
+    },
+    {
+     "year": 2025,
+     "age": 36,
+     "stem": "乙",
+     "branch": "巳"
+    },
+    {
+     "year": 2026,
+     "age": 37,
+     "stem": "丙",
+     "branch": "午"
+    },
+    {
+     "year": 2027,
+     "age": 38,
+     "stem": "丁",
+     "branch": "未"
+    },
+    {
+     "year": 2028,
+     "age": 39,
+     "stem": "戊",
+     "branch": "申"
+    },
+    {
+     "year": 2029,
+     "age": 40,
+     "stem": "己",
+     "branch": "酉"
+    },
+    {
+     "year": 2030,
+     "age": 41,
+     "stem": "庚",
+     "branch": "戌"
+    },
+    {
+     "year": 2031,
+     "age": 42,
+     "stem": "辛",
+     "branch": "亥"
+    },
+    {
+     "year": 2032,
+     "age": 43,
+     "stem": "壬",
+     "branch": "子"
+    },
+    {
+     "year": 2033,
+     "age": 44,
+     "stem": "癸",
+     "branch": "丑"
+    }
+   ]
+  }
+ }
+}

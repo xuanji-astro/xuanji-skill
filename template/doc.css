@@ -530,3 +530,35 @@ ul.sig li::before{content:"";position:absolute;left:4px;top:10px;width:8px;heigh
 @media print{.pdf{display:none}.card{break-inside:auto}.cover,.founder,.asks,.remember,.toc,.mx,svg,.steps2 li,.pt,.grip>div,.good,.it2,.agree .row,.diff .four,.tl li,.door .item,.ev,.cv-three .it,.stairs,.loop{break-inside:avoid}.part,.lab,.sub2,.mhead,.kw,.diff .q{break-after:avoid}}
 /* 打印分页（rc.14，放在上面那段后面才压得住 .card 可跨页）：大卡照旧可跨页、小块不拆；标题下面至少留出一截正文的位置，不让标题孤零零落在页底（break-after:avoid 在 Chrome 打印里管不住，改用「撑高再拉回」）；中等大小的卡整张不拆（五个方面那种长卡不在里面，整张挪会空出半页）；最后一块和页脚不分开 */
 @media print{.part{break-inside:avoid;padding-bottom:300px;margin-bottom:-294px}.card>.lab:first-child{break-inside:avoid;padding-bottom:110px;margin-bottom:-100px}.card>.mhead:first-child,.card>.dhead:first-child,.card>.thead:first-child{break-inside:avoid;padding-bottom:110px;margin-bottom:-102px}.card>.mhd:first-child{break-inside:avoid;padding-bottom:110px;margin-bottom:-104px}.sysc>.shead:first-child{break-inside:avoid;padding-bottom:110px;margin-bottom:-100px}.mon,.thr,.cross,.past,.xjc,.card:has(>.glance){break-inside:avoid}.endkeep{break-inside:avoid}}
+/* 紫微专题（rc.15）：三方四正小盘、盘上依据、大限流年四化落宫；类名带 zd- 前缀，不撞上面几份报告的样式 */
+.zd-one{font-family:var(--serif);font-size:16px;color:var(--ink);line-height:1.75;margin-bottom:12px}
+.zd-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,minmax(70px,auto));gap:3px}
+.zd-c{display:flex;flex-direction:column;justify-content:space-between;padding:5px 4px;border-radius:8px;background:#fff;box-shadow:inset 0 0 0 1px var(--line);min-width:0}
+.zd-c.on{background:var(--soft);box-shadow:inset 0 0 0 1.6px var(--accent)}
+.zd-c.sf{background:var(--card2)}
+.zd-ss{display:flex;flex-wrap:wrap;gap:2px 4px}
+.zd-st{font-size:12.5px;font-weight:700;color:#C7473B;white-space:nowrap}
+.zd-st.m{color:var(--lav);font-weight:600}
+.zd-st i{font-style:normal;font-size:10px;font-weight:400;color:var(--sub);margin-left:1px}
+.zd-empty{font-size:11px;color:var(--faint)}
+.zd-c u,.zd-hua u,.cap u{text-decoration:none;font-size:9.5px;color:#fff;border-radius:3px;padding:0 2px;margin-left:1px;font-weight:400}
+.zd-h0{background:#2E9E3F}.zd-h1{background:#7C5CD6}.zd-h2{background:#3D74C8}.zd-h3{background:#D2453A}
+.zd-pn{display:flex;align-items:baseline;gap:3px;font-size:11.5px;color:var(--ink);font-weight:700;margin-top:4px}
+.zd-pn em{font-style:normal;font-size:9.5px;color:#fff;background:var(--accent);border-radius:3px;padding:0 2px}
+.zd-pn b{margin-left:auto;font-weight:400;font-size:10.5px;color:var(--sub)}
+.zd-mid{grid-row:2/4;grid-column:2/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border-radius:10px;background:var(--card2)}
+.zd-mid b{font-family:var(--serif);font-size:18px;color:var(--accent);letter-spacing:.1em}
+.zd-mid span{font-size:11px;color:var(--sub);line-height:1.5}
+.zd-basis{display:flex;flex-wrap:wrap;align-items:center;gap:5px 6px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line)}
+.zd-basis span{font-size:11.5px;color:var(--sub);letter-spacing:.1em}
+.zd-basis em{font-style:normal;font-size:12px;color:var(--ink);background:var(--card2);border-radius:999px;padding:2px 9px}
+.zd-yr+.zd-yr{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.zd-yh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.zd-yh b{font-family:var(--serif);font-size:15px;color:var(--ink)}
+.zd-yh span{font-size:12px;color:var(--sub)}
+.zd-hua{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0 6px}
+.zd-hua span{font-size:12px;color:var(--body);background:#fff;border-radius:8px;padding:2px 7px;box-shadow:inset 0 0 0 1px var(--line)}
+.zd-hua span.hit{box-shadow:inset 0 0 0 1.6px var(--accent);color:var(--ink);font-weight:600}
+@media print{.zd-grid,.zd-yr,.zd-basis{break-inside:avoid}}
+/* 紫微专题打印：每一卷另起一页；一段话不拆到两页；盘上依据跟着上一段话走；只管带三方四正小盘的页面，不动另外几份报告 */
+@media print{.wrap:has(.zd-grid) #p2,.wrap:has(.zd-grid) #p3,.wrap:has(.zd-grid) #p4{break-before:page;page-break-before:always}.wrap:has(.zd-grid) .para{break-inside:avoid;page-break-inside:avoid;orphans:3;widows:3}.wrap:has(.zd-grid) .zd-basis{break-before:avoid;page-break-before:avoid}.wrap:has(.zd-grid) .zd-yr{break-inside:avoid;page-break-inside:avoid}.wrap:has(.zd-grid) .card:has(.zd-grid),.wrap:has(.zd-grid) .card:has(>.zd-basis),.wrap:has(.zd-grid) .card:has(.jun){break-inside:avoid;page-break-inside:avoid}}

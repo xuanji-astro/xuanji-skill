@@ -8,6 +8,7 @@
 | 单人 | POST /v1/profile | date,time,city,gender,time_source,time_precision,calib（可选，身强身弱校正的回答）,answers（可选，老的核一核回答） | 有生辰，无自由正文 | 当前计算分支不建长期人物档案 | 当前应用/网关配置不记正文 |
 | 两人 | POST /v1/pair | a,b,relation,met_year | 两人生辰、关系及相识年，无自由正文 | 同上 | 同上 |
 | 印占 | POST /v1/vedic | date,time,city,gender,time_source,time_precision | 有生辰，无自由正文 | 同上 | 同上 |
+| 紫微 | POST /v1/ziwei | date,time,city,gender,time_source,time_precision | 有生辰，无自由正文 | 同上 | 同上 |
 
 V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph。服务未来若改变数据流，须先更新告知和版本，不沿用此事实说明。
 
@@ -139,6 +140,10 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 
 `status` 为 `ok` 时带 `chart`：恒星黄道、Lahiri 岁差、整宫制、平均交点。字段名照服务端印占引擎，星座用 0（白羊）到 11（双鱼）的号：`asc`、`moon`、`planets`（九曜的座、度数、宫、月宿、庙旺、逆行、九分同座、燃烧、管哪几宫）、`vargas`（D1–D60 十六张分盘，每张带 `asc_stable`）、`panchang`、`karakas`、`ashtakavarga`、`shadbala`（六力，带 `min_rupas` 及格线）、`ishta_kashta`、`bhava_bala`、`sripati_houses`、`aspects_whole_sign`、`drishti`、`upagraha`、`arudha`、`maitri`、`avakahada`、`kalasarpa`、`parivartana`、`vimshopaka`、`sade_sati`、`manglik`、`dasha_days`（每步大运的小运；当前大运的小运带第三级；当前小运的第三级带第四级）、`today`、`err_min`、`dasha_err_days`。没有出生时间回 `status: "time_unknown"`，不带 `chart`。
 
+
+### 紫微：`xuanji.ziwei/0.1`
+
+`status` 为 `ok` 时带 `chart`，三合派通行安星（iztro 2.6.1）。口径跟八字一致：钟点用八字排盘服务算的真太阳时（`time.basis`＝`paipan`；排盘服务没接上时本地按经度＋均时差算，写 `local`），23 点换日（不分早晚子时），年按农历正月初一换，闰月前半月算本月、十六起算下月。字段：`today`（北京日期）、`time`（`true_solar`、`shichen`、`time_range`、`day_rollover`、`minutes_to_boundary`、`near_boundary` 离时辰交界 15 分钟以内）、`lunar`（`text`、`year_stem`、`leap`、`leap_rule`）、`pillars`（八字四柱，取不到为 null）、`gender`、`yinyang`、`five_elements`（五行局）、`soul`／`body`（命主／身主）、`ming`／`shen`（命宫、身宫地支）、`palaces`（12 宫：`name`、`stem`、`branch`、`is_body`、`major`／`minor`（`name`、`brightness` 庙旺得利平不陷、`mutagen` 禄权科忌）、`adjective` 杂曜名、`changsheng`／`boshi`／`jiangqian`／`suiqian` 四套十二神、`decadal` 大限起止虚岁和干支）、`sihua`（生年四化：哪颗星、哪一宫）、`now`（`nominal_age` 虚岁、`decadal` 当前大限和大限四化、`years` 今年起三年流年：干支、流年命宫、流年四化）。没有时辰回 `status: "time_unknown"`。
 ## 安全错误
 
 客户端只输出固定代码，绝不输出原始上游错误体：

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-// 两份报告出文件：年度、分术（rc.14.1 起一事一卜只在对话里讲，不出报告；传 --kind yishi 报 YISHI_NO_REPORT）
+// 三份报告出文件：年度、分术、紫微专题（rc.14.1 起一事一卜只在对话里讲，不出报告；传 --kind yishi 报 YISHI_NO_REPORT）
 // Copyright 2026 杭州强势播传文化影视传媒有限公司
 // SPDX-License-Identifier: Apache-2.0
 // 用法：
 //   node build_doc.mjs --kind year   --profile profile.json --year year.json --view xuanji_year.json --report year_report.json --out year.html [--pdf year.pdf]
 //   node build_doc.mjs --kind fenshu --profile profile.json --view xuanji_fenshu.json --report fenshu_report.json [--year year.json] [--hits hits.json] --out fenshu.html [--pdf fenshu.pdf]
+//   node build_doc.mjs --kind ziwei  --ziwei ziwei.json --report ziwei_report.json --out 紫微专题.html [--pdf 紫微专题.pdf]
 // 先查报告数据（必填、条数、长度、不能写的词、跟玄玑怎么看对不对得上），查不过报 REPORT_RULES_FAILED，提示只给类别和字段路径、不带正文；
 // 再整页画好，逐条核对报告里的每一段字都上了页面，少一段报 REPORT_INCOMPLETE；两样都过才新建 HTML（REPORT_SAVED），不覆盖已有文件；
 // 带 --pdf 时，电脑上有 Chrome／Edge 这类浏览器就再打一份 PDF（PDF_SAVED），没有就只出 HTML（PDF_SKIPPED_…）
@@ -16,8 +17,10 @@ import { safeData } from './client.mjs';
 import { founderQR, yearGanZhiErrors } from './build_report.mjs';
 import { printPDF } from './make_pdf.mjs';
 import { renderYishi, renderYear, renderFenshu } from './doc_render.mjs';
+import { checkZiweiDoc, renderZiweiDoc, ZW_COVER_TERMS } from './ziwei_doc.mjs';
+import { checkZiwei } from './build_ziwei.mjs';
 
-const KINDS = ['yishi', 'year', 'fenshu'];
+const KINDS = ['yishi', 'year', 'fenshu', 'ziwei'];
 const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
 const arr = (v) => (Array.isArray(v) ? v : []);
 const n = (s) => [...String(s ?? '').replaceAll('**', '').replace(/\s/g, '')].length;
@@ -59,6 +62,12 @@ const SPEC = {
     count: { 'matrix.rows': [3, 3], 'plan.ladder': [3, 7], 'plan.steps': [4, 7], agree: [2, 5], differ: [2, 4], check: [2, 3], doors: [2, 2], next_questions: [3, 3] },
     max: { question: 80, 'cover.stamp': 2, oneline: 70, 'four.*.text': 14, 'four.*.em': 6, 'matrix.rows[]': 4, 'plan.ladder[].title': 8, 'plan.ladder[].sub': 18, 'plan.steps[].title': 22, 'plan.remember': 40, 'systems.*.verdict': 8, 'next_questions[]': 30 },
   },
+  // 紫微专题：骨架几段、每段几段话、依据几条在 ziwei_doc.mjs 里按题目查
+  ziwei: {
+    need: ['topic', 'cover.seen', 'cover.evidence', 'cover.stamp', 'oneline', 'glance.points', 'sections', 'years', 'advisors', 'loop.remember', 'loop.back_msg', 'next_questions'],
+    count: { 'glance.points': [3, 3], advisors: [1, 2], next_questions: [3, 3] },
+    max: { 'cover.stamp': 2, oneline: 60, 'glance.points[].title': 8, 'glance.points[].sub': 18, 'loop.remember': 40, 'loop.back_msg': 24, 'next_questions[]': 30 },
+  },
 };
 // 不能写的词：说明书里不让写的口头禅、玄玑怎么看背后的术名、把握写成数字
 const BANNED = ['那股劲', '这股劲', '带劲', '不轻，但', 'KP', '西洋卜卦', '判词', '接口', '%', '％', '概率', '准确率', '命中率', '【', '】'];
@@ -74,7 +83,7 @@ function strings(o, path = '', out = []) {
 }
 
 // 查报告数据：返回 [类别, 字段路径]；只看结构和写法，不评内容
-export function checkDoc(kind, { report: R, profile, year: Y, view, cast, hits } = {}) {
+export function checkDoc(kind, { report: R, profile, year: Y, view, cast, hits, ziwei } = {}) {
   const bad = [], say = (cat, path) => bad.push([cat, path]);
   if (!KINDS.includes(kind)) return [['KIND', 'kind']];
   if (!isObj(R) || R.schema !== `xuanji.${kind}_report/0.1`) return [['REPORT_SCHEMA', 'schema']];
@@ -89,15 +98,18 @@ export function checkDoc(kind, { report: R, profile, year: Y, view, cast, hits }
     if (BANNED.some((b) => v.includes(b))) say('BANNED_WORD', w);
   }
   const text = all.map(([, v]) => v).join('\n');
-  if ((text.match(/亮/g) || []).length - (text.match(/月亮/g) || []).length > 1) say('REPEATED_LIANG', '*');
+  // 「亮」不连着做比喻；紫微讲太阳太阴、日月本来就说明暗，放宽到三次
+  if ((text.match(/亮/g) || []).length - (text.match(/月亮/g) || []).length - (text.match(/亮度/g) || []).length > (kind === 'ziwei' ? 3 : 1)) say('REPEATED_LIANG', '*');
   if (yearGanZhiErrors(text, kind === 'year' && Number.isInteger(R.year) ? R.year : undefined).length) say('YEAR_GANZHI', '*');
 
   // 封面三句：三行；第二句 14～28 字；三句里不放术语；印章两个字
-  if (kind !== 'yishi' && isObj(R.cover) && typeof R.cover.seen === 'string') {
-    const lines = R.cover.seen.split('\n').map((s) => s.trim()).filter(Boolean);
+  // 三句写成一串（一句一行）或者三项的数组都认
+  const seen = isObj(R.cover) ? (Array.isArray(R.cover.seen) ? R.cover.seen.join('\n') : R.cover.seen) : undefined;
+  if (kind !== 'yishi' && typeof seen === 'string') {
+    const lines = seen.split('\n').map((s) => s.trim()).filter(Boolean);
     if (lines.length !== 3) say('COVER_LINES', 'cover.seen');
     else { const c = n(lines[1].replace(/[，。；、：！？「」]/g, '')); if (c < 14 || c > 28) say('COVER_LINES', 'cover.seen'); }
-    if (COVER_TERMS.some((t) => R.cover.seen.includes(t)) || MBTI.test(R.cover.seen)) say('COVER_TERMS', 'cover.seen');
+    if ([...COVER_TERMS, ...(kind === 'ziwei' ? ZW_COVER_TERMS : [])].some((t) => seen.includes(t)) || MBTI.test(seen)) say('COVER_TERMS', 'cover.seen');
     MBTI.lastIndex = 0;
   }
   // 出厂底色的字母只能是他盘上的那几个
@@ -135,6 +147,10 @@ export function checkDoc(kind, { report: R, profile, year: Y, view, cast, hits }
     }
     if (!profile) say('PROFILE_INVALID', 'profile');
   }
+  if (kind === 'ziwei') {
+    const z = checkZiwei(ziwei);
+    if (z) say('ZIWEI_INVALID', 'ziwei'); else for (const b of checkZiweiDoc(R, ziwei.chart)) say(...b);
+  }
   if (kind === 'fenshu') {
     if (!isObj(view) || view.schema !== 'xuanji.view/0.1' || view.kind !== 'fenshu') say('VIEW_INVALID', 'view');
     else if (view.key_window?.year) {
@@ -154,7 +170,7 @@ export function checkDoc(kind, { report: R, profile, year: Y, view, cast, hits }
 }
 
 // 报告里的每一段字都要上页面：把 HTML 去掉标签，按段落、斜杠、换行拆开逐段找
-const NOT_SHOWN = new Set(['schema', 'color', 'kind', 'source', 'sys', 'type', 'tag', 'key', 'step', 'hit_id', 'index', 'level', 'after', 'month']);
+const NOT_SHOWN = new Set(['schema', 'color', 'kind', 'source', 'sys', 'type', 'tag', 'key', 'step', 'hit_id', 'index', 'level', 'after', 'month', 'topic']);
 const plain = (html) => html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/\s/g, '');
 export function verifyDoc(report, html, hits) {
   const page = plain(html), gaps = [];
@@ -174,15 +190,16 @@ export function verifyDoc(report, html, hits) {
 }
 
 export function renderDoc(kind, inp, qr = founderQR()) {
-  const { report, profile, year, view, cast, hits } = inp;
+  const { report, profile, year, view, cast, hits, ziwei } = inp;
+  if (kind === 'ziwei') return renderZiweiDoc({ chart: ziwei.chart, report, qr });
   if (kind === 'yishi') return renderYishi({ cast, view, report, qr });
   if (kind === 'year') return renderYear({ prof: profile, year, view, report, qr });
   return renderFenshu({ report, hits, qr });
 }
 
-const FLAGS = ['--kind', '--report', '--out', '--pdf', '--cast', '--view', '--profile', '--year', '--hits'];
-const NEEDS = { yishi: ['--cast', '--report', '--out'], year: ['--profile', '--year', '--view', '--report', '--out'], fenshu: ['--profile', '--view', '--report', '--out'] };
-const ALLOWED = { yishi: ['--cast', '--view'], year: ['--profile', '--year', '--view'], fenshu: ['--profile', '--view', '--year', '--hits'] };
+const FLAGS = ['--kind', '--report', '--out', '--pdf', '--cast', '--view', '--profile', '--year', '--hits', '--ziwei'];
+const NEEDS = { yishi: ['--cast', '--report', '--out'], year: ['--profile', '--year', '--view', '--report', '--out'], fenshu: ['--profile', '--view', '--report', '--out'], ziwei: ['--ziwei', '--report', '--out'] };
+const ALLOWED = { yishi: ['--cast', '--view'], year: ['--profile', '--year', '--view'], fenshu: ['--profile', '--view', '--year', '--hits'], ziwei: ['--ziwei'] };
 export async function main(args) {
   const flags = {};
   for (let i = 0; i < args.length; i += 2) { const k = args[i], v = args[i + 1]; if (!FLAGS.includes(k) || !v || v.startsWith('--') || flags[k]) throw Error('REPORT_CONFIG_INVALID'); flags[k] = v; }
@@ -193,7 +210,7 @@ export async function main(args) {
   if (!/\.html?$/i.test(flags['--out']) || (flags['--pdf'] && (resolve(flags['--pdf']) === resolve(flags['--out']) || !/\.pdf$/i.test(flags['--pdf'])))) throw Error('REPORT_CONFIG_INVALID');
   for (const o of [flags['--out'], flags['--pdf']]) if (o && existsSync(o)) throw Error('OUTPUT_EXISTS');   // 不覆盖：换个文件名再出
   const read = (k, max) => (flags[k] ? readPrivateJSON(flags[k], max) : null);
-  const inp = { report: await read('--report', 1048576), profile: await read('--profile', 2097152), year: await read('--year', 2097152), view: await read('--view', 65536), cast: await read('--cast', 262144), hits: await read('--hits', 262144) };
+  const inp = { report: await read('--report', 1048576), profile: await read('--profile', 2097152), year: await read('--year', 2097152), view: await read('--view', 65536), cast: await read('--cast', 262144), hits: await read('--hits', 262144), ziwei: await read('--ziwei', 1048576) };
   for (const v of Object.values(inp)) if (v) { try { safeData(v); } catch { throw Error('REPORT_INVALID'); } }
   const issues = checkDoc(kind, inp);
   if (issues.length) { console.error('REPORT_RULES_HINT ' + issues.slice(0, 12).map(([c, p]) => `${c}:${p}`).join(',')); throw Error('REPORT_RULES_FAILED'); }

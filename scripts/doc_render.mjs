@@ -20,12 +20,12 @@ export const SY={八字:['b','八'],星盘:['x','星'],印占:['y','印'],出厂
 const seal3=(name)=>{const s=SEAL[name];return s?`<span class="seal3 ${s[0]}">${s[1]}</span>`:'';};
 const sy=(name,extra='')=>{const s=SY[name];return s?`<span class="sy ${s[0]}${extra}">${s[1]}</span>`:'';};
 const src=(name)=>{const s=SEAL[name];return s?`<span class="src ${s[0]}"><i>${s[1]}</i>${esc(name)}给的</span>`:'';};
-const part=(id,k,t1,t2)=>`<div class="part" id="${id}"><div class="k">PART · ${k}</div><div class="t">${esc(t1)}<span>${esc(t2)}</span></div><div class="dia"><i></i><b></b><i></i></div></div>`;
+export const part=(id,k,t1,t2)=>`<div class="part" id="${id}"><div class="k">PART · ${k}</div><div class="t">${esc(t1)}<span>${esc(t2)}</span></div><div class="dia"><i></i><b></b><i></i></div></div>`;
 const toc=(items)=>`<div class="toc"><div class="hd">这份报告分四卷<em>点一下就跳过去</em></div><div class="grid">${items.map(([id,no,b,s])=>`<a href="#${id}"><span class="no">${no}</span><div><b>${esc(b)}</b><span>${esc(s)}</span></div><i>↓</i></a>`).join('')}</div></div>`;
-const remember=(s)=>s?`<div class="remember"><small>★ 一句话记住</small>${tx(s).replace(/\n/g,'<br>')}</div>`:'';
-const doorCard=(title,items)=>`<div class="door"><div class="dtop">${CHAT}${esc(title)}</div>${items.map((d,i)=>`<div class="item${items.length>1?' num':''}">${items.length>1?`<span class="n">${i+1}</span>`:''}<div>${d.when?`<span class="when">${esc(d.when)}</span><div style="clear:both"></div>`:''}<div class="msg">${esc(d.msg)}</div>${items.length>1?'<div class="copy">点住这句就能复制</div>':''}<div class="to">会接到 <i>→</i> <b>${esc(d.to)}</b>${d.what?`<span class="what">${esc(d.what)}</span>`:''}</div></div></div>`).join('')}</div>`;
-const asks=(qs)=>`<div class="asks"><div class="dtop">${CHAT_O}接下来可以问我</div>${arr(qs).map(q=>`<div class="msg">${esc(q)}</div>`).join('')}<div class="hint">挑一句，回到对话里发给玄玑</div></div>`;
-const founder=(qr,bullets,note)=>qr?`<div class="founder"><img src="${qr}" alt="创始人微信"><div><div class="t">想看得更细</div><ul>${bullets.map(b=>`<li>${esc(b)}</li>`).join('')}</ul><span class="wx">微信 liin1223<em>· 备注「${esc(note)}」</em></span></div></div>`:'';
+export const remember=(s)=>s?`<div class="remember"><small>★ 一句话记住</small>${tx(s).replace(/\n/g,'<br>')}</div>`:'';
+export const doorCard=(title,items)=>`<div class="door"><div class="dtop">${CHAT}${esc(title)}</div>${items.map((d,i)=>`<div class="item${items.length>1?' num':''}">${items.length>1?`<span class="n">${i+1}</span>`:''}<div>${d.when?`<span class="when">${esc(d.when)}</span><div style="clear:both"></div>`:''}<div class="msg">${esc(d.msg)}</div>${items.length>1?'<div class="copy">点住这句就能复制</div>':''}<div class="to">会接到 <i>→</i> <b>${esc(d.to)}</b>${d.what?`<span class="what">${esc(d.what)}</span>`:''}</div></div></div>`).join('')}</div>`;
+export const asks=(qs)=>`<div class="asks"><div class="dtop">${CHAT_O}接下来可以问我</div>${arr(qs).map(q=>`<div class="msg">${esc(q)}</div>`).join('')}<div class="hint">挑一句，回到对话里发给玄玑</div></div>`;
+export const founder=(qr,bullets,note)=>qr?`<div class="founder"><img src="${qr}" alt="创始人微信"><div><div class="t">想看得更细</div><ul>${bullets.map(b=>`<li>${esc(b)}</li>`).join('')}</ul><span class="wx">微信 liin1223<em>· 备注「${esc(note)}」</em></span></div></div>`:'';
 const FOOT='<div class="foot">解读仅供参考，不承诺特定结果，不替代法律、投资、医疗等专业意见。</div>';
 export function page(title,brand,body){
   // 页脚跟最后一块（创始人卡，没有就是「接下来可以问我」）包在一起，打印时不让页脚一个人落到新的一页
@@ -157,7 +157,7 @@ const LANE={l1:'#D97757',l2:'#2a9d8f',l3:'#4a63c4',l4:'#b0679e'},LANE_TX={l1:'#C
 const cn=(n)=>'一二三四五六'[n]||String(n+1);
 function shareCover(seen,evidence,stamp,label,small){
   return `<div class="card cover seen"><div class="cvrow"><div class="lab" style="margin:0">${esc(label)}</div>${stamp?`<div class="stamp two"><b>${esc(stamp)}</b><small>${esc(small||'')}</small></div>`:''}</div>
-<div class="seenp">${esc(String(seen).replace(/\n/g,''))}</div>${evidence?`<div class="seenev">${esc(evidence)}</div>`:''}<div class="seenft"><span class="mirror">星盘 × 八字 × 人格 映照</span><b class="sig">Xuanji 玄玑</b></div></div>`;
+<div class="seenp">${esc((Array.isArray(seen)?seen.join(''):String(seen)).replace(/\n/g,''))}</div>${evidence?`<div class="seenev">${esc(evidence)}</div>`:''}<div class="seenft"><span class="mirror">星盘 × 八字 × 人格 映照</span><b class="sig">Xuanji 玄玑</b></div></div>`;
 }
 const fourRows=(four)=>`<div class="cv-three"><div class="l">四套同看</div><div class="row">${['八字','星盘','印占','出厂底色'].filter(k=>four&&four[k]).map(k=>`<div class="it ${SY[k][0]}">${sy(k)}<b>${k}</b>${esc(four[k].text)}<em>${esc(four[k].em||'')}</em></div>`).join('')}</div></div>`;
 const evRows=(rows)=>arr(rows).map(e=>`<div class="ev">${sy(e.sys)}<div>${tx(e.text)}</div></div>`).join('');

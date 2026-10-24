@@ -34,7 +34,7 @@ function birth(v) {
   if(v.time_source!==undefined&&!['birth_certificate','family_clear','family_rough','unknown'].includes(v.time_source)) fail('INPUT_INVALID');
   if(v.time_precision!==undefined&&!['minute','within_15min','within_1h','unknown'].includes(v.time_precision)) fail('INPUT_INVALID');
 }
-export const KINDS=['health','profile','pair','year','xuanji','vedic'];
+export const KINDS=['health','profile','pair','year','xuanji','vedic','ziwei'];
 // 年度报告（rc.13）：生辰＋哪一年；可选 tz（日子按用户所在时区出）、现在住的地方（中国城市 now_city，国外 now_place {lat,lon}）
 function yearInput(v,{needYear=true}={}){
   const {year,tz,now_city,now_place,...b}=v;birth(b);
@@ -57,7 +57,7 @@ export function validate(kind, input) {
   if(!KINDS.includes(kind)) fail('ENDPOINT_NOT_ALLOWED');
   if(kind==='year'||kind==='xuanji'){if(!object(input)) fail('INPUT_INVALID');kind==='year'?yearInput(input):xuanjiInput(input);if(Buffer.byteLength(JSON.stringify(input),'utf8')>8192) fail('INPUT_TOO_LARGE');return;}
   if(kind==='health'){if(input!==undefined) fail('INPUT_INVALID');return;}
-  if(kind==='vedic'){if(!object(input)) fail('INPUT_INVALID');birth(input);if(Buffer.byteLength(JSON.stringify(input),'utf8')>8192) fail('INPUT_TOO_LARGE');return;}   // 印占整盘：只收生辰，跟 profile 一样查
+  if(kind==='vedic'||kind==='ziwei'){if(!object(input)) fail('INPUT_INVALID');birth(input);if(Buffer.byteLength(JSON.stringify(input),'utf8')>8192) fail('INPUT_TOO_LARGE');return;}   // 印占、紫微整盘：只收生辰，跟 profile 一样查
   if(kind==='profile'){
     // 「核一核」的回答（接口 answers）：[{year,pick}]，pick 只能是 弱／强／都沾／记不清，最多 12 条；其余照生辰字段严格查
     // 身强身弱校正（接口 calib）：traits 8 个（A–F 或 null，F＝说不准），events 最多 30 件 {year, domain?, event?, good}；跟接口同一套检查
@@ -110,6 +110,7 @@ export async function callAPI(kind,input,{fetchImpl=globalThis.fetch,timeoutMs=9
       else if(kind==='year') {if(data.schema!=='xuanji.year/0.1'||!object(data.bazi))fail('RESPONSE_INVALID');}
       else if(kind==='xuanji') {if(data.schema!=='xuanji.view/0.1'||!['year','fenshu'].includes(data.kind))fail('RESPONSE_INVALID');}
       else if(kind==='vedic') {if(data.schema!=='xuanji.vedic/0.1'||!['ok','time_unknown'].includes(data.status)||(data.status==='ok'&&!object(data.chart)))fail('RESPONSE_INVALID');}
+      else if(kind==='ziwei') {if(data.schema!=='xuanji.ziwei/0.1'||!['ok','time_unknown'].includes(data.status)||(data.status==='ok'&&!object(data.chart)))fail('RESPONSE_INVALID');}
       else if(data.schema!=='xuanji.pair/0.1'||!object(data.scope))fail('RESPONSE_INVALID');
       return data;
     })();
