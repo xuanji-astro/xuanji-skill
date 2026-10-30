@@ -32,6 +32,12 @@ test('身强身弱：实锤只认用户核过的，待定两种原因都问体�
   assert.match(skill,/`calib`/);
   assert.match(skill,/一条消息发完/);
   assert.match(skill,/一定在出报告之前/);
+  // rc.16：一段时间、转折年也问；没定也给答案（先按盘面看那一套），不再说「不说也能出结果」「维持原判」
+  assert.match(skill,/`calib\.ask\.periods`/);
+  assert.match(skill,/`calib\.ask\.turns`/);
+  assert.match(skill,/先按盘面看：/);
+  assert.match(skill,/你的校正结果为：/);
+  assert.doesNotMatch(skill,/不说也能出结果/);
   // 每题第六项「说不准」；几种判法一致的盘不主动问；翻到原判反面要明说
   assert.match(skill,/A–F 六个选项/);
   assert.match(skill,/verdict\.agree` 是「一致」）的不主动问/);
