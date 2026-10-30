@@ -16,7 +16,7 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 
 单人需要 date（真实存在的公历 YYYY-MM-DD）、city（中国省市区）、gender（male/female）。time 为 HH:mm、null 或省略。可选 time_source：birth_certificate/family_clear/family_rough/unknown；time_precision：minute/within_15min/within_1h/unknown。钟表时间由服务端处理，不自行换算。
 
-身强身弱校正的回答：可选 `calib`，写成 `{ "traits": ["D","B",null,…8 个], "events": [{ "year": 2016, "domain": "事业", "event": "跳槽", "good": true }] }`。`traits` 是 `method.bazi.calib.ask.traits` 8 道题各选了哪项（A–F，F 是「说不准」不算分，没答写 null）；`events` 是用户说的大事（方面是感情、事业、钱财、学业、健康、家庭之一，`event` 可不填，填了要是那个方面里列出的；`good` 好事 true、坏事 false），最多 30 件。接口按跟玄玑网站校正页同一套算分，定身强还是身弱，再按这一边出喜用和大运；结果在 `method.bazi.calib.result`。不合法回 `CALIB_INVALID`。
+身强身弱校正的回答：可选 `calib`，写成 `{ "traits": ["D","B",null,…8 个], "events": [{ "year": 2016, "domain": "事业", "event": "跳槽", "good": true }], "periods": [{ "from": 2020, "to": 2023, "good": false }], "turns": [{ "year": 2024, "up": true }] }`。`traits` 是 `method.bazi.calib.ask.traits` 8 道题各选了哪项（A–F，F 是「说不准」不算分，没答写 null）；`events` 是用户说的大事（方面是感情、事业、钱财、学业、健康、家庭、人际之一，`event` 可不填，填了要是那个方面里列出的；`good` 好事 true、坏事 false），最多 30 件；`periods` 是哪几年整体很难或很顺（`good` 很顺 true），最多 6 段，一段不超过 15 年；`turns` 是哪一年开始变好或变差（`up` 变好 true），最多 6 个。接口拿盘上几派给的喜用（扶抑派身强、身弱，调候派，格局派，疑似从强）逐套对用户的经历，跟玄玑网站校正页同一套算法，定到哪一套就按哪一套出喜用和大运；结果在 `method.bazi.calib.result`。不合法回 `CALIB_INVALID`。
 
 老的核一核回答：可选 `answers`（`calib` 定了就以 `calib` 为准），写成 `[{ "year": 2023, "pick": "弱" }]`，`pick` 只能是 弱／强／都沾／记不清，最多 12 条，同一轮累积着传。接口用它定身强身弱、挑出对得上经历的那一派，喜用和大运流年按那一派算（见 `method.bazi.check`、`method.bazi.school`）。
 
@@ -74,9 +74,9 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | `method.bazi.useful` | 喜用 `favorable`、忌 `unfavorable`、用神 `useful`、忌神 `avoid` |
 | `method.bazi.strength.vote` | 身强身弱三种判法的投票：每一票（排盘引擎、旺衰打分法、新派）的结论和理由、结论 `verdict`（`side` 强／弱／中／待定；`agree` 一致／多数／分歧／孤票；`kind` 待定的原因：硬分歧／孤票；`firm` 在票这一层一律为假——实锤只认用户用经历核过的 `decided`；`need_review` 为真＝一定要用体感核一次）、两种结论各自的喜用 `favorable_if`；要核时 `ask` 给出要问用户的年份（体感判官）。v1.4 起西盘不进身强身弱，回包不再有 `west`、`west_agrees` |
 | `method.bazi.schools` | 八字三派各自的说法：扶抑派（身强身弱那一边）、调候派（口诀）、格局派（格名、成败），各带喜忌五行和大运顺逆。报告里按 `school` 那一派说，其余两派收起 |
-| `method.bazi.school` | 这张盘的喜用和大运按哪一派：`name`；`by` 是「核核你」（用户的经历对上了）、「指定」或「默认」（还没核过、没核完或三派都对不上时先按扶抑→格局→调候整派取，`unconfirmed` 为真）；`check` 是核到哪一步（加问／降置信） |
+| `method.bazi.school` | 这张盘的喜用和大运按哪一派：`name`；`by` 是「你的经历」（身强身弱校正定的）、「核核你」（老的核一核对上了）、「指定」或「默认」（还没核过、没核完或都对不上时替用户先定一套，`unconfirmed` 为真：强弱有方向的按扶抑派那一边；强弱定不了的取跟几派说法最一致的那一套；特殊格局按格局派）；`check` 是核到哪一步（加问／降置信） |
 | `method.bazi.check` | 核一核的题：`first_ask`（首轮最多三年，每年两条说法 `readings`，按 `order` 摆）、`extra`（加问备选）；请求带了 `answers` 时多一个 `score`：`status`（定案／加问／降置信）、`next`（下一题）、`answers`（问过的年份和那年顺还是糟）。一张盘总共最多 5 题 |
-| `method.bazi.calib` | 身强身弱校正：`ask`（`traits` 8 道性格题，每题 A–F 六个选项（F＝说不准），不标偏哪边；`events` 问大事的话和 6 个方面各有哪些事；`rules` 定案门槛）；请求带了 `calib` 时 `result`：`status`（定案／没对上／不适用）、`type`（身强型／身弱型）、`cards`（结果四格，标题加一句话）、`say`（结果下面那句提醒，或没对上时说的话）、`flip`（定到盘面原判的反面时明说的那句，否则 null）。`detail` 是留痕，不对用户报分数 |
+| `method.bazi.calib` | 身强身弱校正（时辰知道、盘上至少两套不一样的喜用才给）：`ask`（`traits` 8 道性格题，每题 A–F 六个选项（F＝说不准），不标偏哪边；`events` 问大事的话和 7 个方面各有哪些事；`periods` 问一段时间的话；`turns` 问转折年的话；`rules` 定案门槛）；请求带了 `calib` 时 `result`：`status`（定案／没对上／不适用）、`type`（定到扶抑派是身强型／身弱型，定到调候、格局是「喜火、木」这种；没对上时是现在按的那一套）、`close`（领先不多，「更接近」，也照它给）、`keep`（没对上，先按盘面看）、`school`（定到哪一套：`key`、`name`、`side`）、`favorable`、`unfavorable`、`cards`（扶抑派才有的结果四格，标题加一句话）、`say`（结果下面那句提醒，或没定时说为什么、再说些什么能定）、`flip`（定到盘面原来看法的反面时明说的那句，否则 null）。`detail` 是留痕，不对用户报分数 |
 | `method.boundary` | 出生时间的边界：`hour`（真太阳时落在哪个时辰、离前后交界各几分钟、`near`）、`asc`／`mc`（星座、在星座里第几度、`near`）、`cusp_planets`（离宫头不到 1.5° 的星）、`near_any`。说时辰交界、换宫这些只用它 |
 | `method.quotes[]` | 报告里可以引的古人原句候选：`use`（适合放在哪一章）、`text`（原文）、`source`（出处）。只许用这几句 |
 | `method.bazi.luck[]` | 每步大运：起止年份 `start_year`／`end_year`、年龄 `start_age`／`end_age`（`age_kind` 是周岁还是虚岁，新版排盘服务给周岁）、对外写法 `label`（如「2001 年交运（那年满 5 周岁） · 丙辰（2001–2011）」，老版为空）、交运那年满几周岁 `start_year_age`、档位 `tier_name`（上上／上／中／下／下下）、大运判词 `title`（两个四字）和 `line` |
