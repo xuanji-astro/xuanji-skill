@@ -92,7 +92,7 @@ V1 不要求玄玑注册，不接人物档案库，不提供云端存档、认�
    - PDF 内容不对时脚本会自动重打一次；还不行，或者 Windows 上 PDF 的权限自查没过（会另打 `WINDOWS_REASON`），就不交 PDF，只交完整的 HTML，照上面「只交 HTML」那条说；不绕过检查，也不把没生成的 PDF 说成已经生成。
    出了文件用 `node <skill目录>/scripts/check_report.mjs --request request.json --report report.html` 自查有没有生辰，不在命令里写生辰。检查通过时它什么都不打印，查出问题才列类别并非 0 退出；没有输出不是没跑。hits只放用户在对话里答「准」「部分准」的验前事，没核对就留空、不伪造确认；报告文字仍由用户自己的AI宿主生成。report.json按第2步私有创建，不使用shell heredoc或重定向承载生辰。输入与输出均用第2步的平台权限检查，不改其他文件权限，不覆盖；模板默认不显示或嵌入原始出生日期、时间、地点，仍含敏感衍生盘面，不能称匿名。报告离线不联网。合盘只作对话回答，不生成合盘HTML或其他报告文件，读法见 [合盘](reference/合盘.md)；除了出不了完整报告、一事一卜讲完（包括他要一事一卜的报告）这两种情况，对话里不主动引导加创始人（两份报告最后的创始人卡片是报告自带的）。
 7. **两份报告**（年度、分术）：什么时候出、怎么拿数据、怎么写，各看 [年度报告](reference/年度.md)、[分术报告](reference/分术.md)。一事一卜不出报告，只在对话里讲，见 [一事一卜](reference/一事一卜.md)。报告数据（`year_report.json`、`fenshu_report.json`）照第 2 步私有创建，再用 `node <skill目录>/scripts/build_doc.mjs --kind year|fenshu …` 出文件（每份要带哪些文件，那一份的说明里写着）。它先查报告数据，查不过打 `REPORT_RULES_FAILED`，另一行 `REPORT_RULES_HINT` 列出类别和字段路径（比如 `LENGTH_LIMIT:four.八字.text`、`VIEW_MISMATCH:glance.key_month_label`），照说明把那几处改对再跑；过了才整页画好、逐段核对，再新建 HTML 和 PDF。出来的提示码跟第 6 步一样处理：`REPORT_SAVED`／`PDF_SAVED` 两份都交，`PDF_SKIPPED_…` 只交 HTML（沙箱里另跑 `make_pdf.mjs` 那一条照第 6 步），`OUTPUT_EXISTS` 换个文件名，改过还是 `REPORT_INCOMPLETE` 或 `REPORT_RULES_FAILED` 就什么都不给、照第 6 步请他加创始人微信。出了文件，照第 6 步用 `check_report.mjs --request request.json --report 出的那份.html` 自查有没有生辰。
-8. **印占排盘**：用户要看印度占星的盘，照 [印占](reference/印占.md) 拿 `vedic.json`，再用 `node <skill目录>/scripts/build_vedic.mjs --vedic vedic.json --out 印占排盘.html --pdf 印占排盘.pdf --pack 印占数据包.txt --zip 印占排盘.zip` 出报告和压缩包；报告只有盘和数据，解读在对话里照那份说明讲。提示码照那份说明处理；`REPORT_INCOMPLETE`、`VEDIC_INVALID` 什么都不给、照第 6 步请他加创始人微信。**紫微排盘**同一个做法：照 [紫微](reference/紫微.md) 拿 `ziwei.json`，用 `node <skill目录>/scripts/build_ziwei.mjs --ziwei ziwei.json --out 紫微排盘.html --pdf 紫微排盘.pdf --pack 紫微数据包.txt --zip 紫微排盘.zip` 出报告和压缩包；`ZIWEI_TIME_UNKNOWN` 照实说没有时辰排不了，`ZIWEI_INVALID` 跟 `VEDIC_INVALID` 一样处理。紫微三个专题（命宫主星、夫妻宫、财帛宫）他要做成报告时，照 [紫微](reference/紫微.md)「做成专题报告」写 `ziwei_report.json`，用 `node <skill目录>/scripts/build_doc.mjs --kind ziwei --ziwei ziwei.json --report ziwei_report.json --out 紫微_夫妻宫.html --pdf 紫微_夫妻宫.pdf` 出（文件名跟题目走）。
+8. **印占排盘**：用户要看印度占星的盘，照 [印占](reference/印占.md) 拿 `vedic.json`，再用 `node <skill目录>/scripts/build_vedic.mjs --vedic vedic.json --out 印占排盘.html --pdf 印占排盘.pdf --pack 印占数据包.txt --zip 印占排盘.zip` 出报告和压缩包；报告只有盘和数据，解读在对话里照那份说明讲。两个人的**印占合盘**（36 分配对、火星煞）照那份说明最后一节：两张盘各拿一次，用 `node <skill目录>/scripts/vedic_milan.mjs` 在本机算分，只在对话里讲，不出文件。提示码照那份说明处理；`REPORT_INCOMPLETE`、`VEDIC_INVALID` 什么都不给、照第 6 步请他加创始人微信。**紫微排盘**同一个做法：照 [紫微](reference/紫微.md) 拿 `ziwei.json`，用 `node <skill目录>/scripts/build_ziwei.mjs --ziwei ziwei.json --out 紫微排盘.html --pdf 紫微排盘.pdf --pack 紫微数据包.txt --zip 紫微排盘.zip` 出报告和压缩包；`ZIWEI_TIME_UNKNOWN` 照实说没有时辰排不了，`ZIWEI_INVALID` 跟 `VEDIC_INVALID` 一样处理。紫微三个专题（命宫主星、夫妻宫、财帛宫）他要做成报告时，照 [紫微](reference/紫微.md)「做成专题报告」写 `ziwei_report.json`，用 `node <skill目录>/scripts/build_doc.mjs --kind ziwei --ziwei ziwei.json --report ziwei_report.json --out 紫微_夫妻宫.html --pdf 紫微_夫妻宫.pdf` 出（文件名跟题目走）。
 9. 本地文件可能含隐私（定时辰时还有 `events.json`、`answers.json`、`ask.json`、`rectify.json`，里面是用户说的大事：哪年、什么事、好坏；身强身弱校正的回答写在 `request.json` 的 `calib` 里；一事一卜的问题和外应在 `yishi_request.json`；他对过的事在 `hits.json`；印占的整盘在 `vedic.json`，数据包 `印占数据包.txt` 是可以贴给别的 AI 的盘面摘要；紫微的整盘在 `ziwei.json`，`紫微数据包.txt` 同理），告诉用户保存位置；不主动上传，不承诺自动删除。用户不需要本地保存时，可用支持临时数据的宿主工具，不在公开仓写任何实际结果。
 
 ## 怎么回答（读法见 [解读](reference/解读.md)）
@@ -140,13 +140,17 @@ V1 不要求玄玑注册，不接人物档案库，不提供云端存档、认�
 - 一半以上「不准」，就如实说：盘和经历对不上，最常见的原因是出生时间有偏差；之后跟出生时间有关的结论（上升、宫位、时柱）收窄着说。不要硬圆。
 
 **身强身弱校正**（`method.bazi.calib.ask` 不为空、`method.bazi.calib.result` 为空才问；盘面几种判法一致（`method.bazi.strength.vote.verdict.agree` 是「一致」）的不主动问；用户自己说「校正一下」「核一核」都问）：验前事说完、用户回完以后问：**用户回完验前事的那条回复，最后一句就问**，一定在出报告之前：校正完喜用和大运会变，先校正再写，报告只写一次。题、选项、结果的话跟玄玑网站的校正页一字不差。
-- 先问一句要不要做：「想让喜用和大运更贴你，可以做个身强身弱校正：8 道日常小题，再说几件这些年的大事，两三分钟。要做吗？」不想做就跳过，不追问。
+- 先问一句要不要做：「想让喜用和大运更贴你，可以做个身强身弱校正：8 道日常小题，再说几件这些年的大事，或者哪几年特别难、特别顺，两三分钟。要做吗？」不想做就跳过，不追问。
 - 8 道题**一条消息发完**：照 `calib.ask.traits` 原样列，题号、题目、A–F 六个选项一字不改（F 是「说不准／都不好说」），请用户回「题号加字母」（比如「1A 2C」）。不说哪个选项偏强偏弱，不提身强身弱、门派，零暗示。哪题答不上可以空着。
-- 再请用户说大事：照 `calib.ask.events` 的 `q` 和 `hint` 问，跟定时辰的大事是同一套（方面、那件事、哪一年、好事还是坏事，表见 [定时辰](reference/定时辰.md) 第 2 步）；定时辰时已经说过的直接用上，说一句「前面说过的我直接用上」。不说也能出结果。
-- 记回答：在 `request.json` 里加 `calib`，写成 `{"traits":["D","B",null,"A","C","B","D","E"],"events":[{"year":2016,"domain":"事业","event":"跳槽","good":true}]}`：`traits` 按题号 8 个，空着的写 `null`；`events` 最多 30 件，好坏说不上来的那件不写进去。写完再跑一次 `client.mjs profile`。不再写 `answers`（老的「两条说法选一条」那套不用了）。
+- 再请用户说经历，一条消息问完三样：
+  - 大事：照 `calib.ask.events` 的 `q` 和 `hint` 问，跟定时辰的大事是同一套（方面、那件事、哪一年、好事还是坏事，七个方面和每个方面的事见 `calib.ask.events.domains`，跟 [定时辰](reference/定时辰.md) 第 2 步的表一样）；定时辰时已经说过的直接用上，说一句「前面说过的我直接用上」。
+  - 一段时间：照 `calib.ask.periods` 的 `q` 和 `hint` 问（从哪年到哪年整体很难还是很顺）。
+  - 转折年：照 `calib.ask.turns` 的 `q` 和 `hint` 问（哪一年开始变好还是变差）。
+  - 三样说哪样都行，说得越多越准；用户说「2020 到 2023 年都挺难，24 年开始好起来」这种，拆成一段时间加一个转折年记。只答了性格题、一件经历都没说的，定不下来，结果会「先按盘面看」。
+- 记回答：在 `request.json` 里加 `calib`，写成 `{"traits":["D","B",null,"A","C","B","D","E"],"events":[{"year":2016,"domain":"事业","event":"跳槽","good":true}],"periods":[{"from":2020,"to":2023,"good":false}],"turns":[{"year":2024,"up":true}]}`：`traits` 按题号 8 个，空着的写 `null`；`events` 最多 30 件，好坏说不上来的那件不写进去；`periods` 最多 6 段，一段不超过 15 年，`good` 是整体很顺；`turns` 最多 6 个，`up` 是开始变好。没说的那样不写。写完再跑一次 `client.mjs profile`。不再写 `answers`（老的「两条说法选一条」那套不用了）。
 - 看新 `profile.json` 的 `method.bazi.calib.result`：
-  - `status` 是「定案」：照原样说 `type`（身强型／身弱型）；`flip` 不为空（定到了盘面原来判断的反面）就紧跟着照说那句；再说四格 `cards`（每格标题加那句话）、喜用（`method.bazi.useful.favorable`），最后加 `say` 那句。之后身强身弱就按它说，喜用和大运接口已经按这一边算好。
-  - 「没对上」：照 `say` 说，喜用照给，按 `method.bazi.school` 说「先按这一派来说」。
+  - `status` 是「定案」：先说「你的校正结果为：」再照原样说 `type`。定到扶抑派是「身强型／身弱型」；定到调候派、格局派（包括从格那套）是「喜火、木」这种，没有四格。`flip` 不为空（定到了盘面原来看法的反面）就紧跟着照说那句；有 `cards` 就说四格（每格标题加那句话）；再说喜用（`method.bazi.useful.favorable`）。`close` 为真（领先不多，「更接近」）时最后照说 `say`；不为真时，扶抑派最后说「身强身弱是对整张盘力量的概括，具体还要结合整体结构和现实情况。」，调候、格局说「喜用和大运流年都按这一套来看，具体还要结合整体结构和现实情况。」。之后喜用和大运就按这一套说，接口已经按它算好（`method.bazi.school.by` 是「你的经历」）。
+  - 「没对上」（`keep` 为真）：先说「先按盘面看：」再照原样说 `type`（现在按的那一套），喜用照给，最后照说 `say`（为什么还定不了、再说些什么能定）。不说「维持原判」「印证不足」。用户补了经历，把新的加进 `calib` 再跑一次。
   - 「不适用」：不提校正，照常往下讲。
   - 不报分数，不说哪道题、哪件事偏哪边。
 - 校正过一次（`calib.result` 有了）就不再主动问；用户想重做，换新的回答再跑一次。报告用新 `profile.json` 出，`strength_check` 不用再写。
@@ -209,7 +213,7 @@ V1 不要求玄玑注册，不接人物档案库，不提供云端存档、认�
 
 ### 用户问「你还能做什么」
 
-照这个 Skill 真能做的说，用他会问的话各举一句：性格和天赋、今年明年怎么走、事业要不要换、感情和正缘、钱；拿过去几年核一核准不准；身强身弱校正；出生时间卡在时辰交界时把时辰定下来；两个人合盘（恋人、家人、朋友、同事、合伙）；出一份 HTML 报告；一件事起一卦看盘（一事一卜，讲盘和他的现在）；某一年按月怎么走（年度报告）；一件事几套盘分开说（分术报告）；看印度占星的盘（印占排盘报告，附一份可以贴给别的 AI 的数据包）；看紫微斗数的盘（紫微排盘报告，同样附数据包；还能出命宫主星、夫妻宫、财帛宫三个专题报告）。用户说不要报告，就不再提报告。最后带一句：手机上也能看，去执天玄玑网站（xuanji-astro.com）排盘，在生辰页右上角的分享里点「复制给AI」，贴给手机上的 AI 就能接着聊。
+照这个 Skill 真能做的说，用他会问的话各举一句：性格和天赋、今年明年怎么走、事业要不要换、感情和正缘、钱；拿过去几年核一核准不准；身强身弱校正；出生时间卡在时辰交界时把时辰定下来；两个人合盘（恋人、家人、朋友、同事、合伙）；出一份 HTML 报告；一件事起一卦看盘（一事一卜，讲盘和他的现在）；某一年按月怎么走（年度报告）；一件事几套盘分开说（分术报告）；看印度占星的盘（印占排盘报告，附一份可以贴给别的 AI 的数据包）；两个人的印占合盘（印度人那种 36 分配对）；看紫微斗数的盘（紫微排盘报告，同样附数据包；还能出命宫主星、夫妻宫、财帛宫三个专题报告）。用户说不要报告，就不再提报告。最后带一句：手机上也能看，去执天玄玑网站（xuanji-astro.com）排盘，在生辰页右上角的分享里点「复制给AI」，贴给手机上的 AI 就能接着聊。
 
 用户想让朋友、家人也看看，而对方没装这个 Skill，也这么告诉他：去执天玄玑网站排盘，点「复制给AI」。网站只在这两种时候提，别的回答里不加。
 

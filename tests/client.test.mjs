@@ -82,6 +82,15 @@ test('身强身弱校正 calib：traits 8 个 A–F 或 null（F＝说不准）�
    {events:Array.from({length:31},(_,i)=>({year:1990+i,good:true}))},{traits:['A'],extra:1}])
   assert.throws(()=>validate('profile',{...birth(),calib}),/INPUT_INVALID/,JSON.stringify(calib).slice(0,60));
 });
+test('rc.16 校正：一段时间 periods、转折年 turns、方面加「人际」；跟接口 rc.16 同一套检查',()=>{
+ validate('profile',{...birth(),calib:{traits:[null,null,null,null,null,null,null,null],periods:[{from:2020,to:2023,good:false}],turns:[{year:2024,up:true}]}});
+ validate('profile',{...birth(),calib:{events:[{year:2019,domain:'人际',event:'遇到贵人',good:true}],periods:[{from:2001,to:2016,good:true}],turns:[]}});
+ for(const calib of [{periods:[{from:2023,to:2020,good:true}]},{periods:[{from:2000,to:2016,good:true}]},{periods:[{from:2020,to:2023}]},{periods:[{from:2020,to:2023,good:true,note:'x'}]},
+   {periods:Array.from({length:7},(_,i)=>({from:2000+i,to:2001+i,good:true}))},{periods:{from:2020,to:2023,good:true}},
+   {turns:[{year:2024}]},{turns:[{year:2024,up:'好'}]},{turns:[{year:1900,up:true}]},{turns:Array.from({length:7},(_,i)=>({year:2010+i,up:true}))},{turns:[{year:2024,up:true,why:'x'}]},
+   {events:[{year:2016,domain:'社交',good:true}]}])
+  assert.throws(()=>validate('profile',{...birth(),calib}),/INPUT_INVALID/,JSON.stringify(calib).slice(0,60));
+});
 test('给了出生时间却没写来源：TIME_SOURCE_MISSING',async()=>{
   const {validate}=await import('../scripts/client.mjs');
   assert.throws(()=>validate('profile',{date:'1996-05-20',time:'10:30',city:'浙江省杭州市西湖区',gender:'female'}),e=>e.code==='TIME_SOURCE_MISSING');

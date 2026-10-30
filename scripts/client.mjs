@@ -60,17 +60,21 @@ export function validate(kind, input) {
   if(kind==='vedic'||kind==='ziwei'){if(!object(input)) fail('INPUT_INVALID');birth(input);if(Buffer.byteLength(JSON.stringify(input),'utf8')>8192) fail('INPUT_TOO_LARGE');return;}   // 印占、紫微整盘：只收生辰，跟 profile 一样查
   if(kind==='profile'){
     // 「核一核」的回答（接口 answers）：[{year,pick}]，pick 只能是 弱／强／都沾／记不清，最多 12 条；其余照生辰字段严格查
-    // 身强身弱校正（接口 calib）：traits 8 个（A–F 或 null，F＝说不准），events 最多 30 件 {year, domain?, event?, good}；跟接口同一套检查
+    // 身强身弱校正（接口 calib）：traits 8 个（A–F 或 null，F＝说不准），events 最多 30 件 {year, domain?, event?, good}；
+    // periods 最多 6 段 {from, to, good}（哪几年整体很难／很顺，一段不超过 15 年），turns 最多 6 个 {year, up}（哪一年开始变好／变差）；跟接口 rc.16 同一套检查
     const {answers,calib,...b}=object(input)?input:{};
     if(!object(input)) fail('INPUT_INVALID');
     birth(b);
     if(answers!==undefined&&(!Array.isArray(answers)||answers.length>12||!answers.every(x=>object(x)&&Object.keys(x).every(k=>k==='year'||k==='pick')&&Number.isInteger(x.year)&&x.year>1900&&x.year<2100&&['弱','强','都沾','记不清'].includes(x.pick)))) fail('INPUT_INVALID');
     if(calib!==undefined){
-      const AREAS=['感情','事业','钱财','学业','健康','家庭'],tr=calib&&calib.traits,ev=calib&&calib.events;
-      if(!object(calib)||Object.keys(calib).some(k=>k!=='traits'&&k!=='events')) fail('INPUT_INVALID');
+      const AREAS=['感情','事业','钱财','学业','健康','家庭','人际'],tr=calib&&calib.traits,ev=calib&&calib.events,pr=calib&&calib.periods,tn=calib&&calib.turns;
+      const yr=y=>Number.isInteger(y)&&y>1900&&y<2100;
+      if(!object(calib)||Object.keys(calib).some(k=>!['traits','events','periods','turns'].includes(k))) fail('INPUT_INVALID');
       if(tr!==undefined&&(!Array.isArray(tr)||tr.length>8||!tr.every(x=>x===null||(typeof x==='string'&&/^[A-F]$/.test(x))||(Number.isInteger(x)&&x>=0&&x<6)))) fail('INPUT_INVALID');
       if(ev!==undefined&&(!Array.isArray(ev)||ev.length>30||!ev.every(x=>object(x)&&Object.keys(x).every(k=>['year','domain','event','good'].includes(k))&&Number.isInteger(x.year)&&x.year>1900&&x.year<2100&&typeof x.good==='boolean'
         &&(x.domain===undefined||AREAS.includes(x.domain))&&(x.event===undefined||(typeof x.event==='string'&&x.event.length<=20))))) fail('INPUT_INVALID');
+      if(pr!==undefined&&(!Array.isArray(pr)||pr.length>6||!pr.every(x=>object(x)&&Object.keys(x).every(k=>['from','to','good'].includes(k))&&yr(x.from)&&yr(x.to)&&x.to>=x.from&&x.to-x.from<=15&&typeof x.good==='boolean'))) fail('INPUT_INVALID');
+      if(tn!==undefined&&(!Array.isArray(tn)||tn.length>6||!tn.every(x=>object(x)&&Object.keys(x).every(k=>k==='year'||k==='up')&&yr(x.year)&&typeof x.up==='boolean'))) fail('INPUT_INVALID');
     }
   }
   else {
