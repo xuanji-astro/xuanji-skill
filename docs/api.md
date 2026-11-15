@@ -14,7 +14,7 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 
 ## 请求
 
-单人需要 date（真实存在的公历 YYYY-MM-DD）、city（中国省市区）、gender（male/female）。time 为 HH:mm、null 或省略。可选 time_source：birth_certificate/family_clear/family_rough/unknown；time_precision：minute/within_15min/within_1h/unknown。钟表时间由服务端处理，不自行换算。
+单人需要 date（真实存在的公历 YYYY-MM-DD）、city（国内写省市区；境外写「城市, 州或省, 国家」，中文英文都行）、gender（male/female）。境外和港澳台按出生地时区算（含当地夏令时；港澳台 1986–1991 没有大陆夏令时），中国大陆照旧东八区、1986–1991 夏令时按大陆扣。城市在当地两个时区交界上的回 `LOCATION_ZONE_UNCERTAIN`（换附近的城市），找不到回 `LOCATION_NOT_FOUND`。time 为 HH:mm、null 或省略。可选 time_source：birth_certificate/family_clear/family_rough/unknown；time_precision：minute/within_15min/within_1h/unknown。钟表时间由服务端处理，不自行换算。
 
 身强身弱校正的回答：可选 `calib`，写成 `{ "traits": ["D","B",null,…8 个], "events": [{ "year": 2016, "domain": "事业", "event": "跳槽", "good": true }], "periods": [{ "from": 2020, "to": 2023, "good": false }], "turns": [{ "year": 2024, "up": true }] }`。`traits` 是 `method.bazi.calib.ask.traits` 8 道题各选了哪项（A–F，F 是「说不准」不算分，没答写 null）；`events` 是用户说的大事（方面是感情、事业、钱财、学业、健康、家庭、人际之一，`event` 可不填，填了要是那个方面里列出的；`good` 好事 true、坏事 false），最多 30 件；`periods` 是哪几年整体很难或很顺（`good` 很顺 true），最多 6 段，一段不超过 15 年；`turns` 是哪一年开始变好或变差（`up` 变好 true），最多 6 个。接口拿盘上几派给的喜用（扶抑派身强、身弱，调候派，格局派，疑似从强）逐套对用户的经历，跟玄玑网站校正页同一套算法，定到哪一套就按哪一套出喜用和大运；结果在 `method.bazi.calib.result`。不合法回 `CALIB_INVALID`。
 
@@ -40,7 +40,7 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 
 | 路径 | 内容 |
 |---|---|
-| `birth` | 原样回显的出生信息，以及解析出的经纬度 `place` |
+| `birth` | 原样回显的出生信息，以及解析出的经纬度 `place`（境外、港澳台另有 `place.zone`＝出生地时区名、`birth.tz`＝出生那一刻的真实时差） |
 | `western.data.planets` | 行星：`n` 名、`sign` 星座、`deg`／`min` 度分、`house` 宫位、`rx` 是否逆行 |
 | `western.data.angles` | 上升 `asc`、天顶 `mc` |
 | `western.data.aspects` | 相位，如「太阳拱木星」 |
@@ -156,7 +156,7 @@ V1 不提供保存 endpoint、注册登录、人物档案库或 Personal Graph�
 | API_TIMEOUT / NETWORK_UNAVAILABLE | 网络或服务暂不可用，不自行排盘替代 |
 | API_UNAVAILABLE | 5xx，包括预热/繁忙；稍后再试，不改生辰 |
 | RATE_LIMITED | 429；稍后再试，不绕过限额 |
-| API_REJECTED | 非200/429/5xx；核对字段或服务状态 |
+| API_REJECTED | 非200/429/5xx；核对字段或服务状态。境外城市认不出（服务端 LOCATION_NOT_FOUND）或在两个时区交界上（LOCATION_ZONE_UNCERTAIN）也是这个：补上州或省和国家，或换附近的城市 |
 | RESPONSE_INVALID / RESPONSE_TOO_LARGE | 未知响应，不生成伪结果 |
 | OUTPUT_FILE_UNAVAILABLE | 不覆盖已有文件；选择新输出名 |
 
