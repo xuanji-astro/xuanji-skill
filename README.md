@@ -2,7 +2,7 @@
 
 **让你的 AI 助手学会看结构。**
 
-装上它，支持 Skill 的 AI（比如 Claude Code）就能调用执天玄玑 API：排八字和西洋星盘，讲你的出厂底色、重生人格和人格 Buff，看两个人的关系，还能生成一份离线的 HTML 品牌报告；一件事可以起一卦（一事一卜：在你电脑上起卦、讲盘），某一年怎么走、一件事几套盘分开说，也各有一份报告（年度、分术）。
+装上它，支持 Skill 的 AI（比如 Claude Code）就能调用执天玄玑 API：排八字和西洋星盘，讲你的出厂底色（从星盘推出的 MBTI）、重生人格和人格 Buff，看两个人的关系，还能生成一份离线的 HTML 品牌报告；一件事可以起一卦（一事一卜：在你电脑上起卦、讲盘），某一年怎么走、一件事几套盘分开说，也各有一份报告（年度、分术）。
 
 **不装 Skill 也能用**：在执天玄玑网站排好盘，点「复制给AI」，贴给豆包、DeepSeek、Kimi、ChatGPT 都行，怎么弄见[下面](#不装-skill-也能用复制给-ai)。
 
@@ -23,6 +23,16 @@
 复制的是一段文字：你的八字、星盘、出厂底色和流年，加上玄玑的读法。AI 读完会先说几件你过去的事请你核对，再回答你想问的。这段文字不含你的出生日期、时间和地点。
 
 想要整份图文报告（HTML／PDF），用这个 Skill 出。
+
+## 用完 Skill，去网站接着看
+
+Skill 不建档案、用完就留在你电脑上。想长期用，去执天玄玑网站 https://xuanji-astro.com ，填一样的出生信息，排出来是同一张盘：
+
+- **时辰校准（免费）**：出生时间拿不准的，用分界辨识校准法一层一层挑出最像你的那一段。登录后进「宝殿」里的「我的档案」，新建或打开你的档案，点出生时间旁边的「时辰校准」。挑好的时间回到 Skill 里说一声，它按新时间重排。
+- **档案**：一份档案走全站，家人朋友也能建。
+- **每天的运势、问玥神和司烬**：带着你的盘回答，记得你说过的话。
+- **缘分合盘**：宝殿里的「我的关系（缘分合盘）」，免费那层就能看谁更上头、TA 怎么看你。
+- 还有塔罗、万年历、书房。
 
 ## 装好之后是什么体验
 
@@ -59,14 +69,14 @@
 
 截图里的盘都是编的生辰，不是真人。
 
-出生时间卡在两个时辰中间也不怕：它会问你几件经历过的事，帮你把时辰定下来；你说的这些经历只在你自己的电脑上用，不发给接口。
+出生时间卡在两个时辰中间也不怕：它会告诉你卡在哪，带你去执天玄玑网站用「时辰校准」免费定下来，挑好的时间回来，它按新时间重排。
 
 ## 安装（三步）
 
 前提：Node.js ≥ 18.19.1。无 npm/pip 第三方依赖，无需模型 Key、CloudBase Key 或数据库配置。克隆安装另需 Git。
 
 1. 拿到 `xuanji/` 目录，二选一：
-   - 下载发布包 `Xuanji-Skill-0.1.0.zip`，解压到一个**新建的空目录**（macOS 可用 Finder 或 `ditto -x -k`，Linux 用支持 UTF-8 文件名的解压工具，Windows 用系统解压或 PowerShell `Expand-Archive`）。解压后核对 `reference/报告.md` 存在。
+   - 下载发布包 `Xuanji-Skill-0.1.1.zip`，解压到一个**新建的空目录**（macOS 可用 Finder 或 `ditto -x -k`，Linux 用支持 UTF-8 文件名的解压工具，Windows 用系统解压或 PowerShell `Expand-Archive`）。解压后核对 `reference/报告.md` 存在。
    - 或克隆本仓库：`git clone <本仓库地址> xuanji`
 2. 把整个 `xuanji/` 目录放进你的 AI 宿主的技能目录。Codex 示例：复制到看盘那个文件夹的 `.agents/skills/xuanji/`；其他宿主按各自的方式安装。不要只复制 SKILL.md，否则脚本和模板缺失；不要覆盖现有同名 Skill。本仓不自动安装、不修改宿主设置。
    - **Codex（含 ChatGPT 桌面版里的 Codex）**：放到看盘那个文件夹的 `.agents/skills/xuanji/` 只在那里用；放到 `~/.agents/skills/xuanji/` 哪个文件夹都能用。Codex 的沙箱默认不联网，第一次排盘它会请你批准一条 `client.mjs` 命令联网（只连 `api.xuanji-astro.com`），点同意就行；生成报告时它还会请你批准一条 `make_pdf.mjs` 命令在沙箱外打开浏览器出 PDF（Codex 的沙箱里起不了浏览器），同意就行；不用另装浏览器插件。
@@ -90,13 +100,10 @@ node scripts/client.mjs profile --input request.json --output profile.json
 node scripts/client.mjs pair --input pair-request.json --output pair.json
 node scripts/build_report.mjs --profile profile.json --report report.json --out report.html --pdf report.pdf
 node scripts/rectify.mjs check --profile profile.json --request request.json --output request_alt.json
-node scripts/rectify.mjs ask --a profile.json --b profile_alt.json --events events.json --output ask.json
-node scripts/rectify.mjs score --a profile.json --b profile_alt.json --events events.json --ask ask.json --answers answers.json --output rectify.json
-node scripts/build_report.mjs --profile profile.json --report report.json --rectify rectify.json --out report.html   # 定过时辰的
 node scripts/check_report.mjs --request request.json --report report.html   # 只打有／没有生辰
 ```
 
-后三行（rectify 系列）是定时辰，只读本地文件，不联网。单人报告 `report.json` 的格式见 [reference/报告.md](reference/报告.md)。
+`rectify.mjs check` 只看出生时间卡不卡在时辰交界，只读本地文件，不联网；定时辰本身去网站「时辰校准」做。单人报告 `report.json` 的格式见 [reference/报告.md](reference/报告.md)。
 
 ## 隐私与安全
 
@@ -112,6 +119,7 @@ node scripts/check_report.mjs --request request.json --report report.html   # �
 
 ## 更新记录
 
+- **0.1.1**：**定时辰搬到网站**。出生时间卡在时辰交界时，带你去执天玄玑网站用「时辰校准」（分界辨识校准法，免费）一层一层挑，挑好的时间回来按新时间重排。本地不再拿经历给两张盘打分：拿经历倒推出生时间，我们用 206 位有出生记录的名人测过，跟随手猜差不多。报告页尾和对话里该提的地方带上网站：存档、每天的运势、问玥神和司烬、缘分合盘。问到交易、炒币、投钱这类事，哪段日子好走照常说，结尾带一句「自己判断、自己负责」。其余跟 0.1.0 一样。
 - **0.1.0（正式版）**：**出生在国外、港澳台也能排了**。城市写「城市, 州或省, 国家」，中文英文都行（比如 `Toronto, ON, Canada`、`悉尼, 澳大利亚`），时间照填当地的钟表时间，不用自己换算；服务器按出生地的时区算，当地夏令时也算进去，港澳台不再按大陆的夏令时扣。排完会跟你核一句认出来的是不是这个地方，同名的城市认错了，补上州或国家再排。印占、紫微、合盘一样适用；看某一年时，现在住在国外也直接写城市名。其余功能跟 rc.16 一样。
 - **rc.16**：多了**印占合盘**。两个人都有出生时间，说一句「看看我们的印占合盘」，按印度人婚配看的 36 分配对讲给你听：总分、合得来和容易摩擦的几项、两人的本命动物、前世业力，恋人再看两边的火星煞。说是家人、朋友、同事，按这层关系讲合不合得来，不按婚配说。只在对话里讲，不出报告。**身强身弱校正换了办法**：盘上几种看法给的喜用（身强、身弱、调候、格局，特殊格局也算）逐套跟你的经历对，对上哪套就按哪套出喜用和大运。除了几件大事，还可以说「哪几年整体很难、很顺」「哪一年开始变好、变差」；大事清单补了谈恋爱、桃花旺、失恋、收入大涨这些，多了「人际」（遇到贵人、被小人陷害这类）。经历还不够定的时候，也告诉你现在先按哪一套看、再说点什么能定下来。定时辰时说的大事跟校正用同一份清单。
 - **rc.15**：多了**紫微排盘**。说一句「帮我排一下紫微」，出一份紫微排盘报告：十二宫盘面（主星、辅星、杂曜带庙旺利陷，生年四化标色，宫干自化和对宫化入，博士、将前、岁前三套神和长生十二宫，大限、小限、流年岁数），中间印真太阳时、农历、四柱和八字大运；还有十二宫细表、大限表、流年和流月，PDF 和网页版都有；再附一份紫微数据包（txt），可以整段贴给别的 AI。还能出**命宫主星**、**夫妻宫**、**财帛宫**三个专题报告。时辰跟八字用同一个真太阳时，23 点以后算第二天子时，闰月按月中分界。
@@ -141,7 +149,7 @@ Apache-2.0 不自动授权执天玄玑名称、Logo、官方身份。允许正�
 
 隐私政策（Privacy Policy）：https://xuanji-astro.com/privacy
 
-当前版本 0.1.0，正式版。
+当前版本 0.1.1，正式版。
 
 ## 找到我们
 

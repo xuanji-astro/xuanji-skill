@@ -26,7 +26,7 @@ export const remember=(s)=>s?`<div class="remember"><small>★ 一句话记住</
 export const doorCard=(title,items)=>`<div class="door"><div class="dtop">${CHAT}${esc(title)}</div>${items.map((d,i)=>`<div class="item${items.length>1?' num':''}">${items.length>1?`<span class="n">${i+1}</span>`:''}<div>${d.when?`<span class="when">${esc(d.when)}</span><div style="clear:both"></div>`:''}<div class="msg">${esc(d.msg)}</div>${items.length>1?'<div class="copy">点住这句就能复制</div>':''}<div class="to">会接到 <i>→</i> <b>${esc(d.to)}</b>${d.what?`<span class="what">${esc(d.what)}</span>`:''}</div></div></div>`).join('')}</div>`;
 export const asks=(qs)=>`<div class="asks"><div class="dtop">${CHAT_O}接下来可以问我</div>${arr(qs).map(q=>`<div class="msg">${esc(q)}</div>`).join('')}<div class="hint">挑一句，回到对话里发给玄玑</div></div>`;
 export const founder=(qr,bullets,note)=>qr?`<div class="founder"><img src="${qr}" alt="创始人微信"><div><div class="t">想看得更细</div><ul>${bullets.map(b=>`<li>${esc(b)}</li>`).join('')}</ul><span class="wx">微信 liin1223<em>· 备注「${esc(note)}」</em></span></div></div>`:'';
-const FOOT='<div class="foot">解读仅供参考，不承诺特定结果，不替代法律、投资、医疗等专业意见。</div>';
+const FOOT='<div class="foot">存档、每天的运势、问玥神、缘分合盘、时辰校准，都在执天玄玑网站 xuanji-astro.com。解读仅供参考，不承诺特定结果，不替代法律、投资、医疗等专业意见。</div>';
 export function page(title,brand,body){
   // 页脚跟最后一块（创始人卡，没有就是「接下来可以问我」）包在一起，打印时不让页脚一个人落到新的一页
   const cut=Math.max(body.lastIndexOf('<div class="founder">'),body.lastIndexOf('<div class="asks">'));
