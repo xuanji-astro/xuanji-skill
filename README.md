@@ -1,5 +1,7 @@
 # 执天玄玑 / Xuanji Skill
 
+[English edition →](https://github.com/xuanji-astro/xuanji-skill-en)
+
 **让你的 AI 助手学会看结构。**
 
 装上它，支持 Skill 的 AI（比如 Claude Code）就能调用执天玄玑 API：排八字和西洋星盘，讲你的出厂底色（从星盘推出的 MBTI）、重生人格和人格 Buff，看两个人的关系，还能生成一份离线的 HTML 品牌报告；一件事可以起一卦（一事一卜：在你电脑上起卦、讲盘），某一年怎么走、一件事几套盘分开说，也各有一份报告（年度、分术）。
